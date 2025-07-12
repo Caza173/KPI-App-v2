@@ -1,0 +1,54 @@
+{
+  "name": "kpi-dashboard",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:simple": "node server-simple.js",
+    "build": "webpack --config webpack.config.js",
+    "dev": "webpack serve --open",
+    "dev:full": "concurrently \"npm start\" \"npm run dev\"",
+    "email-scheduler": "node email-scheduler.js",
+    "test-email": "node test-email.js",
+    "test-server": "node test-simple-server.js"
+  },
+  "dependencies": {
+    "ansi-html-community": "^0.0.8",
+    "chart.js": "^4.5.0",
+    "concurrently": "^7.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "events": "^3.3.0",
+    "kleur": "^4.1.5",
+    "node-cron": "^4.1.0",
+    "nodemailer": "^6.9.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "twilio": "^5.7.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.7",
+    "@babel/preset-react": "^7.23.3",
+    "babel-loader": "^9.1.3",
+    "css-loader": "^7.1.2",
+    "express": "^4.18.2",
+    "redux-devtools-extension": "^2.13.9",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.2.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

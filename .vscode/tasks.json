@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start React Dev Server",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "group": "servers"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Backend Server",
+      "type": "shell",
+      "command": "npm",
+      "args": ["start"],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "group": "servers"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Both Servers",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Start React Dev Server",
+        "Start Backend Server"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Build React App",
+      "type": "shell", 
+      "command": "npm",
+      "args": ["run", "build"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
