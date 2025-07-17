@@ -5,6 +5,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
+    publicPath: '/',
     clean: true
   },
   module: {
@@ -40,7 +41,9 @@ module.exports = {
     compress: true,
     port: 3002,
     hot: false,
-    liveReload: true
+    liveReload: true,
+    open: true,
+    historyApiFallback: true
   },
   mode: 'development'
 };

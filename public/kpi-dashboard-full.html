@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI Dashboard - All Tabs</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .tab {
+            padding: 12px 16px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px 5px 0 0;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 100px;
+            text-align: center;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .tab:hover {
+            background: #e9ecef;
+        }
+        .tab.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .tab-content {
+            padding: 20px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .tile {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+            transition: transform 0.2s ease;
+        }
+        .tile:hover {
+            transform: translateY(-2px);
+        }
+        .tile h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        .tile p {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #007bff;
+        }
+        .tile small {
+            color: #666;
+            font-size: 12px;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        .btn {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+        .timestamp {
+            text-align: right;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #b6d7e2;
+        }
+        .progress-bar {
+            background-color: #e9ecef;
+            border-radius: 4px;
+            height: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: #007bff;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('goals');
+            const [properties, setProperties] = useState([]);
+            const [transactions, setTransactions] = useState([]);
+            const [expenses, setExpenses] = useState([]);
+            const [hours, setHours] = useState([]);
+            const [calls, setCalls] = useState({ made: 0, answered: 0 });
+            const [appointments, setAppointments] = useState([]);
+            const [gciData, setGciData] = useState({ gciGoal: 215000, current: 0 });
+            const [dailyData, setDailyData] = useState({});
+            const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+            
+            // Sample data for demonstration
+            useEffect(() => {
+                const sampleProperties = [
+                    { id: 1, address: '123 Main St', client: 'John Doe', status: 'Active', price: 350000 },
+                    { id: 2, address: '456 Oak Ave', client: 'Jane Smith', status: 'Sold', price: 425000 },
+                    { id: 3, address: '789 Pine Rd', client: 'Bob Johnson', status: 'Pending', price: 275000 }
+                ];
+                setProperties(sampleProperties);
+                
+                const sampleTransactions = [
+                    { id: 1, amount: 350000, commission: 8750, status: 'Closed' },
+                    { id: 2, amount: 425000, commission: 10625, status: 'Closed' },
+                    { id: 3, amount: 275000, commission: 6875, status: 'Pending' }
+                ];
+                setTransactions(sampleTransactions);
+                
+                setCalls({ made: 15, answered: 12 });
+                setAppointments([
+                    { id: 1, date: '2025-07-16', time: '10:00', client: 'John Doe' },
+                    { id: 2, date: '2025-07-16', time: '14:00', client: 'Jane Smith' }
+                ]);
+            }, []);
+            
+            const totalCommission = transactions.reduce((sum, t) => sum + (t.commission || 0), 0);
+            const closedDeals = transactions.filter(t => t.status === 'Closed');
+            
+            return (
+                <div className="container">
+                    <h1>Real Estate KPI Dashboard</h1>
+                    <div className="timestamp">
+                        <span>Last Updated: {new Date().toLocaleString()}</span>
+                    </div>
+                    
+                    {/* Navigation Tabs */}
+                    <div className="tabs">
+                        <div 
+                            className={`tab ${activeTab === 'goals' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('goals')}
+                        >
+                            Goals
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'properties' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('properties')}
+                        >
+                            Properties
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'transactions' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('transactions')}
+                        >
+                            Transactions
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('dashboard')}
+                        >
+                            Dashboard
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'dataInput' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('dataInput')}
+                        >
+                            Daily Data
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'expenses' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('expenses')}
+                        >
+                            Expenses
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'calendar' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('calendar')}
+                        >
+                            Calendar
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'gci' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('gci')}
+                        >
+                            GCI Calculator
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'reports' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('reports')}
+                        >
+                            Reports
+                        </div>
+                    </div>
+                    
+                    {/* Goals Tab */}
+                    {activeTab === 'goals' && (
+                        <div className="tab-content">
+                            <h2>Goals & Targets</h2>
+                            <div className="grid">
+                                <div className="tile">
+                                    <h4>Daily Goals</h4>
+                                    <p>10 Calls</p>
+                                    <small>Target: 10 calls per day</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Weekly Goals</h4>
+                                    <p>5 Appointments</p>
+                                    <small>Target: 5 appointments per week</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Monthly Goals</h4>
+                                    <p>2 Closings</p>
+                                    <small>Target: 2 closings per month</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Annual GCI Goal</h4>
+                                    <p>${gciData.gciGoal.toLocaleString()}</p>
+                                    <small>Target: ${gciData.gciGoal.toLocaleString()}</small>
+                                </div>
+                            </div>
+                            
+                            <div className="form-section">
+                                <h3>Set New Goals</h3>
+                                <div className="form-group">
+                                    <label>Daily Call Goal</label>
+                                    <input type="number" placeholder="Enter daily call target" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Weekly Appointment Goal</label>
+                                    <input type="number" placeholder="Enter weekly appointment target" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Monthly Closing Goal</label>
+                                    <input type="number" placeholder="Enter monthly closing target" />
+                                </div>
+                                <button className="btn">Update Goals</button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Properties Tab */}
+                    {activeTab === 'properties' && (
+                        <div className="tab-content">
+                            <h2>Property Management</h2>
+                            <div className="grid">
+                                <div className="tile">
+                                    <h4>Total Properties</h4>
+                                    <p>{properties.length}</p>
+                                    <small>Properties in portfolio</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Active Listings</h4>
+                                    <p>{properties.filter(p => p.status === 'Active').length}</p>
+                                    <small>Currently active</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Sold Properties</h4>
+                                    <p>{properties.filter(p => p.status === 'Sold').length}</p>
+                                    <small>Successfully sold</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Pending Sales</h4>
+                                    <p>{properties.filter(p => p.status === 'Pending').length}</p>
+                                    <small>Under contract</small>
+                                </div>
+                            </div>
+                            
+                            <div className="form-section">
+                                <h3>Add New Property</h3>
+                                <div className="form-group">
+                                    <label>Property Address</label>
+                                    <input type="text" placeholder="Enter property address" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Client Name</label>
+                                    <input type="text" placeholder="Enter client name" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Property Type</label>
+                                    <select>
+                                        <option>Listing</option>
+                                        <option>Buyer</option>
+                                        <option>Rental</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Price</label>
+                                    <input type="number" placeholder="Enter price" />
+                                </div>
+                                <button className="btn">Add Property</button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Transactions Tab */}
+                    {activeTab === 'transactions' && (
+                        <div className="tab-content">
+                            <h2>Transaction History</h2>
+                            <div className="grid">
+                                <div className="tile">
+                                    <h4>Total Transactions</h4>
+                                    <p>{transactions.length}</p>
+                                    <small>All transactions</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Total Volume</h4>
+                                    <p>${transactions.reduce((sum, t) => sum + t.amount, 0).toLocaleString()}</p>
+                                    <small>Total transaction volume</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Commission Earned</h4>
+                                    <p>${totalCommission.toLocaleString()}</p>
+                                    <small>Total commission</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Closed Deals</h4>
+                                    <p>{closedDeals.length}</p>
+                                    <small>Successfully closed</small>
+                                </div>
+                            </div>
+                            
+                            <div className="form-section">
+                                <h3>Recent Transactions</h3>
+                                {transactions.map(transaction => (
+                                    <div key={transaction.id} style={{marginBottom: '10px', padding: '10px', border: '1px solid #ddd', borderRadius: '4px'}}>
+                                        <strong>Amount: ${transaction.amount.toLocaleString()}</strong> | 
+                                        Commission: ${transaction.commission.toLocaleString()} | 
+                                        Status: {transaction.status}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Dashboard Tab */}
+                    {activeTab === 'dashboard' && (
+                        <div className="tab-content">
+                            <h2>Dashboard Overview</h2>
+                            <div className="grid">
+                                <div className="tile">
+                                    <h4>Today's Calls</h4>
+                                    <p>{calls.made}</p>
+                                    <small>Calls made today</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Call Success Rate</h4>
+                                    <p>{calls.made > 0 ? Math.round((calls.answered / calls.made) * 100) : 0}%</p>
+                                    <small>Answered calls rate</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Appointments Today</h4>
+                                    <p>{appointments.filter(a => a.date === selectedDate).length}</p>
+                                    <small>Scheduled appointments</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Monthly Progress</h4>
+                                    <p>{Math.round((totalCommission / gciData.gciGoal) * 100)}%</p>
+                                    <small>Progress toward annual goal</small>
+                                </div>
+                            </div>
+                            
+                            <div className="alert alert-info">
+                                <strong>Quick Stats:</strong> You have {properties.filter(p => p.status === 'Active').length} active listings, 
+                                {properties.filter(p => p.status === 'Pending').length} pending sales, and have earned 
+                                ${totalCommission.toLocaleString()} in commission this year.
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Daily Data Input Tab */}
+                    {activeTab === 'dataInput' && (
+                        <div className="tab-content">
+                            <h2>Daily Data Entry</h2>
+                            <div className="form-section">
+                                <div className="form-group">
+                                    <label>Date</label>
+                                    <input 
+                                        type="date" 
+                                        value={selectedDate}
+                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Hours Worked</label>
+                                    <input type="number" placeholder="Enter hours worked" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Calls Made</label>
+                                    <input type="number" placeholder="Enter calls made" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Calls Answered</label>
+                                    <input type="number" placeholder="Enter calls answered" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Appointments Set</label>
+                                    <input type="number" placeholder="Enter appointments set" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Offers Written</label>
+                                    <input type="number" placeholder="Enter offers written" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Listings Obtained</label>
+                                    <input type="number" placeholder="Enter listings obtained" />
+                                </div>
+                                <button className="btn">Save Daily Data</button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Expenses Tab */}
+                    {activeTab === 'expenses' && (
+                        <div className="tab-content">
+                            <h2>Expense Tracking</h2>
+                            <div className="grid">
+                                <div className="tile">
+                                    <h4>Total Expenses</h4>
+                                    <p>${expenses.reduce((sum, e) => sum + (e.amount || 0), 0).toLocaleString()}</p>
+                                    <small>Total expenses this month</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Marketing Expenses</h4>
+                                    <p>${expenses.filter(e => e.category === 'Marketing').reduce((sum, e) => sum + (e.amount || 0), 0).toLocaleString()}</p>
+                                    <small>Marketing spend</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Office Expenses</h4>
+                                    <p>${expenses.filter(e => e.category === 'Office').reduce((sum, e) => sum + (e.amount || 0), 0).toLocaleString()}</p>
+                                    <small>Office-related expenses</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Transportation</h4>
+                                    <p>${expenses.filter(e => e.category === 'Transportation').reduce((sum, e) => sum + (e.amount || 0), 0).toLocaleString()}</p>
+                                    <small>Travel & transportation</small>
+                                </div>
+                            </div>
+                            
+                            <div className="form-section">
+                                <h3>Add New Expense</h3>
+                                <div className="form-group">
+                                    <label>Date</label>
+                                    <input type="date" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Category</label>
+                                    <select>
+                                        <option>Marketing</option>
+                                        <option>Office</option>
+                                        <option>Transportation</option>
+                                        <option>Professional Development</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Amount</label>
+                                    <input type="number" placeholder="Enter amount" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Description</label>
+                                    <input type="text" placeholder="Enter description" />
+                                </div>
+                                <button className="btn">Add Expense</button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Calendar Tab */}
+                    {activeTab === 'calendar' && (
+                        <div className="tab-content">
+                            <h2>Calendar & Appointments</h2>
+                            <div className="grid">
+                                <div className="tile">
+                                    <h4>Today's Appointments</h4>
+                                    <p>{appointments.filter(a => a.date === selectedDate).length}</p>
+                                    <small>Scheduled for today</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>This Week</h4>
+                                    <p>{appointments.length}</p>
+                                    <small>Total appointments</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Show Rate</h4>
+                                    <p>85%</p>
+                                    <small>Client show rate</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Next Appointment</h4>
+                                    <p>10:00 AM</p>
+                                    <small>John Doe - Property viewing</small>
+                                </div>
+                            </div>
+                            
+                            <div className="form-section">
+                                <h3>Schedule New Appointment</h3>
+                                <div className="form-group">
+                                    <label>Date</label>
+                                    <input type="date" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Time</label>
+                                    <input type="time" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Client Name</label>
+                                    <input type="text" placeholder="Enter client name" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Appointment Type</label>
+                                    <select>
+                                        <option>Property Viewing</option>
+                                        <option>Listing Presentation</option>
+                                        <option>Buyer Consultation</option>
+                                        <option>Closing</option>
+                                    </select>
+                                </div>
+                                <button className="btn">Schedule Appointment</button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* GCI Calculator Tab */}
+                    {activeTab === 'gci' && (
+                        <div className="tab-content">
+                            <h2>GCI Calculator</h2>
+                            <div className="grid">
+                                <div className="tile">
+                                    <h4>Annual GCI Goal</h4>
+                                    <p>${gciData.gciGoal.toLocaleString()}</p>
+                                    <small>Target for this year</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Current GCI</h4>
+                                    <p>${totalCommission.toLocaleString()}</p>
+                                    <small>Year-to-date commission</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Remaining Goal</h4>
+                                    <p>${Math.max(0, gciData.gciGoal - totalCommission).toLocaleString()}</p>
+                                    <small>Still needed</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Progress</h4>
+                                    <p>{Math.round((totalCommission / gciData.gciGoal) * 100)}%</p>
+                                    <small>Toward annual goal</small>
+                                </div>
+                            </div>
+                            
+                            <div className="form-section">
+                                <h3>GCI Projection</h3>
+                                <div className="progress-bar">
+                                    <div className="progress-fill" style={{width: `${Math.min((totalCommission / gciData.gciGoal) * 100, 100)}%`}}></div>
+                                </div>
+                                <p style={{textAlign: 'center', marginTop: '10px'}}>
+                                    {Math.round((totalCommission / gciData.gciGoal) * 100)}% Complete
+                                </p>
+                                
+                                <div className="form-group">
+                                    <label>Update GCI Goal</label>
+                                    <input type="number" placeholder="Enter new GCI goal" />
+                                </div>
+                                <button className="btn">Update Goal</button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Reports Tab */}
+                    {activeTab === 'reports' && (
+                        <div className="tab-content">
+                            <h2>Reports & Analytics</h2>
+                            <div className="grid">
+                                <div className="tile">
+                                    <h4>Conversion Rate</h4>
+                                    <p>25%</p>
+                                    <small>Leads to appointments</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Average Deal Size</h4>
+                                    <p>${transactions.length > 0 ? Math.round(transactions.reduce((sum, t) => sum + t.amount, 0) / transactions.length).toLocaleString() : 0}</p>
+                                    <small>Average transaction value</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Time to Close</h4>
+                                    <p>45 days</p>
+                                    <small>Average closing time</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Commission Rate</h4>
+                                    <p>2.5%</p>
+                                    <small>Average commission rate</small>
+                                </div>
+                            </div>
+                            
+                            <div className="form-section">
+                                <h3>Generate Report</h3>
+                                <div className="form-group">
+                                    <label>Report Type</label>
+                                    <select>
+                                        <option>Monthly Summary</option>
+                                        <option>Quarterly Review</option>
+                                        <option>Annual Report</option>
+                                        <option>Commission Summary</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Date Range</label>
+                                    <input type="date" />
+                                </div>
+                                <button className="btn">Generate Report</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

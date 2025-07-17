@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate KPI Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .timestamp {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #3498db;
+            margin-bottom: 30px;
+            gap: 5px;
+        }
+
+        .tab {
+            padding: 15px 20px;
+            background: #ecf0f1;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .tab:hover {
+            background: #d5dbdb;
+        }
+
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .card .label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.5s ease;
+            border-radius: 15px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.sold {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .edit-btn {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .save-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Real Estate KPI Dashboard</h1>
+            <div class="timestamp">Last Updated: <span id="timestamp"></span></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('goals')">Goals</button>
+            <button class="tab" onclick="showTab('properties')">Properties</button>
+            <button class="tab" onclick="showTab('transactions')">Transactions</button>
+            <button class="tab" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="showTab('daily')">Daily Data</button>
+            <button class="tab" onclick="showTab('expenses')">Expenses</button>
+            <button class="tab" onclick="showTab('calendar')">Calendar</button>
+            <button class="tab" onclick="showTab('gci')">GCI Calculator</button>
+            <button class="tab" onclick="showTab('reports')">Reports</button>
+        </div>
+
+        <!-- Goals Tab -->
+        <div id="goals" class="tab-content active">
+            <h2>Goals & Targets</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Daily Goal</h3>
+                    <div class="number">10</div>
+                    <div class="label">Calls per day</div>
+                </div>
+                <div class="card">
+                    <h3>Weekly Goal</h3>
+                    <div class="number">5</div>
+                    <div class="label">Appointments per week</div>
+                </div>
+                <div class="card">
+                    <h3>Monthly Goal</h3>
+                    <div class="number">2</div>
+                    <div class="label">Closings per month</div>
+                </div>
+                <div class="card">
+                    <h3>Annual GCI</h3>
+                    <div class="number">$215K</div>
+                    <div class="label">Target commission</div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Update Your Goals</h3>
+                <div class="form-group">
+                    <label>Daily Call Goal</label>
+                    <input type="number" name="dailyCalls" value="10" placeholder="Enter daily call target">
+                </div>
+                <div class="form-group">
+                    <label>Weekly Appointment Goal</label>
+                    <input type="number" name="weeklyAppointments" value="5" placeholder="Enter weekly appointment target">
+                </div>
+                <div class="form-group">
+                    <label>Monthly Closing Goal</label>
+                    <input type="number" name="monthlyClosings" value="2" placeholder="Enter monthly closing target">
+                </div>
+                <button class="btn">Update Goals</button>
+            </div>
+        </div>
+
+        <!-- Properties Tab -->
+        <div id="properties" class="tab-content">
+            <h2>Property Management</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Total Properties</h3>
+                    <div class="number">15</div>
+                    <div class="label">Properties in portfolio</div>
+                </div>
+                <div class="card">
+                    <h3>Active Listings</h3>
+                    <div class="number">8</div>
+                    <div class="label">Currently active</div>
+                </div>
+                <div class="card">
+                    <h3>Sold Properties</h3>
+                    <div class="number">5</div>
+                    <div class="label">Successfully sold</div>
+                </div>
+                <div class="card">
+                    <h3>Pending Sales</h3>
+                    <div class="number">2</div>
+                    <div class="label">Under contract</div>
+                </div>
+            </div>
+
+            <table class="table" id="propertiesTable">
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>Client</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Properties will be populated by JavaScript -->
+                </tbody>
+            </table>
+
+            <div class="form-section">
+                <h3>Add New Property</h3>
+                <div class="form-group">
+                    <label>Property Address</label>
+                    <input type="text" name="address" placeholder="Enter property address">
+                </div>
+                <div class="form-group">
+                    <label>Client Name</label>
+                    <input type="text" name="client" placeholder="Enter client name">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" name="price" placeholder="Enter price">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status">
+                        <option>Active</option>
+                        <option>Pending</option>
+                        <option>Sold</option>
+                    </select>
+                </div>
+                <button class="btn">Add Property</button>
+            </div>
+        </div>
+
+        <!-- Transactions Tab -->
+        <div id="transactions" class="tab-content">
+            <h2>Transaction History</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Total Transactions</h3>
+                    <div class="number">12</div>
+                    <div class="label">This year</div>
+                </div>
+                <div class="card">
+                    <h3>Total Volume</h3>
+                    <div class="number">$4.2M</div>
+                    <div class="label">Transaction volume</div>
+                </div>
+                <div class="card">
+                    <h3>Commission Earned</h3>
+                    <div class="number">$105K</div>
+                    <div class="label">Total commission</div>
+                </div>
+                <div class="card">
+                    <h3>Average Deal</h3>
+                    <div class="number">$350K</div>
+                    <div class="label">Average transaction</div>
+                </div>
+            </div>
+
+            <div class="alert">
+                <strong>Great Progress!</strong> You've earned $105,000 in commission so far this year, putting you at 49% of your annual goal.
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Property</th>
+                        <th>Amount</th>
+                        <th>Commission</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-07-15</td>
+                        <td>123 Main Street</td>
+                        <td>$350,000</td>
+                        <td>$8,750</td>
+                        <td><span class="status sold">Closed</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-07-10</td>
+                        <td>456 Oak Avenue</td>
+                        <td>$425,000</td>
+                        <td>$10,625</td>
+                        <td><span class="status sold">Closed</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-07-05</td>
+                        <td>789 Pine Road</td>
+                        <td>$275,000</td>
+                        <td>$6,875</td>
+                        <td><span class="status pending">Pending</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <h2>Dashboard Overview</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Today's Calls</h3>
+                    <div class="number">8</div>
+                    <div class="label">Calls made today</div>
+                </div>
+                <div class="card">
+                    <h3>Appointments</h3>
+                    <div class="number">3</div>
+                    <div class="label">Scheduled today</div>
+                </div>
+                <div class="card">
+                    <h3>Conversion Rate</h3>
+                    <div class="number">25%</div>
+                    <div class="label">Leads to appointments</div>
+                </div>
+                <div class="card">
+                    <h3>Monthly Progress</h3>
+                    <div class="number">67%</div>
+                    <div class="label">Toward monthly goal</div>
+                </div>
+            </div>
+
+            <div class="alert">
+                <strong>Daily Summary:</strong> You've made 8 calls today with a 75% answer rate. You have 3 appointments scheduled and are on track to meet your monthly goals.
+            </div>
+        </div>
+
+        <!-- Daily Data Tab -->
+        <div id="daily" class="tab-content">
+            <h2>Daily Data Entry</h2>
+            <div class="form-section">
+                <h3>Enter Today's Activity</h3>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="date" id="dailyDate">
+                </div>
+                <div class="form-group">
+                    <label>Hours Worked</label>
+                    <input type="number" name="hours" placeholder="Enter hours worked">
+                </div>
+                <div class="form-group">
+                    <label>Calls Made</label>
+                    <input type="number" name="calls" placeholder="Enter calls made">
+                </div>
+                <div class="form-group">
+                    <label>Calls Answered</label>
+                    <input type="number" name="answered" placeholder="Enter calls answered">
+                </div>
+                <div class="form-group">
+                    <label>Appointments Set</label>
+                    <input type="number" name="appointments" placeholder="Enter appointments set">
+                </div>
+                <div class="form-group">
+                    <label>Offers Written</label>
+                    <input type="number" name="offers" placeholder="Enter offers written">
+                </div>
+                <button class="btn">Save Daily Data</button>
+            </div>
+        </div>
+
+        <!-- Expenses Tab -->
+        <div id="expenses" class="tab-content">
+            <h2>Expense Tracking</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Total Expenses</h3>
+                    <div class="number">$2,450</div>
+                    <div class="label">This month</div>
+                </div>
+                <div class="card">
+                    <h3>Marketing</h3>
+                    <div class="number">$1,200</div>
+                    <div class="label">Marketing expenses</div>
+                </div>
+                <div class="card">
+                    <h3>Mileage</h3>
+                    <div class="number">$650</div>
+                    <div class="label">Mileage expenses</div>
+                </div>
+                <div class="card">
+                    <h3>Office</h3>
+                    <div class="number">$600</div>
+                    <div class="label">Office supplies</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Add New Expense</h3>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="date">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="category">
+                        <option>Marketing</option>
+                        <option>Meals</option>
+                        <option>Professional Photography</option>
+                        <option>Staging</option>
+                        <option>Junk Removal</option>
+                        <option>Cleaner</option>
+                        <option>Mileage</option>
+                        <option>Equipment Rental</option>
+                        <option>Office</option>
+                        <option>Professional Development</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" name="amount" placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" name="description" placeholder="Enter description">
+                </div>
+                <div class="form-group">
+                    <label>Mileage (miles)</label>
+                    <input type="number" name="mileage" placeholder="Enter mileage">
+                </div>
+                <div class="form-group">
+                    <label>Travel Hours</label>
+                    <input type="number" name="travelHours" step="0.5" placeholder="Enter travel hours">
+                </div>
+                <button class="btn">Add Expense</button>
+            </div>
+        </div>
+
+        <!-- Calendar Tab -->
+        <div id="calendar" class="tab-content">
+            <h2>Calendar & Appointments</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Today</h3>
+                    <div class="number">3</div>
+                    <div class="label">Appointments</div>
+                </div>
+                <div class="card">
+                    <h3>This Week</h3>
+                    <div class="number">12</div>
+                    <div class="label">Appointments</div>
+                </div>
+                <div class="card">
+                    <h3>Show Rate</h3>
+                    <div class="number">92%</div>
+                    <div class="label">Client show rate</div>
+                </div>
+                <div class="card">
+                    <h3>Next Appointment</h3>
+                    <div class="number">2:00 PM</div>
+                    <div class="label">Property showing</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Schedule New Appointment</h3>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="date">
+                </div>
+                <div class="form-group">
+                    <label>Time</label>
+                    <input type="time" name="time">
+                </div>
+                <div class="form-group">
+                    <label>Client Name</label>
+                    <input type="text" name="client" placeholder="Enter client name">
+                </div>
+                <div class="form-group">
+                    <label>Appointment Type</label>
+                    <select name="type">
+                        <option>Property Showing</option>
+                        <option>Listing Presentation</option>
+                        <option>Buyer Consultation</option>
+                        <option>Closing</option>
+                    </select>
+                </div>
+                <button class="btn">Schedule Appointment</button>
+            </div>
+        </div>
+
+        <!-- GCI Calculator Tab -->
+        <div id="gci" class="tab-content">
+            <h2>GCI Calculator</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Annual Goal</h3>
+                    <div class="number">$215K</div>
+                    <div class="label">GCI target</div>
+                </div>
+                <div class="card">
+                    <h3>Current GCI</h3>
+                    <div class="number">$105K</div>
+                    <div class="label">Year-to-date</div>
+                </div>
+                <div class="card">
+                    <h3>Remaining</h3>
+                    <div class="number">$110K</div>
+                    <div class="label">Still needed</div>
+                </div>
+                <div class="card">
+                    <h3>Progress</h3>
+                    <div class="number">49%</div>
+                    <div class="label">Toward goal</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 49%"></div>
+            </div>
+            <p style="text-align: center; margin-top: 10px; font-weight: 600;">49% Complete - $105,000 of $215,000 goal</p>
+
+            <div class="form-section">
+                <h3>GCI Projection</h3>
+                <div class="form-group">
+                    <label>Average Sale Price</label>
+                    <input type="number" value="350000" placeholder="Enter average sale price">
+                </div>
+                <div class="form-group">
+                    <label>Commission Rate (%)</label>
+                    <input type="number" value="2.5" step="0.1" placeholder="Enter commission rate">
+                </div>
+                <div class="form-group">
+                    <label>Deals Needed</label>
+                    <input type="number" value="13" readonly>
+                </div>
+                <button class="btn">Recalculate</button>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <h2>Reports & Analytics</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Conversion Rate</h3>
+                    <div class="number">25%</div>
+                    <div class="label">Leads to appointments</div>
+                </div>
+                <div class="card">
+                    <h3>Average Days on Market</h3>
+                    <div class="number">32</div>
+                    <div class="label">Days to sell</div>
+                </div>
+                <div class="card">
+                    <h3>Client Satisfaction</h3>
+                    <div class="number">4.8</div>
+                    <div class="label">Out of 5 stars</div>
+                </div>
+                <div class="card">
+                    <h3>Repeat Clients</h3>
+                    <div class="number">35%</div>
+                    <div class="label">Return rate</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Generate Report</h3>
+                <div class="form-group">
+                    <label>Report Type</label>
+                    <select>
+                        <option>Monthly Summary</option>
+                        <option>Quarterly Review</option>
+                        <option>Annual Report</option>
+                        <option>Commission Summary</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date Range</label>
+                    <input type="date">
+                </div>
+                <button class="btn">Generate Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage and management
+        let dashboardData = {
+            goals: {
+                daily: { calls: 10, appointments: 5, closings: 2 },
+                weekly: { calls: 70, appointments: 25, closings: 10 },
+                monthly: { calls: 300, appointments: 100, closings: 40 },
+                annual: { gci: 215000 }
+            },
+            properties: [
+                { id: 1, address: '123 Main Street', client: 'John Doe', price: 350000, status: 'Active' },
+                { id: 2, address: '456 Oak Avenue', client: 'Jane Smith', price: 425000, status: 'Sold' },
+                { id: 3, address: '789 Pine Road', client: 'Bob Johnson', price: 275000, status: 'Pending' }
+            ],
+            transactions: [
+                { id: 1, date: '2025-07-15', property: '123 Main Street', amount: 350000, commission: 8750, status: 'Closed' },
+                { id: 2, date: '2025-07-10', property: '456 Oak Avenue', amount: 425000, commission: 10625, status: 'Closed' },
+                { id: 3, date: '2025-07-05', property: '789 Pine Road', amount: 275000, commission: 6875, status: 'Pending' }
+            ],
+            dailyData: {},
+            expenses: [
+                { id: 1, date: '2025-07-01', category: 'Marketing', amount: 1200, description: 'Social media ads', mileage: 0, travelHours: 0 },
+                { id: 2, date: '2025-07-02', category: 'Mileage', amount: 650, description: 'Client visits', mileage: 150, travelHours: 3 },
+                { id: 3, date: '2025-07-03', category: 'Office', amount: 600, description: 'Office supplies', mileage: 0, travelHours: 0 }
+            ],
+            appointments: [
+                { id: 1, date: '2025-07-16', time: '14:00', client: 'John Doe', type: 'Property Showing' },
+                { id: 2, date: '2025-07-16', time: '16:00', client: 'Jane Smith', type: 'Listing Presentation' },
+                { id: 3, date: '2025-07-17', time: '10:00', client: 'Bob Johnson', type: 'Buyer Consultation' }
+            ]
+        };
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('dashboardData');
+            if (saved) {
+                dashboardData = { ...dashboardData, ...JSON.parse(saved) };
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
+        }
+
+        // Update dashboard displays
+        function updateDashboard() {
+            updateGoalsDisplay();
+            updatePropertiesDisplay();
+            updateTransactionsDisplay();
+            updateExpensesDisplay();
+            updateCalendarDisplay();
+            updateGCIDisplay();
+        }
+
+        function updateGoalsDisplay() {
+            // Update goal cards with current data
+            const goalCards = document.querySelectorAll('#goals .card .number');
+            if (goalCards.length >= 4) {
+                goalCards[0].textContent = dashboardData.goals.daily.calls;
+                goalCards[1].textContent = dashboardData.goals.weekly.appointments;
+                goalCards[2].textContent = dashboardData.goals.monthly.closings;
+                goalCards[3].textContent = '$' + (dashboardData.goals.annual.gci / 1000) + 'K';
+            }
+        }
+
+        function updatePropertiesDisplay() {
+            const props = dashboardData.properties;
+            const activeCount = props.filter(p => p.status === 'Active').length;
+            const soldCount = props.filter(p => p.status === 'Sold').length;
+            const pendingCount = props.filter(p => p.status === 'Pending').length;
+
+            const propCards = document.querySelectorAll('#properties .card .number');
+            if (propCards.length >= 4) {
+                propCards[0].textContent = props.length;
+                propCards[1].textContent = activeCount;
+                propCards[2].textContent = soldCount;
+                propCards[3].textContent = pendingCount;
+            }
+
+            // Update properties table
+            const tbody = document.querySelector('#propertiesTable tbody');
+            tbody.innerHTML = '';
+            
+            props.forEach(property => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td data-field="address">${property.address}</td>
+                    <td data-field="client">${property.client}</td>
+                    <td data-field="price">$${property.price.toLocaleString()}</td>
+                    <td data-field="status">
+                        <span class="status ${property.status.toLowerCase()}">${property.status}</span>
+                    </td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editProperty(${property.id})">Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteProperty(${property.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateTransactionsDisplay() {
+            const transactions = dashboardData.transactions;
+            const totalVolume = transactions.reduce((sum, t) => sum + t.amount, 0);
+            const totalCommission = transactions.reduce((sum, t) => sum + t.commission, 0);
+            const avgDeal = transactions.length > 0 ? totalVolume / transactions.length : 0;
+
+            const transCards = document.querySelectorAll('#transactions .card .number');
+            if (transCards.length >= 4) {
+                transCards[0].textContent = transactions.length;
+                transCards[1].textContent = '$' + (totalVolume / 1000000).toFixed(1) + 'M';
+                transCards[2].textContent = '$' + (totalCommission / 1000) + 'K';
+                transCards[3].textContent = '$' + (avgDeal / 1000) + 'K';
+            }
+        }
+
+        function updateExpensesDisplay() {
+            const expenses = dashboardData.expenses;
+            const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+            const marketing = expenses.filter(e => e.category === 'Marketing').reduce((sum, e) => sum + e.amount, 0);
+            const mileage = expenses.filter(e => e.category === 'Mileage').reduce((sum, e) => sum + e.amount, 0);
+            const office = expenses.filter(e => e.category === 'Office').reduce((sum, e) => sum + e.amount, 0);
+
+            const expCards = document.querySelectorAll('#expenses .card .number');
+            if (expCards.length >= 4) {
+                expCards[0].textContent = '$' + totalExpenses.toLocaleString();
+                expCards[1].textContent = '$' + marketing.toLocaleString();
+                expCards[2].textContent = '$' + mileage.toLocaleString();
+                expCards[3].textContent = '$' + office.toLocaleString();
+            }
+        }
+
+        function updateCalendarDisplay() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayAppts = dashboardData.appointments.filter(a => a.date === today).length;
+            const weekAppts = dashboardData.appointments.length;
+
+            const calCards = document.querySelectorAll('#calendar .card .number');
+            if (calCards.length >= 4) {
+                calCards[0].textContent = todayAppts;
+                calCards[1].textContent = weekAppts;
+                calCards[2].textContent = '92%';
+                calCards[3].textContent = '2:00 PM';
+            }
+        }
+
+        function updateGCIDisplay() {
+            const totalCommission = dashboardData.transactions.reduce((sum, t) => sum + t.commission, 0);
+            const gciGoal = dashboardData.goals.annual.gci;
+            const remaining = gciGoal - totalCommission;
+            const progress = (totalCommission / gciGoal) * 100;
+
+            const gciCards = document.querySelectorAll('#gci .card .number');
+            if (gciCards.length >= 4) {
+                gciCards[0].textContent = '$' + (gciGoal / 1000) + 'K';
+                gciCards[1].textContent = '$' + (totalCommission / 1000) + 'K';
+                gciCards[2].textContent = '$' + (remaining / 1000) + 'K';
+                gciCards[3].textContent = Math.round(progress) + '%';
+            }
+
+            // Update progress bar
+            const progressBar = document.querySelector('#gci .progress-fill');
+            if (progressBar) {
+                progressBar.style.width = progress + '%';
+            }
+        }
+
+        // Set current timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Set today's date in daily data form
+        document.getElementById('dailyDate').value = new Date().toISOString().split('T')[0];
+
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Handle form submissions
+        function handleFormSubmission(formType, form) {
+            let success = false;
+            
+            switch(formType) {
+                case 'goals':
+                    const dailyCalls = form.querySelector('input[name="dailyCalls"]').value;
+                    const weeklyAppointments = form.querySelector('input[name="weeklyAppointments"]').value;
+                    const monthlyClosings = form.querySelector('input[name="monthlyClosings"]').value;
+                    
+                    if (dailyCalls) dashboardData.goals.daily.calls = parseInt(dailyCalls);
+                    if (weeklyAppointments) dashboardData.goals.weekly.appointments = parseInt(weeklyAppointments);
+                    if (monthlyClosings) dashboardData.goals.monthly.closings = parseInt(monthlyClosings);
+                    success = true;
+                    break;
+                    
+                case 'properties':
+                    const address = form.querySelector('input[name="address"]').value;
+                    const client = form.querySelector('input[name="client"]').value;
+                    const price = form.querySelector('input[name="price"]').value;
+                    const status = form.querySelector('select[name="status"]').value;
+                    
+                    if (address && price) {
+                        const newProperty = {
+                            id: Date.now(),
+                            address: address,
+                            client: client,
+                            price: parseFloat(price),
+                            status: status
+                        };
+                        dashboardData.properties.push(newProperty);
+                        success = true;
+                    }
+                    break;
+                    
+                case 'daily':
+                    const date = form.querySelector('input[name="date"]').value;
+                    const hours = form.querySelector('input[name="hours"]').value;
+                    const calls = form.querySelector('input[name="calls"]').value;
+                    const answered = form.querySelector('input[name="answered"]').value;
+                    const appointments = form.querySelector('input[name="appointments"]').value;
+                    const offers = form.querySelector('input[name="offers"]').value;
+                    
+                    if (date) {
+                        dashboardData.dailyData[date] = {
+                            hours: parseFloat(hours) || 0,
+                            calls: parseInt(calls) || 0,
+                            answered: parseInt(answered) || 0,
+                            appointments: parseInt(appointments) || 0,
+                            offers: parseInt(offers) || 0
+                        };
+                        success = true;
+                    }
+                    break;
+                    
+                case 'expenses':
+                    const expDate = form.querySelector('input[name="date"]').value;
+                    const category = form.querySelector('select[name="category"]').value;
+                    const amount = form.querySelector('input[name="amount"]').value;
+                    const description = form.querySelector('input[name="description"]').value;
+                    const mileage = form.querySelector('input[name="mileage"]').value;
+                    const travelHours = form.querySelector('input[name="travelHours"]').value;
+                    
+                    if (expDate && amount) {
+                        const newExpense = {
+                            id: Date.now(),
+                            date: expDate,
+                            category: category,
+                            amount: parseFloat(amount),
+                            description: description,
+                            mileage: parseFloat(mileage) || 0,
+                            travelHours: parseFloat(travelHours) || 0
+                        };
+                        dashboardData.expenses.push(newExpense);
+                        success = true;
+                    }
+                    break;
+                    
+                case 'calendar':
+                    const apptDate = form.querySelector('input[name="date"]').value;
+                    const time = form.querySelector('input[name="time"]').value;
+                    const apptClient = form.querySelector('input[name="client"]').value;
+                    const type = form.querySelector('select[name="type"]').value;
+                    
+                    if (apptDate && time && apptClient) {
+                        const newAppointment = {
+                            id: Date.now(),
+                            date: apptDate,
+                            time: time,
+                            client: apptClient,
+                            type: type
+                        };
+                        dashboardData.appointments.push(newAppointment);
+                        success = true;
+                    }
+                    break;
+            }
+            
+            if (success) {
+                saveData();
+                updateDashboard();
+                return true;
+            }
+            return false;
+        }
+
+        // Property management functions
+        function editProperty(propertyId) {
+            const property = dashboardData.properties.find(p => p.id === propertyId);
+            if (!property) return;
+
+            const row = event.target.closest('tr');
+            const cells = row.querySelectorAll('td');
+            
+            // Store original values
+            const originalData = {
+                address: property.address,
+                client: property.client,
+                price: property.price,
+                status: property.status
+            };
+
+            // Replace cells with input fields
+            cells[0].innerHTML = `<input type="text" value="${property.address}" style="width: 100%;">`;
+            cells[1].innerHTML = `<input type="text" value="${property.client}" style="width: 100%;">`;
+            cells[2].innerHTML = `<input type="number" value="${property.price}" style="width: 100%;">`;
+            cells[3].innerHTML = `
+                <select style="width: 100%;">
+                    <option value="Active" ${property.status === 'Active' ? 'selected' : ''}>Active</option>
+                    <option value="Pending" ${property.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Sold" ${property.status === 'Sold' ? 'selected' : ''}>Sold</option>
+                </select>
+            `;
+            cells[4].innerHTML = `
+                <button class="action-btn save-btn" onclick="saveProperty(${propertyId})">Save</button>
+                <button class="action-btn cancel-btn" onclick="cancelEdit(${propertyId})">Cancel</button>
+            `;
+            
+            // Store original data on the row for cancel functionality
+            row.dataset.originalData = JSON.stringify(originalData);
+        }
+
+        function saveProperty(propertyId) {
+            const row = event.target.closest('tr');
+            const cells = row.querySelectorAll('td');
+            
+            const newAddress = cells[0].querySelector('input').value;
+            const newClient = cells[1].querySelector('input').value;
+            const newPrice = parseFloat(cells[2].querySelector('input').value);
+            const newStatus = cells[3].querySelector('select').value;
+            
+            if (!newAddress || !newPrice) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Update the property in dashboardData
+            const propertyIndex = dashboardData.properties.findIndex(p => p.id === propertyId);
+            if (propertyIndex !== -1) {
+                dashboardData.properties[propertyIndex] = {
+                    id: propertyId,
+                    address: newAddress,
+                    client: newClient,
+                    price: newPrice,
+                    status: newStatus
+                };
+                
+                saveData();
+                updateDashboard();
+                alert('Property updated successfully!');
+            }
+        }
+
+        function cancelEdit(propertyId) {
+            updatePropertiesDisplay();
+        }
+
+        function deleteProperty(propertyId) {
+            const property = dashboardData.properties.find(p => p.id === propertyId);
+            if (!property) return;
+            
+            if (confirm(`Are you sure you want to delete the property at ${property.address}?`)) {
+                dashboardData.properties = dashboardData.properties.filter(p => p.id !== propertyId);
+                saveData();
+                updateDashboard();
+                alert('Property deleted successfully!');
+            }
+        }
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            loadData();
+            updateDashboard();
+            
+            // Add form event listeners
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const form = this.closest('.form-section');
+                    if (form) {
+                        // Determine form type based on parent tab
+                        const parentTab = form.closest('.tab-content');
+                        let formType = '';
+                        if (parentTab) {
+                            formType = parentTab.id;
+                        }
+                        
+                        // Handle the form submission
+                        if (handleFormSubmission(formType, form)) {
+                            alert('Data saved successfully!');
+                            // Clear form inputs
+                            const inputs = form.querySelectorAll('input[type="text"], input[type="number"], select');
+                            inputs.forEach(input => {
+                                if (input.type !== 'date') {
+                                    input.value = '';
+                                }
+                            });
+                        } else {
+                            alert('Please fill in all required fields.');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Start the dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>

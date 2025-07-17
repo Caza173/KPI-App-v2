@@ -1,53 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
-// Lazy load Chart.js to avoid initial load issues
-let Chart = null;
-const loadChart = async () => {
-  if (!Chart) {
-    try {
-      const chartModule = await import('chart.js/auto');
-      Chart = chartModule.default;
-    } catch (error) {
-      console.warn('Failed to load Chart.js:', error);
-    }
-  }
-  return Chart;
-};
-
-// Safe JSON parsing function
-const safeJSONParse = (str, defaultValue) => {
-  try {
-    return JSON.parse(str) || defaultValue;
-  } catch (e) {
-    console.warn('Error parsing JSON:', e);
-    return defaultValue;
-  }
-};
-
 const App = () => {
-  // State Management with safe initialization
-  const [properties, setProperties] = useState(() => safeJSONParse(localStorage.getItem('properties'), []));
-  const [expenses, setExpenses] = useState(() => safeJSONParse(localStorage.getItem('expenses'), []));
-  const [hours, setHours] = useState(() => safeJSONParse(localStorage.getItem('hours'), []));
-  const [showings, setShowings] = useState(() => safeJSONParse(localStorage.getItem('showings'), []));
-  const [offers, setOffers] = useState(() => safeJSONParse(localStorage.getItem('offers'), []));
-  const [listings, setListings] = useState(() => safeJSONParse(localStorage.getItem('listings'), []));
-  const [buyers, setBuyers] = useState(() => safeJSONParse(localStorage.getItem('buyers'), []));
-  const [lostDeals, setLostDeals] = useState(() => safeJSONParse(localStorage.getItem('lostDeals'), []));
-  const [transactions, setTransactions] = useState(() => safeJSONParse(localStorage.getItem('transactions'), []));
-  
-  const storedLeads = safeJSONParse(localStorage.getItem('leads'), {});
-  const [leads, setLeads] = useState(storedLeads && 'sources' in storedLeads ? storedLeads : { 
-    total: 0, 
-    sources: { 'Social Media': 0, SOI: 0, Zillow: 0, OpCity: 0, Referral: 0, UpNest: 0, Homelight: 0, OneSuite: 0, 'Direct Mail': 0, Realtor: 0 } 
-  });
-  
-  const [calls, setCalls] = useState(() => safeJSONParse(localStorage.getItem('calls'), { made: 0, answered: 0 }));
-  const [marketingExpenses, setMarketingExpenses] = useState(() => safeJSONParse(localStorage.getItem('marketingExpenses'), []));
-  const [gciData, setGciData] = useState(() => safeJSONParse(localStorage.getItem('gciData'), { gciGoal: 215000, avgSale: 325090, avgCommission: 0.025 }));
-  const [dailyInputs, setDailyInputs] = useState(() => safeJSONParse(localStorage.getItem('dailyInputs'), {}));
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [activeTab, setActiveTab] = useState('properties');
+  const [appName, setAppName] = useState('Real Estate KPI Dashboard');
   const [activeTab, setActiveTab] = useState('properties');
   const [selectedReportPeriod, setSelectedReportPeriod] = useState('week');
   const [selectedWeek, setSelectedWeek] = useState(1);
@@ -1211,13 +1167,7 @@ const App = () => {
           className={`tab ${activeTab === 'properties' ? 'active' : ''}`}
           onClick={() => setActiveTab('properties')}
         >
-          Add Property
-        </div>
-        <div 
-          className={`tab ${activeTab === 'transactions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('transactions')}
-        >
-          Transactions
+          Properties
         </div>        <div 
           className={`tab ${activeTab === 'goals' ? 'active' : ''}`}
           onClick={() => setActiveTab('goals')}
@@ -2342,528 +2292,277 @@ const App = () => {
             </tbody>
           </table>
         </div>
-      )}      {/* Transactions Tab */}
-      {activeTab === 'transactions' && (
-        <div>
-          <div className="section">
-            <h3>Under Contract</h3><table>
-              <thead>
-                <tr>
-                  <th>Address</th>
-                  <th>Client</th>
-                  <th>Price ($)</th>
-                  <th>Commission ($)</th>
-                  <th>Date</th>
-                  <th>Action</th>
-                </tr>
-              </thead>              <tbody>
-                {contractTransactions.filter(t => t.status === 'Under Contract').map((transaction, i) => (
-                  <tr key={i}>
-                    <td>{transaction.address}</td>
-                    <td>{transaction.client || '-'}</td>
-                    <td>${transaction.price?.toLocaleString() || 0}</td>
-                    <td>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={transaction.commission || (transaction.price * 0.025)}
-                        onChange={(e) => {
-                          const newCommission = parseFloat(e.target.value) || 0;
-                          const updatedTransactions = [...contractTransactions];
-                          const transactionIndex = contractTransactions.indexOf(transaction);
-                          updatedTransactions[transactionIndex] = { ...transaction, commission: newCommission };
-                          setContractTransactions(updatedTransactions);
-                        }}
-                        style={{
-                          width: '80px',
-                          padding: '0.25rem',
-                          border: '1px solid #ccc',
-                          borderRadius: '4px'
-                        }}
-                      />
-                    </td>
-                    <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>                    <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
-                      <button 
-                        onClick={() => {
-                          // Toggle details view
-                          const updatedTransactions = [...contractTransactions];
-                          const transactionIndex = contractTransactions.indexOf(transaction);
-                          updatedTransactions[transactionIndex] = { 
-                            ...transaction, 
-                            showDetails: !transaction.showDetails 
+      )}
+
+      {/* Dashboard Tab */}
+      {activeTab === 'dashboard' && (
+          <table>
+            <thead>
+              <tr>
+                <th>Address</th>
+                <th>Client</th>
+                <th>Price ($)</th>
+                <th>Commission ($)</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contractTransactions.filter(t => t.status === 'Under Contract').map((transaction, i) => (
+                <tr key={i}>
+                  <td>{transaction.address}</td>
+                  <td>{transaction.client || '-'}</td>
+                  <td>${transaction.price?.toLocaleString() || 0}</td>
+                  <td>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={transaction.commission || (transaction.price * 0.025)}
+                      onChange={(e) => {
+                        const newCommission = parseFloat(e.target.value) || 0;
+                        const updatedTransactions = [...contractTransactions];
+                        const transactionIndex = contractTransactions.indexOf(transaction);
+                        updatedTransactions[transactionIndex] = { ...transaction, commission: newCommission };
+                        setContractTransactions(updatedTransactions);
+                      }}
+                      style={{
+                        width: '80px',
+                        padding: '0.25rem',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px'
+                      }}
+                    />
+                  </td>
+                  <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>
+                  <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                    <button 
+                      onClick={() => {
+                        // Toggle details view
+                        const updatedTransactions = [...contractTransactions];
+                        const transactionIndex = contractTransactions.indexOf(transaction);
+                        updatedTransactions[transactionIndex] = { 
+                          ...transaction, 
+                          showDetails: !transaction.showDetails 
+                        };
+                        setContractTransactions(updatedTransactions);
+                      }} 
+                      style={{
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        minWidth: '65px'
+                      }}
+                    >
+                      Details
+                    </button>
+                    <select
+                      value={transaction.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value;
+                        const updatedTransactions = [...contractTransactions];
+                        const transactionIndex = contractTransactions.indexOf(transaction);
+                        
+                        if (newStatus === 'Closed') {
+                          // Move to closed deals
+                          const closedDeal = {
+                            ...transaction,
+                            status: newStatus,
+                            closedDate: new Date().toISOString().split('T')[0]
                           };
-                          setContractTransactions(updatedTransactions);
-                        }} 
-                        style={{
-                          backgroundColor: '#007bff',
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '65px'
-                        }}
-                      >
-                        Details
-                      </button>
-                      <button 
-                        onClick={() => {
+                          setClosedDeals([...closedDeals, closedDeal]);
                           setContractTransactions(contractTransactions.filter(t => t !== transaction));
-                        }} 
-                        style={{
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '65px'
-                        }}
-                      >
-                        Delete
-                      </button>
-                      <button 
-                        onClick={() => {
-                          const updatedTransactions = [...contractTransactions];
-                          const transactionIndex = contractTransactions.indexOf(transaction);
-                          updatedTransactions[transactionIndex] = { ...transaction, status: 'Pending' };
+                        } else {
+                          updatedTransactions[transactionIndex] = { ...transaction, status: newStatus };
                           setContractTransactions(updatedTransactions);
-                        }}
-                        style={{
-                          backgroundColor: '#ffc107',
-                          color: 'black',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '90px'
-                        }}
-                      >
-                        Move to Pending
-                      </button>
-                    </td>
-                  </tr>
-                ))}              </tbody>
-            </table>
-            
-            {/* Details sections for Under Contract transactions */}
-            {contractTransactions.filter(t => t.status === 'Under Contract' && t.showDetails).map((transaction, i) => (
-              <div key={`details-${i}`} style={{
-                marginTop: '1rem',
-                padding: '1rem',
-                backgroundColor: '#f8f9fa',
-                border: '1px solid #dee2e6',
-                borderRadius: '8px'
-              }}>
-                <h4 style={{color: '#17a2b8', marginBottom: '1rem'}}>
-                  Details: {transaction.address} - {transaction.client}
-                </h4>
-                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem'}}>
-                  {/* Hours Details */}
-                  <div>
-                    <h5 style={{color: '#666', marginBottom: '0.5rem'}}>Hours Breakdown</h5>
-                    {transaction.hoursDetails && transaction.hoursDetails.length > 0 ? (
-                      <div>
-                        <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
-                          Total Hours: {transaction.totalHours?.toFixed(1) || '0.0'}h
-                        </div>
-                        <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#28a745'}}>
-                          Total Value: ${((transaction.totalHours || 0) * hourlyRate).toFixed(2)} @ ${hourlyRate.toFixed(2)}/hr
-                        </div>
-                        <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
-                          Total Mileage: {transaction.expensesDetails?.reduce((sum, expense) => sum + (expense.mileage || 0), 0) || 0} miles
-                        </div>
-                        {transaction.hoursDetails.map((hour, idx) => (
-                          <div key={idx} style={{
-                            padding: '0.5rem',
-                            marginBottom: '0.5rem',
-                            backgroundColor: 'white',
-                            borderRadius: '4px',
-                            fontSize: '0.9rem'
-                          }}>
-                            <div><strong>{hour.dayOfWeek}</strong> - {hour.hours}h</div>
-                            <div style={{color: '#666', fontSize: '0.8rem'}}>
-                              {hour.timestamp ? new Date(hour.timestamp).toLocaleDateString() : hour.month}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p style={{color: '#666', fontStyle: 'italic'}}>No hours logged</p>
-                    )}
-                  </div>                  {/* Expenses Details */}
-                  <div>
-                    <h5 style={{color: '#666', marginBottom: '0.5rem'}}>Expenses Breakdown</h5>
-                    {(transaction.expensesDetails && transaction.expensesDetails.length > 0) || transaction.laborCost > 0 ? (
-                      <div>
-                        <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
-                          Total Expenses: ${transaction.totalExpenses?.toLocaleString() || '0'}
-                        </div>
-                        {transaction.expensesDetails?.map((expense, idx) => (
-                          <div key={idx} style={{
-                            padding: '0.5rem',
-                            marginBottom: '0.5rem',
-                            backgroundColor: 'white',
-                            borderRadius: '4px',
-                            fontSize: '0.9rem'
-                          }}>
-                            <div><strong>{expense.category}</strong> - ${expense.amount?.toLocaleString() || '0'}</div>
-                            {expense.mileage > 0 && (
-                              <div style={{color: '#666', fontSize: '0.8rem'}}>
-                                {expense.mileage} miles @ ${expense.gasPrice}/gal
-                              </div>
-                            )}
-                            <div style={{color: '#666', fontSize: '0.8rem'}}>
-                              {expense.timestamp ? new Date(expense.timestamp).toLocaleDateString() : expense.month}
-                            </div>
-                          </div>
-                        ))}
-                        {transaction.laborCost > 0 && (
-                          <div style={{
-                            padding: '0.5rem',
-                            marginBottom: '0.5rem',
-                            backgroundColor: '#fff3cd',
-                            borderRadius: '4px',
-                            fontSize: '0.9rem'
-                          }}>
-                            <div><strong>Labor Cost</strong> - ${transaction.laborCost?.toFixed(2) || '0'}</div>
-                            <div style={{color: '#666', fontSize: '0.8rem'}}>
-                              {transaction.totalHours?.toFixed(1) || '0'}h @ ${hourlyRate.toFixed(2)}/hr
-                            </div>                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <p style={{color: '#666', fontStyle: 'italic'}}>No expenses logged</p>
-                    )}
-                  </div></div>
-
-                {/* ROI Analysis */}
-                <div style={{marginTop: '1rem'}}>
-                  <h5 style={{color: '#666', marginBottom: '0.5rem'}}>Property ROI Analysis</h5>
-                  <div style={{
-                    padding: '1rem',
-                    backgroundColor: '#fff3cd',
-                    border: '1px solid #ffeaa7',
-                    borderRadius: '8px'
-                  }}>
-                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem'}}>
-                      <div>
-                        <strong>Commission:</strong>
-                        <div style={{fontSize: '1.2rem', color: '#28a745'}}>
-                          ${(transaction.commission || 0).toLocaleString()}
-                        </div>
-                      </div>
-                      <div>
-                        <strong>Total Expenses:</strong>
-                        <div style={{fontSize: '1.2rem', color: '#dc3545'}}>
-                          ${(transaction.totalExpenses || 0).toLocaleString()}
-                        </div>
-                      </div>
-                      <div>
-                        <strong>Net Profit:</strong>
-                        <div style={{fontSize: '1.2rem', color: (transaction.commission || 0) - (transaction.totalExpenses || 0) > 0 ? '#28a745' : '#dc3545'}}>
-                          ${((transaction.commission || 0) - (transaction.totalExpenses || 0)).toLocaleString()}
-                        </div>
-                      </div>
-                      <div>
-                        <strong>ROI:</strong>
-                        <div style={{fontSize: '1.2rem', color: '#C5A95E'}}>
-                          {transaction.totalExpenses > 0 ? 
-                            (((transaction.commission || 0) / (transaction.totalExpenses || 1)) * 100).toFixed(1) + '%' 
-                            : 'N/A'}
-                        </div>
-                      </div>
-                    </div>
-                    <div style={{marginTop: '0.5rem', fontSize: '0.8rem', color: '#666'}}>
-                      Hourly Rate: ${transaction.totalHours > 0 ? ((transaction.commission || 0) / transaction.totalHours).toFixed(2) : '0.00'}/hr
-                    </div>
-                  </div>
-                </div>
-
-                {/* Status History */}
-                {transaction.statusDates && (
-                  <div style={{marginTop: '1rem'}}>
-                    <h5 style={{color: '#666', marginBottom: '0.5rem'}}>Status History</h5>
-                    <div style={{fontSize: '0.9rem'}}>
-                      {transaction.statusDates.listedDate && (
-                        <span style={{marginRight: '1rem'}}>
-                          Listed: {new Date(transaction.statusDates.listedDate).toLocaleDateString()}
-                        </span>
-                      )}
-                      {transaction.statusDates.underContractDate && (
-                        <span style={{marginRight: '1rem'}}>
-                          Under Contract: {new Date(transaction.statusDates.underContractDate).toLocaleDateString()}
-                        </span>
-                      )}
-                      {transaction.statusDates.pendingDate && (
-                        <span style={{marginRight: '1rem'}}>
-                          Pending: {new Date(transaction.statusDates.pendingDate).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="section">            <h3>Pending</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Address</th>
-                  <th>Client</th>
-                  <th>Price ($)</th>
-                  <th>Commission ($)</th>
-                  <th>Date</th>
-                  <th>Action</th>
+                        }
+                      }}
+                      style={{
+                        padding: '0.25rem',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        fontSize: '0.8rem'
+                      }}
+                    >
+                      <option value="Under Contract">Under Contract</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Closed">Closed</option>
+                      <option value="Withdrawn">Withdrawn</option>
+                      <option value="Expired">Expired</option>
+                      <option value="Terminated">Terminated</option>
+                      <option value="Fired Client">Fired Client</option>
+                    </select>
+                    <button 
+                      onClick={() => {
+                        if (window.confirm(`Are you sure you want to delete the transaction for "${transaction.address}"?`)) {
+                          setContractTransactions(contractTransactions.filter(t => t !== transaction));
+                        }
+                      }}
+                      style={{
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        minWidth: '65px'
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {contractTransactions.filter(t => t.status === 'Pending').map((transaction, i) => (
-                  <tr key={i}>
-                    <td>{transaction.address}</td>
-                    <td>{transaction.client || '-'}</td>
-                    <td>${transaction.price?.toLocaleString() || 0}</td>
-                    <td>${(transaction.commission || (transaction.price * 0.025)).toFixed(2)}</td>
-                    <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>                    <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
-                      <button 
-                        onClick={() => {
-                          // Toggle details view
-                          const updatedTransactions = [...contractTransactions];
-                          const transactionIndex = contractTransactions.indexOf(transaction);
-                          updatedTransactions[transactionIndex] = { 
-                            ...transaction, 
-                            showDetails: !transaction.showDetails 
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="section">
+          <h3>Pending</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Address</th>
+                <th>Client</th>
+                <th>Price ($)</th>
+                <th>Commission ($)</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contractTransactions.filter(t => t.status === 'Pending').map((transaction, i) => (
+                <tr key={i}>
+                  <td>{transaction.address}</td>
+                  <td>{transaction.client || '-'}</td>
+                  <td>${transaction.price?.toLocaleString() || 0}</td>
+                  <td>${(transaction.commission || (transaction.price * 0.025)).toFixed(2)}</td>
+                  <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>
+                  <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                    <button 
+                      onClick={() => {
+                        // Toggle details view
+                        const updatedTransactions = [...contractTransactions];
+                        const transactionIndex = contractTransactions.indexOf(transaction);
+                        updatedTransactions[transactionIndex] = { 
+                          ...transaction, 
+                          showDetails: !transaction.showDetails 
+                        };
+                        setContractTransactions(updatedTransactions);
+                      }} 
+                      style={{
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        minWidth: '65px'
+                      }}
+                    >
+                      Details
+                    </button>
+                    <select
+                      value={transaction.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value;
+                        const updatedTransactions = [...contractTransactions];
+                        const transactionIndex = contractTransactions.indexOf(transaction);
+                        
+                        if (newStatus === 'Closed') {
+                          // Move to closed deals
+                          const closedDeal = {
+                            ...transaction,
+                            status: newStatus,
+                            closedDate: new Date().toISOString().split('T')[0]
                           };
-                          setContractTransactions(updatedTransactions);
-                        }} 
-                        style={{
-                          backgroundColor: '#007bff',
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '65px'
-                        }}
-                      >
-                        Details
-                      </button>
-                      <button 
-                        onClick={() => {
+                          setClosedDeals([...closedDeals, closedDeal]);
                           setContractTransactions(contractTransactions.filter(t => t !== transaction));
-                        }} 
-                        style={{
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '65px'
-                        }}
-                      >
-                        Delete
-                      </button>                      <button 
-                        onClick={() => {
-                          alert('Close Deal button clicked! Check console for more details.');
-                          console.log('Close Deal button clicked for:', transaction.address);
-                          console.log('Transaction object:', transaction);
-                          try {
-                            if (window.confirm(`Close "${transaction.address}"? This will move it to closed deals.`)) {
-                              console.log('User confirmed, proceeding to close deal...');
-                              // Calculate commission if not set (fallback to 2.5% of price)
-                              const calculatedCommission = transaction.commission || (transaction.price * 0.025);
-                              console.log('Calculated commission:', calculatedCommission);
-                              
-                              // Use the helper function to calculate total expenses including labor
-                              console.log('Calculating expenses for:', transaction.address, transaction.client);
-                              const expenseData = calculateTotalExpensesWithLabor(transaction.address, transaction.client);
-                              console.log('Expense data:', expenseData);
-                              
-                              const closedDeal = {
-                                ...transaction,
-                                status: 'Closed',
-                                closedDate: new Date().toISOString().split('T')[0],
-                                commission: calculatedCommission,
-                                type: transaction.type || 'Buyer', // Default type if not set
-                                totalHours: expenseData.propertyHours,
-                                totalExpenses: expenseData.totalExpenses,
-                                hoursDetails: hours.filter(h => 
-                                  h.propertyClient && (
-                                    h.propertyClient.toLowerCase().includes(transaction.address.toLowerCase()) ||
-                                    h.propertyClient.toLowerCase().includes(transaction.client?.toLowerCase() || '')
-                                  )
-                                ),
-                                expensesDetails: expenses.filter(e => 
-                                  e.propertyClient && (
-                                    e.propertyClient.toLowerCase().includes(transaction.address.toLowerCase()) ||
-                                    e.propertyClient.toLowerCase().includes(transaction.client?.toLowerCase() || '')
-                                  )
-                                )
-                              };
-                              console.log('Created closed deal:', closedDeal);
-                              console.log('Current closed deals:', closedDeals.length);
-                              setClosedDeals([...closedDeals, closedDeal]);
-                              console.log('Updated closed deals, removing from contract transactions...');
-                              setContractTransactions(contractTransactions.filter(t => t !== transaction));
-                              console.log('Deal closure complete');
-                              alert('Deal closed successfully! Check the Closed Deals section.');
-                            } else {
-                              console.log('User cancelled deal closure');
-                            }
-                          } catch (error) {
-                            console.error('Error closing deal:', error);
-                            alert('Error closing deal: ' + error.message);
-                          }
-                        }}
-                        style={{
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '85px'
-                        }}
-                      >
-                        Close Deal
-                      </button>
-                    </td>
-                  </tr>
-                ))}              </tbody>            </table>
-            
-            {/* Details sections for Pending transactions */}
-            {contractTransactions.filter(t => t.status === 'Pending' && t.showDetails).map((transaction, i) => (
-              <div key={i} style={{
-                marginTop: '1rem',
-                border: '2px solid #ffc107',
-                borderRadius: '8px',
-                padding: '1rem',
-                backgroundColor: '#fff3cd'
-              }}>
-                <h4 style={{color: '#856404', marginBottom: '1rem'}}>
-                  Details: {transaction.address} - {transaction.client}
-                </h4>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem'}}>
-                  <div>
-                    <h5 style={{color: '#28a745', marginBottom: '0.5rem'}}>Hours Breakdown</h5>
-                    <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
-                      Total Hours: {transaction.totalHours?.toFixed(1) || '0.0'}h
-                    </div>
-                    <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#28a745'}}>
-                      Total Value: ${((transaction.totalHours || 0) * hourlyRate).toFixed(2)} @ ${hourlyRate.toFixed(2)}/hr
-                    </div>
-                    <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
-                      Total Mileage: {transaction.expensesDetails?.reduce((sum, expense) => sum + (expense.mileage || 0), 0) || 0} miles
-                    </div>
-                    {transaction.hoursDetails && transaction.hoursDetails.length > 0 ? (
-                      <table style={{width: '100%', fontSize: '0.9rem'}}>
-                        <thead>
-                          <tr style={{backgroundColor: '#e9ecef'}}>
-                            <th style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>Date</th>
-                            <th style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>Day</th>
-                            <th style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>Hours</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {transaction.hoursDetails.map((hour, hi) => (
-                            <tr key={hi}>
-                              <td style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>{hour.timestamp?.split(',')[0] || hour.month}</td>
-                              <td style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>{hour.dayOfWeek}</td>
-                              <td style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>{hour.hours}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <p style={{color: '#6c757d', fontStyle: 'italic'}}>No hours logged for this property</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <h5 style={{color: '#dc3545', marginBottom: '0.5rem'}}>Expenses Breakdown</h5>
-                    <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
-                      Total Expenses: ${transaction.totalExpenses?.toLocaleString() || '0'}
-                    </div>
-                    {transaction.expensesDetails && transaction.expensesDetails.length > 0 ? (
-                      <table style={{width: '100%', fontSize: '0.9rem'}}>
-                        <thead>
-                          <tr style={{backgroundColor: '#e9ecef'}}>
-                            <th style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>Date</th>
-                            <th style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>Category</th>
-                            <th style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>Amount</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {transaction.expensesDetails.map((expense, ei) => (
-                            <tr key={ei}>
-                              <td style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>{expense.timestamp?.split(',')[0] || expense.month}</td>
-                              <td style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>{expense.category}</td>
-                              <td style={{padding: '0.5rem', border: '1px solid #dee2e6'}}>${expense.amount?.toFixed(2) || '0.00'}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <p style={{color: '#6c757d', fontStyle: 'italic'}}>No expenses logged for this property</p>
-                    )}
-                  </div>
-                </div>
+                        } else {
+                          updatedTransactions[transactionIndex] = { ...transaction, status: newStatus };
+                          setContractTransactions(updatedTransactions);
+                        }
+                      }}
+                      style={{
+                        padding: '0.25rem',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        fontSize: '0.8rem'
+                      }}
+                    >
+                      <option value="Under Contract">Under Contract</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Closed">Closed</option>
+                      <option value="Withdrawn">Withdrawn</option>
+                      <option value="Expired">Expired</option>
+                      <option value="Terminated">Terminated</option>
+                      <option value="Fired Client">Fired Client</option>
+                    </select>
+                    <button 
+                      onClick={() => {
+                        if (window.confirm(`Are you sure you want to delete the transaction for "${transaction.address}"?`)) {
+                          setContractTransactions(contractTransactions.filter(t => t !== transaction));
+                        }
+                      }}
+                      style={{
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        minWidth: '65px'
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="section">
+          <h3>Closed Deals</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Address</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Price ($)</th>
+                <th>Commission ($)</th>
+                <th>Total Hours</th>
+                <th>Total Expenses</th>
+                <th>DOM (Days)</th>
+                <th>Closed Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {closedDeals.map((deal, i) => {
+                // Recalculate expenses dynamically to ensure labor costs are included
+                const expenseData = calculateTotalExpensesWithLabor(deal.address, deal.client);
                 
-                <div style={{marginTop: '1rem', padding: '0.5rem', backgroundColor: '#e9ecef', borderRadius: '4px'}}>
-                  <strong>Status History</strong>
-                  <div style={{marginTop: '0.25rem'}}>
-                    {transaction.statusDates?.listedDate && <span>Listed: {new Date(transaction.statusDates.listedDate).toLocaleDateString()} | </span>}
-                    {transaction.statusDates?.buyerContractDate && <span>Buyer Contract: {new Date(transaction.statusDates.buyerContractDate).toLocaleDateString()} | </span>}
-                    {transaction.statusDates?.underContractDate && <span>Under Contract: {new Date(transaction.statusDates.underContractDate).toLocaleDateString()} | </span>}
-                    {transaction.statusDates?.pendingDate && <span>Pending: {new Date(transaction.statusDates.pendingDate).toLocaleDateString()}</span>}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-            {/* Closed Deals Section */}
-          <div className="section">
-            <h3>Closed Deals</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Address</th>
-                  <th>Client</th>
-                  <th>Type</th>
-                  <th>Price ($)</th>
-                  <th>Commission ($)</th>
-                  <th>Total Hours</th>
-                  <th>Total Expenses</th>
-                  <th>DOM (Days)</th>
-                  <th>Closed Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>              <tbody>
-                {closedDeals.map((deal, i) => {
-                  // Recalculate expenses dynamically to ensure labor costs are included
-                  const expenseData = calculateTotalExpensesWithLabor(deal.address, deal.client);
-                  
-                  return (
-                    <tr key={i}>
-                      <td>{deal.address}</td>
-                      <td>{deal.client || '-'}</td>
-                      <td>{deal.type}</td>
-                      <td>${deal.price?.toLocaleString() || 0}</td>
-                      <td>${deal.commission?.toFixed(2) || 0}</td>
-                      <td>{expenseData.propertyHours.toFixed(1)}h</td>
-                      <td>${expenseData.totalExpenses.toLocaleString()}</td>
-                      <td>
-                        {(() => {
-                          if (deal.statusDates?.listedDate && deal.closedDate) {
+                return (
+                  <tr key={i}>
+                    <td>{deal.address}</td>
+                    <td>{deal.client || '-'}</td>
+                    <td>{deal.type}</td>
+                    <td>${deal.price?.toLocaleString() || 0}</td>
+                    <td>${deal.commission?.toFixed(2) || 0}</td>
+                    <td>{expenseData.propertyHours.toFixed(1)}h</td>
+                    <td>${expenseData.totalExpenses.toLocaleString()}</td>
+                    <td>
+                      {(() => {
+                        if (deal.statusDates?.listedDate && deal.closedDate) {
                           const listedDate = new Date(deal.statusDates.listedDate);
                           const closedDate = new Date(deal.closedDate);
                           return Math.ceil((closedDate - listedDate) / (1000 * 60 * 60 * 24));
@@ -2871,7 +2570,8 @@ const App = () => {
                         return '-';
                       })()}
                     </td>
-                    <td>{deal.closedDate ? new Date(deal.closedDate).toLocaleDateString() : '-'}</td>                    <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                    <td>{deal.closedDate ? new Date(deal.closedDate).toLocaleDateString() : '-'}</td>
+                    <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
                       <button 
                         onClick={() => {
                           // Toggle details view for closed deals
@@ -2908,463 +2608,276 @@ const App = () => {
                           padding: '0.25rem 0.5rem',
                           borderRadius: '3px',
                           cursor: 'pointer',
-                          fontSize: '0.8rem',                          minWidth: '65px'
+                          fontSize: '0.8rem',
+                          minWidth: '65px'
                         }}
                       >
                         Delete
                       </button>
                     </td>
                   </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            
-            {/* Details sections for Closed Deals */}
-            {closedDeals.filter(deal => deal.showDetails).map((deal, i) => (
-              <div key={`closed-details-${i}`} style={{
-                marginTop: '1rem',
-                padding: '1rem',
-                backgroundColor: '#f8f9fa',
-                border: '1px solid #dee2e6',
-                borderRadius: '8px'
-              }}>
-                <h4 style={{color: '#28a745', marginBottom: '1rem'}}>
-                  Details: {deal.address} - {deal.client}
-                </h4>
-                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem'}}>
-                  {/* Hours Details */}
-                  <div>
-                    <h5 style={{color: '#666', marginBottom: '0.5rem'}}>Hours Breakdown</h5>
-                    {deal.hoursDetails && deal.hoursDetails.length > 0 ? (
-                      <div>
-                        <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
-                          Total Hours: {deal.totalHours?.toFixed(1) || '0.0'}h
-                        </div>
-                        <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#28a745'}}>
-                          Total Value: ${((deal.totalHours || 0) * hourlyRate).toFixed(2)} @ ${hourlyRate.toFixed(2)}/hr
-                        </div>
-                        <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
-                          Total Mileage: {deal.expensesDetails?.reduce((sum, expense) => sum + (expense.mileage || 0), 0) || 0} miles
-                        </div>
-                        {deal.hoursDetails.map((hour, idx) => (
-                          <div key={idx} style={{
-                            padding: '0.5rem',
-                            marginBottom: '0.5rem',
-                            backgroundColor: 'white',
-                            borderRadius: '4px',
-                            fontSize: '0.9rem'
-                          }}>
-                            <div><strong>{hour.dayOfWeek}</strong> - {hour.hours}h</div>
-                            <div style={{color: '#666', fontSize: '0.8rem'}}>
-                              {hour.timestamp ? new Date(hour.timestamp).toLocaleDateString() : hour.month}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p style={{color: '#666', fontStyle: 'italic'}}>No hours logged</p>
-                    )}
-                  </div>                  {/* Expenses Details */}
-                  <div>
-                    <h5 style={{color: '#666', marginBottom: '0.5rem'}}>Expenses Breakdown</h5>
-                    {(deal.expensesDetails && deal.expensesDetails.length > 0) || deal.laborCost > 0 ? (
-                      <div>
-                        <div style={{fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>
-                          Total Expenses: ${deal.totalExpenses?.toLocaleString() || '0'}
-                        </div>
-                        {deal.expensesDetails?.map((expense, idx) => (
-                          <div key={idx} style={{
-                            padding: '0.5rem',
-                            marginBottom: '0.5rem',
-                            backgroundColor: 'white',
-                            borderRadius: '4px',
-                            fontSize: '0.9rem'
-                          }}>
-                            <div><strong>{expense.category}</strong> - ${expense.amount?.toLocaleString() || '0'}</div>
-                            {expense.mileage > 0 && (
-                              <div style={{color: '#666', fontSize: '0.8rem'}}>
-                                {expense.mileage} miles @ ${expense.gasPrice}/gal
-                              </div>
-                            )}
-                            <div style={{color: '#666', fontSize: '0.8rem'}}>
-                              {expense.timestamp ? new Date(expense.timestamp).toLocaleDateString() : expense.month}
-                            </div>
-                          </div>
-                        ))}
-                        {deal.laborCost > 0 && (
-                          <div style={{
-                            padding: '0.5rem',
-                            marginBottom: '0.5rem',
-                            backgroundColor: '#fff3cd',
-                            borderRadius: '4px',
-                            fontSize: '0.9rem'
-                          }}>
-                            <div><strong>Labor Cost</strong> - ${deal.laborCost?.toFixed(2) || '0'}</div>
-                            <div style={{color: '#666', fontSize: '0.8rem'}}>
-                              {deal.totalHours?.toFixed(1) || '0'}h @ ${hourlyRate.toFixed(2)}/hr
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <p style={{color: '#666', fontStyle: 'italic'}}>No expenses logged</p>
-                    )}
-                  </div>
-                </div>                {/* ROI Analysis */}
-                <div style={{marginTop: '1rem', padding: '1rem', backgroundColor: '#e8f5e8', borderRadius: '8px'}}>
-                  <h5 style={{color: '#28a745', marginBottom: '0.5rem'}}>ROI Analysis</h5>
-                  {(() => {
-                    // Recalculate expenses dynamically to ensure labor costs are included
-                    const expenseData = calculateTotalExpensesWithLabor(deal.address, deal.client);
-                    const netProfit = (deal.commission || 0) - expenseData.totalExpenses;
-                    const roi = expenseData.totalExpenses > 0 ? ((netProfit / expenseData.totalExpenses) * 100) : 0;
-                    
-                    return (
-                      <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', fontSize: '0.9rem'}}>
-                        <div>
-                          <strong>Commission:</strong><br/>
-                          <span style={{color: '#28a745', fontSize: '1.2rem'}}>${(deal.commission || 0).toLocaleString()}</span><br/>
-                          <small style={{color: '#666'}}>Hourly Rate: ${expenseData.propertyHours > 0 ? (netProfit / expenseData.propertyHours).toFixed(2) : '0.00'}/hr</small>
-                        </div>
-                        <div>
-                          <strong>Total Expenses:</strong><br/>
-                          <span style={{color: '#dc3545', fontSize: '1.2rem'}}>${expenseData.totalExpenses.toLocaleString()}</span><br/>
-                          <small style={{color: '#666'}}>Incl. ${expenseData.laborCost.toFixed(0)} labor</small>
-                        </div>
-                        <div>
-                          <strong>Net Profit:</strong><br/>
-                          <span style={{color: netProfit >= 0 ? '#28a745' : '#dc3545', fontSize: '1.2rem'}}>${netProfit.toLocaleString()}</span>
-                        </div>
-                        <div>
-                          <strong>ROI:</strong><br/>
-                          <span style={{color: '#C5A95E', fontSize: '1.2rem'}}>
-                            {expenseData.totalExpenses > 0 ? `${roi.toFixed(1)}%` : 'N/A'}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
 
-                {/* Status History */}
-                {deal.statusDates && (
-                  <div style={{marginTop: '1rem'}}>
-                    <h5 style={{color: '#666', marginBottom: '0.5rem'}}>Status History</h5>
-                    <div style={{fontSize: '0.9rem'}}>
-                      {deal.statusDates.listedDate && (
-                        <span style={{marginRight: '1rem'}}>
-                          Listed: {new Date(deal.statusDates.listedDate).toLocaleDateString()}
-                        </span>
-                      )}
-                      {deal.statusDates.underContractDate && (
-                        <span style={{marginRight: '1rem'}}>
-                          Under Contract: {new Date(deal.statusDates.underContractDate).toLocaleDateString()}
-                        </span>
-                      )}
-                      {deal.statusDates.pendingDate && (
-                        <span style={{marginRight: '1rem'}}>
-                          Pending: {new Date(deal.statusDates.pendingDate).toLocaleDateString()}
-                        </span>
-                      )}
-                      {deal.closedDate && (
-                        <span style={{marginRight: '1rem'}}>
-                          Closed: {new Date(deal.closedDate).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-            
-            <div className="section" style={{marginTop: '1rem'}}>
-              <h4>Closed Deals Summary</h4>
-              <div className="grid">
-                <div className="tile">
-                  <h4>Total Closed Deals</h4>
-                  <p>{closedDeals.length}</p>
-                </div>
-                <div className="tile">
-                  <h4>Total Commission Earned</h4>
-                  <p>${totalClosedCommission.toFixed(2)}</p>
-                </div>
-                <div className="tile">
-                  <h4>Average Commission</h4>
-                  <p>${closedDeals.length > 0 ? (totalClosedCommission / closedDeals.length).toFixed(2) : '0.00'}</p>
-                </div>
-              </div>
+        <div className="section">
+          <h3>Withdrawn</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Address</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Total Hours</th>
+                <th>Total Expenses</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contractTransactions.filter(t => t.status === 'Withdrawn').map((transaction, i) => (
+                <tr key={i}>
+                  <td>{transaction.address}</td>
+                  <td>{transaction.client || '-'}</td>
+                  <td>{transaction.type || 'Buyer'}</td>
+                  <td>{transaction.totalHours?.toFixed(1) || '0.0'}h</td>
+                  <td>${transaction.totalExpenses?.toLocaleString() || 0}</td>
+                  <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>
+                  <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                    <button 
+                      onClick={() => {
+                        setContractTransactions(contractTransactions.filter(t => t !== transaction));
+                      }} 
+                      style={{
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        minWidth: '65px'
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="section">
+          <h3>Expired</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Address</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Total Hours</th>
+                <th>Total Expenses</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contractTransactions.filter(t => t.status === 'Expired').map((transaction, i) => (
+                <tr key={i}>
+                  <td>{transaction.address}</td>
+                  <td>{transaction.client || '-'}</td>
+                  <td>{transaction.type || 'Buyer'}</td>
+                  <td>{transaction.totalHours?.toFixed(1) || '0.0'}h</td>
+                  <td>${transaction.totalExpenses?.toLocaleString() || 0}</td>
+                  <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>
+                  <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                    <button 
+                      onClick={() => {
+                        setContractTransactions(contractTransactions.filter(t => t !== transaction));
+                      }} 
+                      style={{
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        minWidth: '65px'
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="section">
+          <h3>Terminated</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Address</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Total Hours</th>
+                <th>Total Expenses</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contractTransactions.filter(t => t.status === 'Terminated').map((transaction, i) => (
+                <tr key={i}>
+                  <td>{transaction.address}</td>
+                  <td>{transaction.client || '-'}</td>
+                  <td>{transaction.type || 'Buyer'}</td>
+                  <td>{transaction.totalHours?.toFixed(1) || '0.0'}h</td>
+                  <td>${transaction.totalExpenses?.toLocaleString() || 0}</td>
+                  <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>
+                  <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                    <button 
+                      onClick={() => {
+                        setContractTransactions(contractTransactions.filter(t => t !== transaction));
+                      }} 
+                      style={{
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        minWidth: '65px'
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="section">
+          <h3>Fired Client</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Address</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Total Hours</th>
+                <th>Total Expenses</th>
+                <th>Date</th>
+                <th>Note</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contractTransactions.filter(t => t.status === 'Fired Client').map((transaction, i) => (
+                <tr key={i}>
+                  <td>{transaction.address}</td>
+                  <td>{transaction.client || '-'}</td>
+                  <td>{transaction.type || 'Buyer'}</td>
+                  <td>{transaction.totalHours?.toFixed(1) || '0.0'}h</td>
+                  <td>${transaction.totalExpenses?.toLocaleString() || 0}</td>
+                  <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>
+                  <td>
+                    <input
+                      type="text"
+                      value={transaction.firedClientNote || ''}
+                      onChange={(e) => {
+                        const updatedTransactions = [...contractTransactions];
+                        const transactionIndex = contractTransactions.indexOf(transaction);
+                        updatedTransactions[transactionIndex] = { 
+                          ...transaction, 
+                          firedClientNote: e.target.value 
+                        };
+                        setContractTransactions(updatedTransactions);
+                      }}
+                      placeholder="Why fired?"
+                      style={{
+                        width: '120px',
+                        padding: '0.25rem',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        fontSize: '0.8rem'
+                      }}
+                    />
+                  </td>
+                  <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                    <button 
+                      onClick={() => {
+                        setContractTransactions(contractTransactions.filter(t => t !== transaction));
+                      }} 
+                      style={{
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        minWidth: '65px'
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="section">
+          <h3>Volume Summary</h3>
+          <div className="grid">
+            <div className="tile">
+              <h4>Volume Under Contract</h4>
+              <p>${volumeUnderContract.toLocaleString()}</p>
             </div>
-          </div>          {/* Withdrawn Deals Section */}
-          <div className="section">
-            <h3>Withdrawn</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Address</th>
-                  <th>Client</th>
-                  <th>Type</th>
-                  <th>Total Hours</th>
-                  <th>Total Expenses</th>
-                  <th>Date</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {contractTransactions.filter(t => t.status === 'Withdrawn').map((transaction, i) => (
-                  <tr key={i}>
-                    <td>{transaction.address}</td>
-                    <td>{transaction.client || '-'}</td>
-                    <td>{transaction.type || 'Buyer'}</td>
-                    <td>{transaction.totalHours?.toFixed(1) || '0.0'}h</td>
-                    <td>${transaction.totalExpenses?.toLocaleString() || 0}</td>
-                    <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>
-                    <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
-                      <button 
-                        onClick={() => {
-                          setContractTransactions(contractTransactions.filter(t => t !== transaction));
-                        }} 
-                        style={{
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '65px'
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>                ))}
-              </tbody>
-            </table>
-          </div>          {/* Expired Deals Section */}
-          <div className="section">
-            <h3>Expired</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Address</th>
-                  <th>Client</th>
-                  <th>Type</th>
-                  <th>Total Hours</th>
-                  <th>Total Expenses</th>
-                  <th>Date</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {contractTransactions.filter(t => t.status === 'Expired').map((transaction, i) => (
-                  <tr key={i}>
-                    <td>{transaction.address}</td>
-                    <td>{transaction.client || '-'}</td>
-                    <td>{transaction.type || 'Buyer'}</td>
-                    <td>{transaction.totalHours?.toFixed(1) || '0.0'}h</td>
-                    <td>${transaction.totalExpenses?.toLocaleString() || 0}</td>
-                    <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>
-                    <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
-                      <button 
-                        onClick={() => {
-                          setContractTransactions(contractTransactions.filter(t => t !== transaction));
-                        }} 
-                        style={{
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '65px'
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>            </table>
-          </div>          {/* Terminated Deals Section */}
-          <div className="section">
-            <h3>Terminated</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Address</th>
-                  <th>Client</th>
-                  <th>Type</th>
-                  <th>Total Hours</th>
-                  <th>Total Expenses</th>
-                  <th>Date</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {contractTransactions.filter(t => t.status === 'Terminated').map((transaction, i) => (
-                  <tr key={i}>
-                    <td>{transaction.address}</td>
-                    <td>{transaction.client || '-'}</td>
-                    <td>{transaction.type || 'Buyer'}</td>
-                    <td>{transaction.totalHours?.toFixed(1) || '0.0'}h</td>
-                    <td>${transaction.totalExpenses?.toLocaleString() || 0}</td>
-                    <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>
-                    <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
-                      <button 
-                        onClick={() => {
-                          setContractTransactions(contractTransactions.filter(t => t !== transaction));
-                        }} 
-                        style={{
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '65px'
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>{/* Fired Client Deals Section */}
-          <div className="section">
-            <h3>Fired Client</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Address</th>
-                  <th>Client</th>
-                  <th>Type</th>
-                  <th>Total Hours</th>
-                  <th>Total Expenses</th>
-                  <th>Date</th>
-                  <th>Note</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {contractTransactions.filter(t => t.status === 'Fired Client').map((transaction, i) => (
-                  <tr key={i}>
-                    <td>{transaction.address}</td>
-                    <td>{transaction.client || '-'}</td>
-                    <td>{transaction.type || 'Buyer'}</td>
-                    <td>{transaction.totalHours?.toFixed(1) || '0.0'}h</td>
-                    <td>${transaction.totalExpenses?.toLocaleString() || 0}</td>
-                    <td>{transaction.date ? new Date(transaction.date).toLocaleDateString() : '-'}</td>                    <td>
-                      <input
-                        type="text"
-                        value={transaction.firedClientNote || ''}
-                        onChange={(e) => {
-                          const updatedTransactions = [...contractTransactions];
-                          const transactionIndex = contractTransactions.indexOf(transaction);
-                          updatedTransactions[transactionIndex] = { 
-                            ...transaction, 
-                            firedClientNote: e.target.value 
-                          };
-                          setContractTransactions(updatedTransactions);
-                        }}
-                        placeholder="Why fired?"
-                        style={{
-                          width: '120px',
-                          padding: '0.25rem',
-                          border: '1px solid #ccc',
-                          borderRadius: '4px',
-                          fontSize: '0.8rem'
-                        }}
-                      />
-                    </td>
-                    <td style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
-                      <button 
-                        onClick={() => {
-                          setContractTransactions(contractTransactions.filter(t => t !== transaction));
-                        }} 
-                        style={{
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          minWidth: '65px'
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>            <div className="section">
-            <h3>Volume Summary</h3>
-            <div className="grid">
-              <div className="tile">
-                <h3>Volume Under Contract</h3>
-                <p>${volumeUnderContract.toLocaleString()}</p>
-              </div>
-              <div className="tile">
-                <h3>Volume Pending</h3>
-                <p>${volumePending.toLocaleString()}</p>
-              </div>
-              <div className="tile">
-                <h3>Closed Volume</h3>
-                <p>${closedDeals.reduce((sum, deal) => sum + (deal.price || 0), 0).toLocaleString()}</p>
-              </div>              <div className="tile">
-                <h3>Total Volume</h3>
-                <p>${(volumeUnderContract + volumePending).toLocaleString()}</p>
-              </div>              <div className="tile">
-                <h3>Average Sale Price</h3>
-                <p>${closedDeals.length > 0 ? (closedDeals.reduce((sum, deal) => sum + (deal.price || 0), 0) / closedDeals.length).toLocaleString() : '0'}</p>
-              </div>
-              <div className="tile">
-                <h3>Average ROI</h3>
-                <p>{(() => {
-                  const dealsWithExpenses = closedDeals.filter(deal => (deal.totalExpenses || 0) > 0);
-                  if (dealsWithExpenses.length === 0) return 'N/A';
-                  const totalROI = dealsWithExpenses.reduce((sum, deal) => {
-                    const roi = ((deal.commission || 0) / (deal.totalExpenses || 1)) * 100;
-                    return sum + roi;
-                  }, 0);
-                  return (totalROI / dealsWithExpenses.length).toFixed(1) + '%';
-                })()}</p>
-              </div>
-              <div className="tile">
-                <h3>Avg. Listed to Closing</h3>
-                <p>{(() => {
-                  const sellerDeals = closedDeals.filter(deal => deal.type === 'Seller' && deal.statusDates?.listedDate && deal.closedDate);
-                  if (sellerDeals.length === 0) return 'N/A';
-                  const totalDays = sellerDeals.reduce((sum, deal) => {
-                    const listedDate = new Date(deal.statusDates.listedDate);
-                    const closedDate = new Date(deal.closedDate);
-                    return sum + Math.ceil((closedDate - listedDate) / (1000 * 60 * 60 * 24));
-                  }, 0);
-                  return Math.round(totalDays / sellerDeals.length) + ' days';
-                })()}</p>
-              </div>
-              <div className="tile">
-                <h3>Avg. Buyer Agreement to Closing</h3>
-                <p>{(() => {
-                  const buyerDeals = closedDeals.filter(deal => deal.type === 'Buyer' && deal.statusDates?.buyerContractDate && deal.closedDate);
-                  if (buyerDeals.length === 0) return 'N/A';
-                  const totalDays = buyerDeals.reduce((sum, deal) => {
-                    const contractDate = new Date(deal.statusDates.buyerContractDate);
-                    const closedDate = new Date(deal.closedDate);
-                    return sum + Math.ceil((closedDate - contractDate) / (1000 * 60 * 60 * 24));
-                  }, 0);
-                  return Math.round(totalDays / buyerDeals.length) + ' days';                })()}</p>              </div>
+            <div className="tile">
+              <h4>Volume Pending</h4>
+              <p>${volumePending.toLocaleString()}</p>
+            </div>
+            <div className="tile">
+              <h4>Closed Volume</h4>
+              <p>${closedDeals.reduce((sum, deal) => sum + (deal.price || 0), 0).toLocaleString()}</p>
+            </div>
+            <div className="tile">
+              <h4>Total Volume</h4>
+              <p>${(volumeUnderContract + volumePending).toLocaleString()}</p>
+            </div>
+            <div className="tile">
+              <h4>Average Sale Price</h4>
+              <p>${closedDeals.length > 0 ? (closedDeals.reduce((sum, deal) => sum + (deal.price || 0), 0) / closedDeals.length).toLocaleString() : '0'}</p>
+            </div>
+            <div className="tile">
+              <h4>Average ROI</h4>
+              <p>{(() => {
+                const dealsWithExpenses = closedDeals.filter(deal => (deal.totalExpenses || 0) > 0);
+                if (dealsWithExpenses.length === 0) return 'N/A';
+                const totalROI = dealsWithExpenses.reduce((sum, deal) => {
+                  const roi = ((deal.commission || 0) / (deal.totalExpenses || 1)) * 100;
+                  return sum + roi;
+                }, 0);
+                return (totalROI / dealsWithExpenses.length).toFixed(1) + '%';
+              })()}</p>
             </div>
           </div>
         </div>
-      )}      {/* Dashboard Tab */}
+      )}
+
+      {/* Dashboard Tab */}
       {activeTab === 'dashboard' && (
         <div className="section">
           <h2>Performance Dashboard</h2>
