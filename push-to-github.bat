@@ -1,5 +1,5 @@
 @echo off
-git config --global user.email "corey@nhomeatlast.net.com"
+git config --global user.email "corey@nhomeatlast.net"
 git config --global user.name "Caza173"
 echo Pushing enhanced KPI dashboard to GitHub...
 cd "c:\Users\mainc\Caza Team Dropbox\01. Caza Team Folder\KPI App\KPI-App-v2"
