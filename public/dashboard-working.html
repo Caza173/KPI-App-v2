@@ -505,7 +505,7 @@
             <button class="tab" onclick="switchTab('dashboard', this)">Dashboard</button>
             <button class="tab" onclick="switchTab('daily', this)">Daily Data</button>
             <button class="tab" onclick="switchTab('expenses', this)">Expenses</button>
-            <button class="tab" onclick="switchTab('calendar', this)">Calendar</button>
+            <button class="tab" onclick="switchTab('calendar', this)">Activities</button>
             <button class="tab" onclick="switchTab('reports', this)">Reports</button>
         </div>
 
@@ -622,23 +622,82 @@
         <div id="properties" class="tab-content">
             <h2>Property Management</h2>
             
-            <div id="propertyTableContainer">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Address</th>
-                            <th>Client</th>
-                            <th>Type</th>
-                            <th>Price</th>
-                            <th>Status</th>
-                            <th>Status Note</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="propertyTableBody">
-                        <!-- Properties will be populated here -->
-                    </tbody>
-                </table>
+            <div class="alert" style="background: #e7f3ff; border: 1px solid #b8daff; color: #004085; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <strong>Note:</strong> Property management has been moved to the Transactions tab for better workflow integration. You can add and manage properties directly from the Transactions section.
+            </div>
+        </div>
+
+        <!-- Transactions Tab -->
+        <div id="transactions" class="tab-content">
+            <h2>Transaction History</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Total Transactions</h3>
+                    <div class="number" id="totalTransactions">12</div>
+                    <div class="label">This year</div>
+                </div>
+                <div class="card">
+                    <h3>Total Volume</h3>
+                    <div class="number" id="transactionTotalVolume">$4.2M</div>
+                    <div class="label">Transaction volume</div>
+                </div>
+                <div class="card">
+                    <h3>Commission Earned</h3>
+                    <div class="number" id="commissionEarned">$105K</div>
+                    <div class="label">Total commission</div>
+                </div>
+                <div class="card">
+                    <h3>Average Deal</h3>
+                    <div class="number" id="transactionAverageDeal">$350K</div>
+                    <div class="label">Average transaction</div>
+                </div>
+            </div>
+
+            <div class="alert" style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <strong>Great Progress!</strong> You've earned $105,000 in commission so far this year, putting you at 49% of your annual goal.
+            </div>
+
+            <div class="form-section">
+                <h3>Add New Transaction</h3>
+                <form id="transactionForm">
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="transactionDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Property *</label>
+                        <select id="transactionProperty" required>
+                            <option value="">Select property</option>
+                            <!-- Properties will be populated here -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Transaction Amount *</label>
+                        <input type="number" id="transactionAmount" placeholder="Enter transaction amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Commission Earned *</label>
+                        <input type="number" id="transactionCommission" placeholder="Enter commission amount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status *</label>
+                        <select id="transactionStatus" required>
+                            <option value="">Select status</option>
+                            <option value="Closed">Closed</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Under Contract">Under Contract</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Expired">Expired</option>
+                            <option value="Withdrawn">Withdrawn</option>
+                            <option value="Terminated">Terminated</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status Note</label>
+                        <textarea id="transactionStatusNote" placeholder="Enter status note or reason (optional)" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add Transaction</button>
+                </form>
             </div>
 
             <div class="form-section">
@@ -685,37 +744,6 @@
                     <button type="submit" class="btn">Add Property</button>
                 </form>
             </div>
-        </div>
-
-        <!-- Transactions Tab -->
-        <div id="transactions" class="tab-content">
-            <h2>Transaction History</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Total Transactions</h3>
-                    <div class="number" id="totalTransactions">12</div>
-                    <div class="label">This year</div>
-                </div>
-                <div class="card">
-                    <h3>Total Volume</h3>
-                    <div class="number" id="transactionTotalVolume">$4.2M</div>
-                    <div class="label">Transaction volume</div>
-                </div>
-                <div class="card">
-                    <h3>Commission Earned</h3>
-                    <div class="number" id="commissionEarned">$105K</div>
-                    <div class="label">Total commission</div>
-                </div>
-                <div class="card">
-                    <h3>Average Deal</h3>
-                    <div class="number" id="transactionAverageDeal">$350K</div>
-                    <div class="label">Average transaction</div>
-                </div>
-            </div>
-
-            <div class="alert" style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                <strong>Great Progress!</strong> You've earned $105,000 in commission so far this year, putting you at 49% of your annual goal.
-            </div>
 
             <div id="transactionTableContainer">
                 <table class="table">
@@ -735,48 +763,25 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="form-section">
-                <h3>Add New Transaction</h3>
-                <form id="transactionForm">
-                    <div class="form-group">
-                        <label>Date *</label>
-                        <input type="date" id="transactionDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Property *</label>
-                        <select id="transactionProperty" required>
-                            <option value="">Select property</option>
-                            <!-- Properties will be populated here -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Transaction Amount *</label>
-                        <input type="number" id="transactionAmount" placeholder="Enter transaction amount" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Commission Earned *</label>
-                        <input type="number" id="transactionCommission" placeholder="Enter commission amount" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Status *</label>
-                        <select id="transactionStatus" required>
-                            <option value="">Select status</option>
-                            <option value="Closed">Closed</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Under Contract">Under Contract</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Expired">Expired</option>
-                            <option value="Withdrawn">Withdrawn</option>
-                            <option value="Terminated">Terminated</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Status Note</label>
-                        <textarea id="transactionStatusNote" placeholder="Enter status note or reason (optional)" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn">Add Transaction</button>
-                </form>
+            
+            <div id="propertyTableContainer">
+                <h3>Property Management</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>Client</th>
+                            <th>Type</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Status Note</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="propertyTableBody">
+                        <!-- Properties will be populated here -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -1012,9 +1017,9 @@
             </div>
         </div>
 
-        <!-- Calendar Tab -->
+        <!-- Activities Tab -->
         <div id="calendar" class="tab-content">
-            <h2>Calendar & Activity Tracking</h2>
+            <h2>Activities & Event Tracking</h2>
             <div class="grid">
                 <div class="card">
                     <h3>Property Showings</h3>
@@ -1266,37 +1271,52 @@
 
         // Global functions - these need to be accessible from onclick
         window.deleteProperty = function(propertyId) {
-            console.log('Delete property called with ID:', propertyId);
-            const property = dashboardData.properties.find(p => p.id === propertyId);
+            console.log('Delete property called with ID:', propertyId, 'Type:', typeof propertyId);
+            
+            // Ensure propertyId is a number
+            const id = parseInt(propertyId);
+            console.log('Converted ID:', id);
+            
+            const property = dashboardData.properties.find(p => p.id === id);
             console.log('Found property:', property);
-            if (property && confirm(`Are you sure you want to delete the property at ${property.address}?`)) {
-                dashboardData.properties = dashboardData.properties.filter(p => p.id !== propertyId);
+            console.log('All properties:', dashboardData.properties);
+            
+            if (property && confirm(`Are you sure you want to remove the property at ${property.address}?`)) {
+                console.log('User confirmed deletion, removing property...');
+                dashboardData.properties = dashboardData.properties.filter(p => p.id !== id);
+                console.log('Properties after deletion:', dashboardData.properties);
                 renderPropertyTable();
                 updateDashboard();
                 updateReportsMetrics();
-                alert('Property deleted successfully!');
+                alert('Property removed successfully!');
+            } else if (!property) {
+                console.error('Property not found with ID:', id);
+                alert('Error: Property not found. Please refresh the page and try again.');
+            } else {
+                console.log('User cancelled deletion');
             }
         };
 
         window.editProperty = function(propertyId) {
-            const property = dashboardData.properties.find(p => p.id === propertyId);
+            const id = parseInt(propertyId);
+            const property = dashboardData.properties.find(p => p.id === id);
             if (!property) return;
             
-            const row = document.querySelector(`tr:has(button[onclick="editProperty(${propertyId})"])`);
+            const row = document.querySelector(`tr:has(button[onclick="editProperty(${id})"])`);
             if (!row) return;
             
             row.innerHTML = `
-                <td><input type="text" value="${property.address}" id="edit-address-${propertyId}"></td>
-                <td><input type="text" value="${property.client}" id="edit-client-${propertyId}"></td>
+                <td><input type="text" value="${property.address}" id="edit-address-${id}"></td>
+                <td><input type="text" value="${property.client}" id="edit-client-${id}"></td>
                 <td>
-                    <select id="edit-type-${propertyId}">
+                    <select id="edit-type-${id}">
                         <option value="Buyer" ${property.type === 'Buyer' ? 'selected' : ''}>Buyer</option>
                         <option value="Seller" ${property.type === 'Seller' ? 'selected' : ''}>Seller</option>
                     </select>
                 </td>
-                <td><input type="number" value="${property.price}" id="edit-price-${propertyId}"></td>
+                <td><input type="number" value="${property.price}" id="edit-price-${id}"></td>
                 <td>
-                    <select id="edit-status-${propertyId}">
+                    <select id="edit-status-${id}">
                         <option value="Active" ${property.status === 'Active' ? 'selected' : ''}>Active</option>
                         <option value="Pending" ${property.status === 'Pending' ? 'selected' : ''}>Pending</option>
                         <option value="Under Contract" ${property.status === 'Under Contract' ? 'selected' : ''}>Under Contract</option>
@@ -1307,26 +1327,27 @@
                         <option value="Terminated" ${property.status === 'Terminated' ? 'selected' : ''}>Terminated</option>
                     </select>
                 </td>
-                <td><input type="text" value="${property.statusNote}" id="edit-note-${propertyId}"></td>
+                <td><input type="text" value="${property.statusNote}" id="edit-note-${id}"></td>
                 <td>
-                    <button class="action-btn edit-btn" onclick="savePropertyEdit(${propertyId})">Save</button>
-                    <button class="action-btn cancel-btn" onclick="cancelEdit(${propertyId})">Cancel</button>
+                    <button class="action-btn edit-btn" onclick="savePropertyEdit(${id})">Save</button>
+                    <button class="action-btn cancel-btn" onclick="cancelEdit(${id})">Cancel</button>
                 </td>
             `;
         };
 
         window.savePropertyEdit = function(propertyId) {
-            const property = dashboardData.properties.find(p => p.id === propertyId);
+            const id = parseInt(propertyId);
+            const property = dashboardData.properties.find(p => p.id === id);
             if (!property) return;
             
             const oldStatus = property.status;
             
-            property.address = document.getElementById(`edit-address-${propertyId}`).value;
-            property.client = document.getElementById(`edit-client-${propertyId}`).value;
-            property.type = document.getElementById(`edit-type-${propertyId}`).value;
-            property.price = parseFloat(document.getElementById(`edit-price-${propertyId}`).value);
-            property.status = document.getElementById(`edit-status-${propertyId}`).value;
-            property.statusNote = document.getElementById(`edit-note-${propertyId}`).value;
+            property.address = document.getElementById(`edit-address-${id}`).value;
+            property.client = document.getElementById(`edit-client-${id}`).value;
+            property.type = document.getElementById(`edit-type-${id}`).value;
+            property.price = parseFloat(document.getElementById(`edit-price-${id}`).value);
+            property.status = document.getElementById(`edit-status-${id}`).value;
+            property.statusNote = document.getElementById(`edit-note-${id}`).value;
             
             // Auto-create transaction when property is marked as Closed
             if (oldStatus !== 'Closed' && property.status === 'Closed') {
@@ -1627,7 +1648,210 @@
                 return;
             }
             
-            alert(`Generating ${reportType} report from ${fromDate} to ${toDate}`);
+            const startDate = new Date(fromDate);
+            const endDate = new Date(toDate);
+            
+            if (startDate > endDate) {
+                alert('Start date must be before end date');
+                return;
+            }
+            
+            // Filter data based on date range
+            const filteredTransactions = dashboardData.transactions.filter(transaction => {
+                const transactionDate = new Date(transaction.date);
+                return transactionDate >= startDate && transactionDate <= endDate;
+            });
+            
+            const filteredExpenses = dashboardData.expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate >= startDate && expenseDate <= endDate;
+            });
+            
+            const filteredProperties = dashboardData.properties.filter(property => {
+                // Include all properties for now - could add date filtering later
+                return true;
+            });
+            
+            // Generate report content
+            const reportContent = generateReportContent(reportType, filteredTransactions, filteredExpenses, filteredProperties, startDate, endDate);
+            
+            // Display the report
+            document.getElementById('reportContent').innerHTML = reportContent;
+            document.getElementById('reportOutput').style.display = 'block';
+            
+            // Scroll to the report
+            document.getElementById('reportOutput').scrollIntoView({ behavior: 'smooth' });
+        };
+        
+        function generateReportContent(reportType, transactions, expenses, properties, startDate, endDate) {
+            const formatDate = (date) => date.toLocaleDateString();
+            const formatCurrency = (amount) => `$${amount.toLocaleString()}`;
+            
+            let content = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2>${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report</h2>
+                    <p><strong>Period:</strong> ${formatDate(startDate)} to ${formatDate(endDate)}</p>
+                    <p><strong>Generated:</strong> ${formatDate(new Date())}</p>
+                </div>
+            `;
+            
+            if (reportType === 'commission') {
+                const closedTransactions = transactions.filter(t => t.status === 'Closed');
+                const totalCommission = closedTransactions.reduce((sum, t) => sum + (t.commission || 0), 0);
+                const totalVolume = closedTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+                const avgCommission = closedTransactions.length > 0 ? totalCommission / closedTransactions.length : 0;
+                
+                content += `
+                    <div style="margin-bottom: 20px;">
+                        <h3>Commission Summary</h3>
+                        <p><strong>Total Closed Transactions:</strong> ${closedTransactions.length}</p>
+                        <p><strong>Total Volume:</strong> ${formatCurrency(totalVolume)}</p>
+                        <p><strong>Total Commission:</strong> ${formatCurrency(totalCommission)}</p>
+                        <p><strong>Average Commission:</strong> ${formatCurrency(avgCommission)}</p>
+                    </div>
+                `;
+                
+                if (closedTransactions.length > 0) {
+                    content += `
+                        <div style="margin-bottom: 20px;">
+                            <h3>Commission Details</h3>
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                                <thead>
+                                    <tr style="background-color: #f2f2f2;">
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Date</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Property</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Amount</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Commission</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    closedTransactions.forEach(transaction => {
+                        content += `
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${formatDate(new Date(transaction.date))}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${transaction.property}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${formatCurrency(transaction.amount || 0)}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${formatCurrency(transaction.commission || 0)}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    content += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+            } else if (reportType === 'expense') {
+                const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+                const expensesByCategory = {};
+                
+                expenses.forEach(expense => {
+                    const category = expense.category || 'Other';
+                    expensesByCategory[category] = (expensesByCategory[category] || 0) + (expense.amount || 0);
+                });
+                
+                content += `
+                    <div style="margin-bottom: 20px;">
+                        <h3>Expense Summary</h3>
+                        <p><strong>Total Expenses:</strong> ${formatCurrency(totalExpenses)}</p>
+                        <p><strong>Number of Expenses:</strong> ${expenses.length}</p>
+                    </div>
+                `;
+                
+                if (Object.keys(expensesByCategory).length > 0) {
+                    content += `
+                        <div style="margin-bottom: 20px;">
+                            <h3>Expenses by Category</h3>
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                                <thead>
+                                    <tr style="background-color: #f2f2f2;">
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Category</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Amount</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    Object.entries(expensesByCategory).forEach(([category, amount]) => {
+                        const percentage = totalExpenses > 0 ? ((amount / totalExpenses) * 100).toFixed(1) : 0;
+                        content += `
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${category}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${formatCurrency(amount)}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">${percentage}%</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    content += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+            } else {
+                // General report (weekly, monthly, quarterly, annual)
+                const closedTransactions = transactions.filter(t => t.status === 'Closed');
+                const totalRevenue = closedTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+                const totalCommission = closedTransactions.reduce((sum, t) => sum + (t.commission || 0), 0);
+                const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+                const netIncome = totalCommission - totalExpenses;
+                
+                content += `
+                    <div style="margin-bottom: 20px;">
+                        <h3>Financial Summary</h3>
+                        <p><strong>Total Revenue:</strong> ${formatCurrency(totalRevenue)}</p>
+                        <p><strong>Total Commission:</strong> ${formatCurrency(totalCommission)}</p>
+                        <p><strong>Total Expenses:</strong> ${formatCurrency(totalExpenses)}</p>
+                        <p><strong>Net Income:</strong> ${formatCurrency(netIncome)}</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3>Activity Summary</h3>
+                        <p><strong>Total Transactions:</strong> ${transactions.length}</p>
+                        <p><strong>Closed Transactions:</strong> ${closedTransactions.length}</p>
+                        <p><strong>Total Properties:</strong> ${properties.length}</p>
+                        <p><strong>Total Expenses Recorded:</strong> ${expenses.length}</p>
+                    </div>
+                `;
+            }
+            
+            return content;
+        }
+        
+        window.printReport = function() {
+            const reportContent = document.getElementById('reportContent').innerHTML;
+            if (!reportContent.trim()) {
+                alert('Please generate a report first');
+                return;
+            }
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Report</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            table { border-collapse: collapse; width: 100%; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f2f2f2; }
+                        </style>
+                    </head>
+                    <body>
+                        ${reportContent}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        };
+        
+        window.downloadPDF = function() {
+            alert('To download as PDF: Use the Print function and select "Save as PDF" as your destination.');
         };
 
         // Simple tab switching function
@@ -1700,8 +1924,7 @@
                     <td>${property.statusNote || ''}</td>
                     <td>
                         <button class="action-btn edit-btn" onclick="editProperty(${property.id})">Edit</button>
-                        <button class="action-btn delete-btn" onclick="deleteProperty(${property.id})">Delete</button>
-                        <button class="action-btn view-btn" onclick="viewPropertyExpenses('${property.address}')">View Expenses</button>
+                        <button class="action-btn delete-btn" onclick="deleteProperty(${property.id})">Remove</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
@@ -1773,6 +1996,7 @@
                     <td>
                         <button class="action-btn edit-btn" onclick="editTransaction(${transaction.id})">Edit</button>
                         <button class="action-btn delete-btn" onclick="deleteTransaction(${transaction.id})">Delete</button>
+                        <button class="action-btn view-btn" onclick="viewPropertyExpenses('${transaction.property}')">View Expenses</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
