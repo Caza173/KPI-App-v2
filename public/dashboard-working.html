@@ -132,6 +132,43 @@
             color: #e0e0e0;
         }
 
+        /* Progress bar styles */
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #27ae60;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .progress-fill.complete {
+            background: #2ecc71;
+        }
+
+        .progress-fill.over {
+            background: #f39c12;
+        }
+
+        #progressDisplay {
+            padding: 15px;
+        }
+
         /* Modal styles */
         .modal {
             display: none;
@@ -361,6 +398,11 @@
             color: #155724;
         }
 
+        .status.active-listing {
+            background: #d1f2eb;
+            color: #0e6656;
+        }
+
         .status.sold {
             background: #cce5ff;
             color: #004085;
@@ -500,11 +542,11 @@
 
         <div class="tabs">
             <button class="tab active" onclick="switchTab('goals', this)">Goals</button>
-            <button class="tab" onclick="switchTab('properties', this)">Properties</button>
             <button class="tab" onclick="switchTab('transactions', this)">Transactions</button>
+            <button class="tab" onclick="switchTab('properties', this)">Properties</button>
             <button class="tab" onclick="switchTab('dashboard', this)">Dashboard</button>
-            <button class="tab" onclick="switchTab('daily', this)">Daily Data</button>
             <button class="tab" onclick="switchTab('expenses', this)">Expenses</button>
+            <button class="tab" onclick="switchTab('gci-calculator', this)">GCI Calculator</button>
             <button class="tab" onclick="switchTab('calendar', this)">Activities</button>
             <button class="tab" onclick="switchTab('reports', this)">Reports</button>
         </div>
@@ -563,12 +605,21 @@
                         <label>Annual GCI Goal</label>
                         <input type="number" id="annualGCIGoal" value="215000" placeholder="Enter annual GCI target">
                     </div>
-                    <button type="submit" class="btn">Update Goals</button>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button type="submit" class="btn">Update Goals</button>
+                        <button type="button" class="btn" onclick="lockGoals()" id="lockGoalsBtn" style="background: #e74c3c;">Lock Goals</button>
+                        <div id="goalsLockStatus" style="font-weight: bold; color: #27ae60;">Unlocked</div>
+                    </div>
                 </form>
             </div>
+        </div>
+
+        <!-- GCI Calculator Tab -->
+        <div id="gci-calculator" class="tab-content">
+            <h2>GCI Calculator & Analysis</h2>
             
             <div class="form-section">
-                <h3>GCI Calculator</h3>
+                <h3>Current Status</h3>
                 <div class="grid">
                     <div class="card">
                         <h3>Annual Goal</h3>
@@ -577,27 +628,29 @@
                     </div>
                     <div class="card">
                         <h3>Current GCI</h3>
-                        <div class="number">$105K</div>
+                        <div class="number" id="currentGCIDisplay">$105K</div>
                         <div class="label">Year-to-date</div>
                     </div>
                     <div class="card">
                         <h3>Remaining</h3>
-                        <div class="number">$110K</div>
+                        <div class="number" id="remainingGCIDisplay">$110K</div>
                         <div class="label">Still needed</div>
                     </div>
                     <div class="card">
                         <h3>Progress</h3>
-                        <div class="number">49%</div>
+                        <div class="number" id="gciProgressDisplay">49%</div>
                         <div class="label">Toward goal</div>
                     </div>
                 </div>
 
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: 49%"></div>
+                    <div class="progress-fill" id="gciProgressFill" style="width: 49%"></div>
                 </div>
-                <p style="text-align: center; margin-top: 10px; font-weight: 600;">49% Complete - $105,000 of $215,000 goal</p>
+                <p style="text-align: center; margin-top: 10px; font-weight: 600;" id="gciProgressText">49% Complete - $105,000 of $215,000 goal</p>
+            </div>
 
-                <h4>GCI Projection</h4>
+            <div class="form-section">
+                <h3>GCI Projection Calculator</h3>
                 <div class="form-group">
                     <label>Average Sale Price</label>
                     <input type="number" id="avgPrice" value="350000" placeholder="Enter average sale price">
@@ -658,90 +711,54 @@
             </div>
 
             <div class="form-section">
-                <h3>Add New Transaction</h3>
-                <form id="transactionForm">
-                    <div class="form-group">
-                        <label>Date *</label>
-                        <input type="date" id="transactionDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Property *</label>
-                        <select id="transactionProperty" required>
-                            <option value="">Select property</option>
-                            <!-- Properties will be populated here -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Transaction Amount *</label>
-                        <input type="number" id="transactionAmount" placeholder="Enter transaction amount" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Commission Earned *</label>
-                        <input type="number" id="transactionCommission" placeholder="Enter commission amount" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Status *</label>
-                        <select id="transactionStatus" required>
-                            <option value="">Select status</option>
-                            <option value="Closed">Closed</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Under Contract">Under Contract</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Expired">Expired</option>
-                            <option value="Withdrawn">Withdrawn</option>
-                            <option value="Terminated">Terminated</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Status Note</label>
-                        <textarea id="transactionStatusNote" placeholder="Enter status note or reason (optional)" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn">Add Transaction</button>
-                </form>
-            </div>
-
-            <div class="form-section">
                 <h3>Add New Property</h3>
-                <form id="propertyForm">
-                    <div class="form-group">
-                        <label>Property Address *</label>
-                        <input type="text" id="propertyAddress" placeholder="Enter property address" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Client Name *</label>
-                        <input type="text" id="clientName" placeholder="Enter client name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Type *</label>
-                        <select id="propertyType" required>
-                            <option value="">Select type</option>
-                            <option value="Buyer">Buyer</option>
-                            <option value="Seller">Seller</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Price *</label>
-                        <input type="number" id="propertyPrice" placeholder="Enter price" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Status *</label>
-                        <select id="propertyStatus" required>
-                            <option value="">Select status</option>
-                            <option value="Active">Active</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Under Contract">Under Contract</option>
-                            <option value="Sold">Sold</option>
-                            <option value="Closed">Closed</option>
-                            <option value="Expired">Expired</option>
-                            <option value="Withdrawn">Withdrawn</option>
-                            <option value="Terminated">Terminated</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Status Note</label>
-                        <textarea id="statusNote" placeholder="Enter status note or reason (optional)" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn">Add Property</button>
+                <form id="combinedForm">
+                    <!-- Property Information Section -->
+                    <fieldset style="border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+                        <legend style="padding: 0 10px; font-weight: bold; color: #333;">Property Information</legend>
+                        <div class="form-group">
+                            <label>Property Address *</label>
+                            <input type="text" id="propertyAddress" placeholder="Enter property address" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Client Name *</label>
+                            <input type="text" id="clientName" placeholder="Enter client name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Property Type *</label>
+                            <select id="propertyType" required>
+                                <option value="">Select type</option>
+                                <option value="Buyer">Buyer</option>
+                                <option value="Seller">Seller</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Property Price *</label>
+                            <input type="number" id="propertyPrice" placeholder="Enter property price" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Transaction Status *</label>
+                            <select id="propertyStatus" required>
+                                <option value="">Select status</option>
+                                <option value="Active">Active</option>
+                                <option value="Active Listing">Active Listing</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Under Contract">Under Contract</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Sold">Sold</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Expired">Expired</option>
+                                <option value="Withdrawn">Withdrawn</option>
+                                <option value="Terminated">Terminated</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Property Status Note</label>
+                            <textarea id="statusNote" placeholder="Enter property status note or reason (optional)" rows="2"></textarea>
+                        </div>
+                    </fieldset>
+
+                    <button type="button" class="btn" onclick="addCombined(event)">Add Property</button>
                 </form>
             </div>
 
@@ -765,7 +782,6 @@
             </div>
             
             <div id="propertyTableContainer">
-                <h3>Property Management</h3>
                 <table class="table">
                     <thead>
                         <tr>
@@ -850,6 +866,16 @@
                     <div class="label">Commission - Expenses</div>
                 </div>
                 <div class="card">
+                    <h3>Annual GCI Goal</h3>
+                    <div class="number" id="annualGCIProgress">$215K / $215K</div>
+                    <div class="label">
+                        <span id="gciProgressPercent">49%</span> to goal
+                        <div style="width: 100%; height: 4px; background: #e0e0e0; border-radius: 2px; margin-top: 5px;">
+                            <div id="gciProgressBar" style="width: 49%; height: 100%; background: #27ae60; border-radius: 2px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
                     <h3>GCI Progress</h3>
                     <div class="number" id="gciProgress">0%</div>
                     <div class="label">Annual goal progress</div>
@@ -892,38 +918,6 @@
         </div>
 
         <!-- Daily Data Tab -->
-        <div id="daily" class="tab-content">
-            <h2>Daily Data Entry</h2>
-            <div class="form-section">
-                <h3>Enter Today's Activity</h3>
-                <div class="form-group">
-                    <label>Date</label>
-                    <input type="date" id="dailyDate">
-                </div>
-                <div class="form-group">
-                    <label>Hours Worked</label>
-                    <input type="number" placeholder="Enter hours worked">
-                </div>
-                <div class="form-group">
-                    <label>Calls Made</label>
-                    <input type="number" placeholder="Enter calls made">
-                </div>
-                <div class="form-group">
-                    <label>Calls Answered</label>
-                    <input type="number" placeholder="Enter calls answered">
-                </div>
-                <div class="form-group">
-                    <label>Appointments Set</label>
-                    <input type="number" placeholder="Enter appointments set">
-                </div>
-                <div class="form-group">
-                    <label>Offers Written</label>
-                    <input type="number" placeholder="Enter offers written">
-                </div>
-                <button class="btn">Save Daily Data</button>
-            </div>
-        </div>
-
         <!-- Expenses Tab -->
         <div id="expenses" class="tab-content">
             <h2>Expense Tracking</h2>
@@ -1019,7 +1013,10 @@
 
         <!-- Activities Tab -->
         <div id="calendar" class="tab-content">
-            <h2>Activities & Event Tracking</h2>
+            <h2>Activities & Daily Tracking</h2>
+            
+            <!-- Monthly Activity Summary -->
+            <h3>Monthly Activity Summary</h3>
             <div class="grid">
                 <div class="card">
                     <h3>Property Showings</h3>
@@ -1042,38 +1039,105 @@
                     <div class="label">This month</div>
                 </div>
             </div>
-
-            <div class="form-section">
-                <h3>Add Activity</h3>
-                <div class="form-group">
-                    <label>Date</label>
-                    <input type="date" id="activityDate">
+            
+            <!-- Two-column layout for daily inputs and activity tracking -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                
+                <!-- Left Column: Daily Data Entry with Progress -->
+                <div>
+                    <div class="form-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>Enter Today's Activity</h3>
+                            <div id="lockStatus" style="font-weight: bold; color: #27ae60;">Unlocked</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="dailyDate" value="2025-07-17">
+                        </div>
+                        <div class="form-group">
+                            <label>Hours Worked</label>
+                            <input type="number" id="dailyHours" placeholder="Enter hours worked">
+                        </div>
+                        <div class="form-group">
+                            <label>Calls Made</label>
+                            <input type="number" id="dailyCalls" placeholder="Enter calls made">
+                        </div>
+                        <div class="form-group">
+                            <label>Calls Answered</label>
+                            <input type="number" id="dailyAnswered" placeholder="Enter calls answered">
+                        </div>
+                        <div class="form-group">
+                            <label>Appointments Set</label>
+                            <input type="number" id="dailyAppointments" placeholder="Enter appointments set">
+                        </div>
+                        <div class="form-group">
+                            <label>Offers Written</label>
+                            <input type="number" id="dailyOffers" placeholder="Enter offers written">
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" id="saveDailyBtn" onclick="saveDailyData()">Save Daily Data</button>
+                            <button class="btn" id="lockDailyBtn" onclick="lockDailyData()" style="background: #e74c3c;">Lock Today's Data</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Real-time Progress Display moved here -->
+                    <div class="form-section" style="margin-top: 20px; background: #f8f9fa; border: 1px solid #e9ecef;">
+                        <h4 style="margin-top: 0; color: #495057;">Today's Progress vs Goals</h4>
+                        <div id="progressDisplay">
+                            <div class="progress-item">
+                                <span>Hours Worked:</span>
+                                <span id="hoursProgress">0 / 8 hours</span>
+                                <div class="progress-bar"><div id="hoursBar" class="progress-fill" style="width: 0%"></div></div>
+                            </div>
+                            <div class="progress-item">
+                                <span>Calls Made:</span>
+                                <span id="callsProgress">0 / 20 calls</span>
+                                <div class="progress-bar"><div id="callsBar" class="progress-fill" style="width: 0%"></div></div>
+                            </div>
+                            <div class="progress-item">
+                                <span>Appointments Set:</span>
+                                <span id="appointmentsProgress">0 / 3 appointments</span>
+                                <div class="progress-bar"><div id="appointmentsBar" class="progress-fill" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Activity Type</label>
-                    <select id="activityType">
-                        <option>Property Showing</option>
-                        <option>Listing Presentation</option>
-                        <option>Buyer Consultation</option>
-                        <option>Closing</option>
-                        <option>Open House</option>
-                        <option>Property Inspection</option>
-                        <option>Market Analysis</option>
-                    </select>
+                
+                <!-- Right Column: Activity Tracking -->
+                <div>
+                    <div class="form-section">
+                        <h3>Add Activity</h3>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="activityDate" value="2025-07-17">
+                        </div>
+                        <div class="form-group">
+                            <label>Activity Type</label>
+                            <select id="activityType">
+                                <option>Property Showing</option>
+                                <option>Listing Presentation</option>
+                                <option>Buyer Consultation</option>
+                                <option>Closing</option>
+                                <option>Open House</option>
+                                <option>Property Inspection</option>
+                                <option>Market Analysis</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Client Name</label>
+                            <input type="text" id="activityClient" placeholder="Enter client name">
+                        </div>
+                        <div class="form-group">
+                            <label>Property Address (Optional)</label>
+                            <input type="text" id="activityProperty" placeholder="Enter property address">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="activityNotes" placeholder="Enter activity notes" rows="3"></textarea>
+                        </div>
+                        <button class="btn" onclick="addActivity()">Add Activity</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Client Name</label>
-                    <input type="text" id="activityClient" placeholder="Enter client name">
-                </div>
-                <div class="form-group">
-                    <label>Property Address (Optional)</label>
-                    <input type="text" id="activityProperty" placeholder="Enter property address">
-                </div>
-                <div class="form-group">
-                    <label>Notes</label>
-                    <textarea id="activityNotes" placeholder="Enter activity notes" rows="3"></textarea>
-                </div>
-                <button class="btn" onclick="addActivity()">Add Activity</button>
             </div>
         </div>
 
@@ -1129,104 +1193,17 @@
     <script>
         // Dashboard data storage
         let dashboardData = {
-            properties: [
-                {
-                    id: 1,
-                    address: "456 Oak Avenue",
-                    client: "Jane Smith",
-                    type: "Seller",
-                    price: 425000,
-                    status: "Closed",
-                    statusNote: "",
-                    listingDate: "2025-06-01",
-                    underContractDate: "2025-06-15",
-                    closedDate: "2025-07-01"
-                },
-                {
-                    id: 2,
-                    address: "789 Pine Road",
-                    client: "Bob Johnson",
-                    type: "Seller",
-                    price: 275000,
-                    status: "Closed",
-                    statusNote: "",
-                    listingDate: "2025-05-15",
-                    underContractDate: "2025-06-01",
-                    closedDate: "2025-06-20"
-                },
-                {
-                    id: 3,
-                    address: "437 Berry Rd Alexandria NH 03222",
-                    client: "Corey Caza",
-                    type: "Seller",
-                    price: 500000,
-                    status: "Sold",
-                    statusNote: "",
-                    listingDate: "2025-05-01",
-                    underContractDate: "2025-06-10",
-                    closedDate: "2025-07-05"
-                },
-                {
-                    id: 4,
-                    address: "123 Main St Concord",
-                    client: "Amy",
-                    type: "Buyer",
-                    price: 1000000,
-                    status: "Sold",
-                    statusNote: "",
-                    listingDate: "2025-06-10",
-                    underContractDate: "2025-06-25",
-                    closedDate: "2025-07-10"
-                },
-                {
-                    id: 5,
-                    address: "555 Elm Street",
-                    client: "Sarah Wilson",
-                    type: "Seller",
-                    price: 320000,
-                    status: "Under Contract",
-                    statusNote: "Buyer inspection completed",
-                    listingDate: "2025-06-20",
-                    underContractDate: "2025-07-05",
-                    closedDate: null
-                },
-                {
-                    id: 6,
-                    address: "777 Cedar Ave",
-                    client: "Mike Davis",
-                    type: "Seller",
-                    price: 290000,
-                    status: "Expired",
-                    statusNote: "Listing expired, relisting soon",
-                    listingDate: "2025-04-01",
-                    underContractDate: null,
-                    closedDate: null
-                },
-                {
-                    id: 7,
-                    address: "999 Birch Lane",
-                    client: "Lisa Brown",
-                    type: "Seller",
-                    price: 380000,
-                    status: "Withdrawn",
-                    statusNote: "Client decided not to sell",
-                    listingDate: "2025-04-15",
-                    underContractDate: null,
-                    closedDate: null
-                },
-                {
-                    id: 8,
-                    address: "333 Maple Drive",
-                    client: "Tom Anderson",
-                    type: "Seller",
-                    price: 450000,
-                    status: "Terminated",
-                    statusNote: "Contract terminated by mutual agreement",
-                    listingDate: "2025-05-10",
-                    underContractDate: "2025-05-25",
-                    closedDate: null
-                }
-            ],
+            // Daily data storage with locking capability
+            dailyData: {},
+            
+            // Goal locking system
+            goalsLocked: false,
+            lockedGoals: null,
+            
+            properties: [],
+            nextPropertyId: 1,
+            nextTransactionId: 1,
+            nextExpenseId: 1,
             transactions: [
                 {
                     id: 1,
@@ -1270,30 +1247,97 @@
         };
 
         // Global functions - these need to be accessible from onclick
+        // Custom confirmation dialog to replace native confirm()
+        function showCustomConfirmation(message, onConfirm, onCancel, options = {}) {
+            const title = options.title || 'Confirm Removal';
+            const confirmText = options.confirmText || 'Remove';
+            const confirmColor = options.confirmColor || '#e74c3c';
+            
+            // Create modal elements
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px; text-align: center;">
+                    <h3 style="margin-top: 0; color: ${confirmColor};">${title}</h3>
+                    <p style="margin: 20px 0; font-size: 16px;">${message}</p>
+                    <div style="margin-top: 30px;">
+                        <button id="confirmBtn" style="background: ${confirmColor}; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin-right: 10px; cursor: pointer; font-size: 14px;">${confirmText}</button>
+                        <button id="cancelBtn" style="background: #95a5a6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Cancel</button>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners
+            const confirmBtn = modal.querySelector('#confirmBtn');
+            const cancelBtn = modal.querySelector('#cancelBtn');
+            
+            confirmBtn.onclick = function() {
+                document.body.removeChild(modal);
+                onConfirm();
+            };
+            
+            cancelBtn.onclick = function() {
+                document.body.removeChild(modal);
+                if (onCancel) onCancel();
+            };
+            
+            // Close on outside click
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    document.body.removeChild(modal);
+                    if (onCancel) onCancel();
+                }
+            };
+            
+            // Add to page
+            document.body.appendChild(modal);
+        }
+
         window.deleteProperty = function(propertyId) {
             console.log('Delete property called with ID:', propertyId, 'Type:', typeof propertyId);
             
-            // Ensure propertyId is a number
-            const id = parseInt(propertyId);
-            console.log('Converted ID:', id);
-            
-            const property = dashboardData.properties.find(p => p.id === id);
-            console.log('Found property:', property);
-            console.log('All properties:', dashboardData.properties);
-            
-            if (property && confirm(`Are you sure you want to remove the property at ${property.address}?`)) {
-                console.log('User confirmed deletion, removing property...');
-                dashboardData.properties = dashboardData.properties.filter(p => p.id !== id);
-                console.log('Properties after deletion:', dashboardData.properties);
-                renderPropertyTable();
-                updateDashboard();
-                updateReportsMetrics();
-                alert('Property removed successfully!');
-            } else if (!property) {
-                console.error('Property not found with ID:', id);
-                alert('Error: Property not found. Please refresh the page and try again.');
-            } else {
-                console.log('User cancelled deletion');
+            try {
+                // Ensure propertyId is a number
+                const id = parseInt(propertyId);
+                console.log('Converted ID:', id);
+                
+                const property = dashboardData.properties.find(p => p.id === id);
+                console.log('Found property:', property);
+                console.log('All properties before deletion:', dashboardData.properties);
+                
+                if (!property) {
+                    console.error('Property not found with ID:', id);
+                    alert('Error: Property not found. Please refresh the page and try again.');
+                    return;
+                }
+                
+                // Use custom confirmation instead of native confirm()
+                showCustomConfirmation(
+                    `Are you sure you want to remove the property at ${property.address}?`,
+                    function() {
+                        // User confirmed - proceed with deletion
+                        console.log('User confirmed deletion, removing property...');
+                        
+                        // Remove the property
+                        dashboardData.properties = dashboardData.properties.filter(p => p.id !== id);
+                        console.log('Properties after deletion:', dashboardData.properties);
+                        
+                        // Update all displays
+                        renderPropertyTable();
+                        updateDashboard();
+                        updateReportsMetrics();
+                        
+                        console.log('Property removal completed successfully');
+                    },
+                    function() {
+                        // User cancelled
+                        console.log('User cancelled deletion');
+                    }
+                );
+            } catch (error) {
+                console.error('Error in deleteProperty function:', error);
+                alert('An error occurred while trying to remove the property. Please try again.');
             }
         };
 
@@ -1318,8 +1362,10 @@
                 <td>
                     <select id="edit-status-${id}">
                         <option value="Active" ${property.status === 'Active' ? 'selected' : ''}>Active</option>
+                        <option value="Active Listing" ${property.status === 'Active Listing' ? 'selected' : ''}>Active Listing</option>
                         <option value="Pending" ${property.status === 'Pending' ? 'selected' : ''}>Pending</option>
                         <option value="Under Contract" ${property.status === 'Under Contract' ? 'selected' : ''}>Under Contract</option>
+                        <option value="In Progress" ${property.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                         <option value="Sold" ${property.status === 'Sold' ? 'selected' : ''}>Sold</option>
                         <option value="Closed" ${property.status === 'Closed' ? 'selected' : ''}>Closed</option>
                         <option value="Expired" ${property.status === 'Expired' ? 'selected' : ''}>Expired</option>
@@ -1383,8 +1429,10 @@
         }
 
         function updateDashboard() {
-            // Active listings (not sold or closed)
-            const activeListings = dashboardData.properties.filter(p => p.status === 'Active' || p.status === 'Pending').length;
+            // Active listings (not sold or closed) - including "Active Listing" status
+            const activeListings = dashboardData.properties.filter(p => 
+                p.status === 'Active' || p.status === 'Active Listing' || p.status === 'Pending'
+            ).length;
             
             // Status-specific counts
             const underContract = dashboardData.properties.filter(p => p.status === 'Under Contract').length;
@@ -1451,6 +1499,11 @@
             
             // Update reports metrics
             updateReportsMetrics();
+            
+            // Update goal progress if goals are locked
+            if (dashboardData.goalsLocked) {
+                updateGoalProgress();
+            }
         }
 
         function updateReportsMetrics() {
@@ -1615,6 +1668,163 @@
                 document.getElementById('dealsNeeded').value = dealsNeeded;
             }
         };
+
+        window.saveDailyData = function() {
+            const date = document.getElementById('dailyDate').value;
+            const hours = parseFloat(document.getElementById('dailyHours').value) || 0;
+            const callsMade = parseInt(document.getElementById('dailyCalls').value) || 0;
+            const callsAnswered = parseInt(document.getElementById('dailyAnswered').value) || 0;
+            const appointments = parseInt(document.getElementById('dailyAppointments').value) || 0;
+            const offers = parseInt(document.getElementById('dailyOffers').value) || 0;
+            
+            if (!date) {
+                alert('Please select a date');
+                return;
+            }
+            
+            // Check if data is locked
+            if (dashboardData.dailyData[date] && dashboardData.dailyData[date].locked) {
+                alert('This date is locked and cannot be modified.');
+                return;
+            }
+            
+            // Store daily data
+            if (!dashboardData.dailyData[date]) {
+                dashboardData.dailyData[date] = {};
+            }
+            
+            dashboardData.dailyData[date] = {
+                ...dashboardData.dailyData[date],
+                date,
+                hours,
+                callsMade,
+                callsAnswered,
+                appointments,
+                offers,
+                timestamp: new Date().toISOString(),
+                locked: dashboardData.dailyData[date]?.locked || false
+            };
+            
+            // Update real-time progress
+            updateProgressDisplay();
+            
+            alert(`Daily data saved for ${date}`);
+        };
+
+        window.lockDailyData = function() {
+            const date = document.getElementById('dailyDate').value;
+            
+            if (!date) {
+                alert('Please select a date');
+                return;
+            }
+            
+            // Show confirmation dialog
+            showCustomConfirmation(
+                `Are you sure you want to lock the data for ${date}? Once locked, this data cannot be modified.`,
+                function() {
+                    // User confirmed - lock the data
+                    if (!dashboardData.dailyData[date]) {
+                        // Save current data first
+                        saveDailyData();
+                    }
+                    
+                    dashboardData.dailyData[date].locked = true;
+                    
+                    // Update UI to show locked state
+                    updateLockStatus(date);
+                    
+                    alert(`Data for ${date} has been locked successfully.`);
+                },
+                function() {
+                    // User cancelled
+                    console.log('User cancelled locking');
+                }
+            );
+        };
+
+        function updateLockStatus(date) {
+            const lockStatus = document.getElementById('lockStatus');
+            const lockBtn = document.getElementById('lockDailyBtn');
+            const saveBtn = document.getElementById('saveDailyBtn');
+            const inputs = ['dailyHours', 'dailyCalls', 'dailyAnswered', 'dailyAppointments', 'dailyOffers'];
+            
+            if (dashboardData.dailyData[date] && dashboardData.dailyData[date].locked) {
+                lockStatus.textContent = 'LOCKED';
+                lockStatus.style.color = '#e74c3c';
+                lockBtn.style.display = 'none';
+                saveBtn.disabled = true;
+                saveBtn.style.opacity = '0.5';
+                
+                // Disable all input fields
+                inputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.disabled = true;
+                        input.style.background = '#f8f9fa';
+                    }
+                });
+            } else {
+                lockStatus.textContent = 'Unlocked';
+                lockStatus.style.color = '#27ae60';
+                lockBtn.style.display = 'inline-block';
+                saveBtn.disabled = false;
+                saveBtn.style.opacity = '1';
+                
+                // Enable all input fields
+                inputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.disabled = false;
+                        input.style.background = '';
+                    }
+                });
+            }
+        }
+
+        function updateProgressDisplay() {
+            const date = document.getElementById('dailyDate').value;
+            const data = dashboardData.dailyData[date];
+            
+            if (!data) return;
+            
+            // Daily goals (these could be made configurable)
+            const goals = {
+                hours: 8,
+                calls: 20,
+                appointments: 3
+            };
+            
+            // Update hours progress
+            const hoursPercent = Math.min((data.hours / goals.hours) * 100, 100);
+            document.getElementById('hoursProgress').textContent = `${data.hours} / ${goals.hours} hours`;
+            document.getElementById('hoursBar').style.width = hoursPercent + '%';
+            
+            // Update calls progress
+            const callsPercent = Math.min((data.callsMade / goals.calls) * 100, 100);
+            document.getElementById('callsProgress').textContent = `${data.callsMade} / ${goals.calls} calls`;
+            document.getElementById('callsBar').style.width = callsPercent + '%';
+            
+            // Update appointments progress
+            const appointmentsPercent = Math.min((data.appointments / goals.appointments) * 100, 100);
+            document.getElementById('appointmentsProgress').textContent = `${data.appointments} / ${goals.appointments} appointments`;
+            document.getElementById('appointmentsBar').style.width = appointmentsPercent + '%';
+            
+            // Update bar colors based on completion
+            [
+                { bar: 'hoursBar', percent: hoursPercent },
+                { bar: 'callsBar', percent: callsPercent },
+                { bar: 'appointmentsBar', percent: appointmentsPercent }
+            ].forEach(item => {
+                const bar = document.getElementById(item.bar);
+                bar.className = 'progress-fill';
+                if (item.percent >= 100) {
+                    bar.classList.add('complete');
+                } else if (item.percent > 100) {
+                    bar.classList.add('over');
+                }
+            });
+        }
 
         window.addActivity = function() {
             const date = document.getElementById('activityDate').value;
@@ -1867,6 +2077,20 @@
             // Show selected tab and activate button
             document.getElementById(tabId).classList.add('active');
             buttonElement.classList.add('active');
+            
+            // Re-render tables when switching to specific tabs
+            if (tabId === 'transactions') {
+                console.log('Switching to transactions tab - rendering tables');
+                renderPropertyTable();
+                renderTransactionTable();
+            } else if (tabId === 'expenses') {
+                renderExpenseTable();
+                updatePropertyDropdowns(); // Update property dropdowns for expenses
+            } else if (tabId === 'calendar') {
+                updatePropertyDropdowns(); // Update property dropdowns for activities
+            } else if (tabId === 'dashboard') {
+                updateDashboard();
+            }
         }
 
         // Theme toggle functionality
@@ -1903,24 +2127,26 @@
 
         // Property management functions
         function renderPropertyTable() {
+            console.log('renderPropertyTable called');
             const tableBody = document.getElementById('propertyTableBody');
             if (!tableBody) {
                 console.error('Property table body not found');
                 return;
             }
             
+            console.log('Clearing table and re-rendering...');
             tableBody.innerHTML = '';
-            console.log('Rendering properties:', dashboardData.properties);
+            console.log('Properties to render:', dashboardData.properties.length, dashboardData.properties);
             
-            dashboardData.properties.forEach(property => {
-                console.log('Rendering property:', property);
+            dashboardData.properties.forEach((property, index) => {
+                console.log(`Rendering property ${index + 1}:`, property);
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${property.address}</td>
                     <td>${property.client}</td>
                     <td>${property.type}</td>
                     <td>$${property.price.toLocaleString()}</td>
-                    <td><span class="status ${property.status.toLowerCase()}">${property.status}</span></td>
+                    <td><span class="status ${property.status.toLowerCase().replace(/\s+/g, '-')}">${property.status}</span></td>
                     <td>${property.statusNote || ''}</td>
                     <td>
                         <button class="action-btn edit-btn" onclick="editProperty(${property.id})">Edit</button>
@@ -1929,6 +2155,8 @@
                 `;
                 tableBody.appendChild(row);
             });
+            
+            console.log('Table rendering completed. Total rows:', tableBody.children.length);
             
             // Update property dropdowns
             updatePropertyDropdowns();
@@ -2019,6 +2247,62 @@
             document.getElementById('transactionTotalVolume').textContent = `$${(totalVolume / 1000000).toFixed(1)}M`;
             document.getElementById('commissionEarned').textContent = `$${(totalCommission / 1000).toFixed(0)}K`;
             document.getElementById('transactionAverageDeal').textContent = `$${(averageTransaction / 1000).toFixed(0)}K`;
+        }
+
+        function addCombined(event) {
+            console.log('addCombined function called');
+            if (event) {
+                event.preventDefault();
+            }
+            
+            // Get property information
+            const address = document.getElementById('propertyAddress').value;
+            const client = document.getElementById('clientName').value;
+            const propertyType = document.getElementById('propertyType').value;
+            const propertyPrice = parseFloat(document.getElementById('propertyPrice').value);
+            const propertyStatus = document.getElementById('propertyStatus').value;
+            const propertyStatusNote = document.getElementById('statusNote').value;
+            
+            console.log('Property data:', { address, client, propertyType, propertyPrice, propertyStatus, propertyStatusNote });
+            
+            // Validate required fields
+            if (!address || !client || !propertyType || !propertyPrice || !propertyStatus) {
+                alert('Please fill in all required fields.');
+                return false;
+            }
+            
+            // Create new property
+            const newProperty = {
+                id: dashboardData.nextPropertyId++,
+                address,
+                client,
+                type: propertyType,
+                price: propertyPrice,
+                status: propertyStatus,
+                statusNote: propertyStatusNote
+            };
+            
+            console.log('New property created:', newProperty);
+            
+            // Add property to the data
+            dashboardData.properties.push(newProperty);
+            
+            console.log('Property added to data. Total properties:', dashboardData.properties.length);
+            
+            // Update displays
+            renderPropertyTable();
+            updateDashboard();
+            updateReportsMetrics();
+            
+            // Reset the form
+            document.getElementById('combinedForm').reset();
+            
+            // Ensure we stay on the transactions tab
+            switchTab('transactions', document.querySelector('button[onclick*="transactions"]'));
+            
+            alert('Property added successfully!');
+            
+            return false; // Ensure form doesn't submit
         }
 
         function addTransaction(event) {
@@ -2185,8 +2469,17 @@
             document.getElementById('expenseDate').value = today;
             document.getElementById('transactionDate').value = today;
             
+            // Set today's date in activity date field (if it exists)
+            const activityDate = document.getElementById('activityDate');
+            if (activityDate) {
+                activityDate.value = today;
+            }
+            
             // Initialize theme
             initializeTheme();
+            
+            // Load today's data if it exists
+            loadTodaysData(today);
             
             // Render initial data
             renderPropertyTable();
@@ -2195,10 +2488,32 @@
             updateDashboard();
             updateReportsMetrics();
             
+            // Add event listeners for real-time updates
+            ['dailyHours', 'dailyCalls', 'dailyAnswered', 'dailyAppointments', 'dailyOffers'].forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('input', function() {
+                        // Update progress in real-time as user types
+                        const date = document.getElementById('dailyDate').value;
+                        if (!dashboardData.dailyData[date]) {
+                            dashboardData.dailyData[date] = {};
+                        }
+                        dashboardData.dailyData[date].hours = parseFloat(document.getElementById('dailyHours').value) || 0;
+                        dashboardData.dailyData[date].callsMade = parseInt(document.getElementById('dailyCalls').value) || 0;
+                        dashboardData.dailyData[date].appointments = parseInt(document.getElementById('dailyAppointments').value) || 0;
+                        updateProgressDisplay();
+                    });
+                }
+            });
+            
+            // Add date change listener
+            document.getElementById('dailyDate').addEventListener('change', function() {
+                const newDate = this.value;
+                loadTodaysData(newDate);
+            });
+            
             // Add event listeners
-            document.getElementById('propertyForm').addEventListener('submit', addProperty);
             document.getElementById('expenseForm').addEventListener('submit', addExpense);
-            document.getElementById('transactionForm').addEventListener('submit', addTransaction);
             document.getElementById('goalsForm').addEventListener('submit', updateGoals);
             
             // Close modal when clicking outside
@@ -2208,6 +2523,152 @@
                     modal.style.display = 'none';
                 }
             };
+        });
+
+        function loadTodaysData(date) {
+            const data = dashboardData.dailyData[date];
+            
+            if (data) {
+                // Load saved data into form
+                document.getElementById('dailyHours').value = data.hours || '';
+                document.getElementById('dailyCalls').value = data.callsMade || '';
+                document.getElementById('dailyAnswered').value = data.callsAnswered || '';
+                document.getElementById('dailyAppointments').value = data.appointments || '';
+                document.getElementById('dailyOffers').value = data.offers || '';
+                
+                // Update progress display
+                updateProgressDisplay();
+            } else {
+                // Clear form for new date
+                document.getElementById('dailyHours').value = '';
+                document.getElementById('dailyCalls').value = '';
+                document.getElementById('dailyAnswered').value = '';
+                document.getElementById('dailyAppointments').value = '';
+                document.getElementById('dailyOffers').value = '';
+                
+                // Reset progress display
+                document.getElementById('hoursProgress').textContent = '0 / 8 hours';
+                document.getElementById('callsProgress').textContent = '0 / 20 calls';
+                document.getElementById('appointmentsProgress').textContent = '0 / 3 appointments';
+                document.getElementById('hoursBar').style.width = '0%';
+                document.getElementById('callsBar').style.width = '0%';
+                document.getElementById('appointmentsBar').style.width = '0%';
+            }
+            
+            // Update lock status
+            updateLockStatus(date);
+        }
+
+        // Goal Locking and Progress Tracking Functions
+        window.lockGoals = function() {
+            showCustomConfirmation(
+                'Are you sure you want to lock your goals? Once locked, goals cannot be changed and will be used for progress tracking.',
+                function() {
+                    // User confirmed - lock the goals
+                    dashboardData.goalsLocked = true;
+                    dashboardData.lockedGoals = {
+                        dailyCalls: document.getElementById('dailyCallGoal').value,
+                        weeklyAppointments: document.getElementById('weeklyAppointmentGoal').value,
+                        monthlyClosings: document.getElementById('monthlyClosingGoal').value,
+                        monthlyOffers: document.getElementById('monthlyOffersGoalInput').value,
+                        annualGCI: document.getElementById('annualGCIGoal').value,
+                        lockDate: new Date().toISOString()
+                    };
+                    
+                    updateGoalsLockStatus();
+                    
+                    alert('Goals have been locked successfully. Progress tracking is now active!');
+                },
+                function() {
+                    // User cancelled
+                    console.log('User cancelled goal locking');
+                },
+                {
+                    title: 'Confirm Goal Lock',
+                    confirmText: 'Lock Goals',
+                    confirmColor: '#27ae60'
+                }
+            );
+        };
+
+        function updateGoalsLockStatus() {
+            const lockStatus = document.getElementById('goalsLockStatus');
+            const lockBtn = document.getElementById('lockGoalsBtn');
+            const goalInputs = ['dailyCallGoal', 'weeklyAppointmentGoal', 'monthlyClosingGoal', 'monthlyOffersGoalInput', 'annualGCIGoal'];
+            
+            if (dashboardData.goalsLocked) {
+                lockStatus.textContent = 'LOCKED';
+                lockStatus.style.color = '#e74c3c';
+                lockBtn.style.display = 'none';
+                
+                // Disable all goal input fields
+                goalInputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.disabled = true;
+                        input.style.background = '#f8f9fa';
+                    }
+                });
+                
+                // Start real-time progress tracking
+                updateGoalProgress();
+            } else {
+                lockStatus.textContent = 'Unlocked';
+                lockStatus.style.color = '#27ae60';
+                lockBtn.style.display = 'inline-block';
+                
+                // Enable all goal input fields
+                goalInputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.disabled = false;
+                        input.style.background = '';
+                    }
+                });
+            }
+        }
+
+        function updateGoalProgress() {
+            if (!dashboardData.goalsLocked || !dashboardData.lockedGoals) return;
+            
+            // Calculate current GCI from closed transactions
+            const currentGCI = dashboardData.transactions
+                .filter(t => t.status === 'Closed')
+                .reduce((sum, t) => sum + (t.commission || 0), 0);
+            
+            const annualGoal = parseFloat(dashboardData.lockedGoals.annualGCI);
+            const progress = annualGoal > 0 ? (currentGCI / annualGoal) * 100 : 0;
+            const remaining = annualGoal - currentGCI;
+            
+            // Update dashboard GCI tile
+            const formatCurrency = (amount) => {
+                if (amount >= 1000000) return `$${(amount / 1000000).toFixed(1)}M`;
+                if (amount >= 1000) return `$${(amount / 1000).toFixed(0)}K`;
+                return `$${amount.toLocaleString()}`;
+            };
+            
+            document.getElementById('annualGCIProgress').textContent = 
+                `${formatCurrency(currentGCI)} / ${formatCurrency(annualGoal)}`;
+            document.getElementById('gciProgressPercent').textContent = `${Math.round(progress)}%`;
+            document.getElementById('gciProgressBar').style.width = `${Math.min(progress, 100)}%`;
+            
+            // Update GCI Calculator tab displays
+            if (document.getElementById('currentGCIDisplay')) {
+                document.getElementById('currentGCIDisplay').textContent = formatCurrency(currentGCI);
+                document.getElementById('remainingGCIDisplay').textContent = formatCurrency(Math.max(remaining, 0));
+                document.getElementById('gciProgressDisplay').textContent = `${Math.round(progress)}%`;
+                document.getElementById('gciProgressFill').style.width = `${Math.min(progress, 100)}%`;
+                document.getElementById('gciProgressText').textContent = 
+                    `${Math.round(progress)}% Complete - ${formatCurrency(currentGCI)} of ${formatCurrency(annualGoal)} goal`;
+            }
+        }
+
+        // Initialize goals lock status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGoalsLockStatus();
+            if (dashboardData.goalsLocked) {
+                updateGoalProgress();
+            }
         });
     </script>
 </body>
