@@ -1,0 +1,14 @@
+Real Estate KPI Dashboard - Standalone Edition 
+Version: 2.0.0 
+Created: 07-20-2025 
+ 
+CONTENTS: 
+- KPI-Dashboard-Standalone-Complete.html (Main Application) 
+- Launch-KPI-Dashboard.bat (Windows Launcher) 
+- launch-dashboard.sh (Mac/Linux Launcher) 
+- README.md (Instructions and Documentation) 
+ 
+INSTRUCTIONS: 
+1. Windows: Double-click Launch-KPI-Dashboard.bat 
+2. Mac/Linux: Double-click KPI-Dashboard-Standalone-Complete.html 
+3. Manual: Open the HTML file in any modern web browser 

@@ -1,0 +1,43 @@
+{
+  "name": "kpi-dashboard-electron",
+  "version": "2.0.0",
+  "description": "Real Estate KPI Dashboard - Desktop Application",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.cazarealestate.kpidashboard",
+    "productName": "Real Estate KPI Dashboard",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron-main.js",
+      "KPI-Dashboard-Standalone-Complete.html",
+      "icon.png"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "mac": {
+      "category": "public.app-category.business",
+      "icon": "icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "icon.png"
+    }
+  },
+  "devDependencies": {
+    "electron": "^25.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "author": "Caza Real Estate Solutions",
+  "license": "MIT"
+}
