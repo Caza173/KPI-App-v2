@@ -16,84 +16,6 @@
             line-height: 1.6;
             color: #333;
             background-color: #f4f4f4;
-        }        function addCombined(event) {
-            console.log('addCombined function called');
-            
-            // Firefox-compatible event handling
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            
-            try {
-                // Get elements with error checking
-                const elements = {
-                    address: document.getElementById('propertyAddress'),
-                    client: document.getElementById('clientName'),
-                    type: document.getElementById('propertyType'),
-                    price: document.getElementById('propertyPrice'),
-                    status: document.getElementById('propertyStatus'),
-                    note: document.getElementById('statusNote')
-                };
-                
-                // Check if all required elements exist
-                const missingElements = Object.entries(elements)
-                    .filter(([key, element]) => !element && key !== 'note')
-                    .map(([key]) => key);
-                
-                if (missingElements.length > 0) {
-                    console.error('Missing form elements:', missingElements);
-                    alert('Form error: Missing required fields. Please refresh and try again.');
-                    return false;
-                }
-                
-                // Get values
-                const address = elements.address.value.trim();
-                const client = elements.client.value.trim();
-                const propertyType = elements.type.value;
-                const propertyPrice = parseFloat(elements.price.value);
-                const propertyStatus = elements.status.value;
-                const propertyStatusNote = elements.note ? elements.note.value.trim() : '';
-                
-                // Validate required fields
-                if (!address || !client || !propertyType || isNaN(propertyPrice) || !propertyStatus) {
-                    alert('Please fill in all required fields.');
-                    return false;
-                }
-                
-                // Create new property
-                const newProperty = {
-                    id: dashboardData.nextPropertyId++,
-                    address,
-                    client,
-                    type: propertyType,
-                    price: propertyPrice,
-                    status: propertyStatus,
-                    statusNote: propertyStatusNote
-                };
-                
-                // Add to data
-                dashboardData.properties.push(newProperty);
-                
-                // Update displays
-                renderPropertyTable();
-                updateDashboard();
-                updateReportsMetrics();
-                
-                // Reset form
-                const form = document.getElementById('combinedForm');
-                if (form) {
-                    form.reset();
-                }
-                
-                alert('Property added successfully!');
-                return false;
-                
-            } catch (error) {
-                console.error('Error in addCombined:', error);
-                alert('An error occurred. Please try again.');
-                return false;
-            }
         }
 
         .container {
@@ -620,8 +542,8 @@
 
         <div class="tabs">
             <button class="tab active" onclick="switchTab('goals', this)">Goals</button>
-            <button class="tab" onclick="switchTab('properties', this)">Properties</button>
             <button class="tab" onclick="switchTab('transactions', this)">Transactions</button>
+            <button class="tab" onclick="switchTab('properties', this)">Properties</button>
             <button class="tab" onclick="switchTab('dashboard', this)">Dashboard</button>
             <button class="tab" onclick="switchTab('expenses', this)">Expenses</button>
             <button class="tab" onclick="switchTab('gci-calculator', this)">GCI Calculator</button>

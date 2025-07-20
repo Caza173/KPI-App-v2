@@ -144,20 +144,31 @@
 
         <!-- Goals Tab -->
         <div id="goals" class="tab-content active">
-            <h2>Goals & Targets</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Daily Goal</h3>
-                    <p>10 calls per day</p>
+            <h2>Set Your Goals</h2>
+            <div class="card">
+                <h3>Set Your Goals</h3>
+                <div class="form-group">
+                    <label>Daily Call Goal</label>
+                    <input type="number" id="dailyCallGoal" placeholder="Enter daily call goal" value="10">
                 </div>
-                <div class="card">
-                    <h3>Weekly Goal</h3>
-                    <p>25 appointments per week</p>
+                <div class="form-group">
+                    <label>Weekly Appointment Goal</label>
+                    <input type="number" id="weeklyAppointmentGoal" placeholder="Enter weekly appointment goal" value="5">
                 </div>
-                <div class="card">
-                    <h3>Monthly Goal</h3>
-                    <p>40 closings per month</p>
+                <div class="form-group">
+                    <label>Monthly Closing Goal</label>
+                    <input type="number" id="monthlyClosingGoal" placeholder="Enter monthly closing goal" value="2">
                 </div>
+                <div class="form-group">
+                    <label>Monthly Offers Written Goal</label>
+                    <input type="number" id="monthlyOffersGoal" placeholder="Enter monthly offers goal" value="15">
+                </div>
+                <div class="form-group">
+                    <label>Annual GCI Goal</label>
+                    <input type="number" id="annualGCIGoal" placeholder="Enter annual GCI goal" value="215000">
+                </div>
+                <button class="btn" onclick="saveGoals()">Save Goals</button>
+                <button class="btn" onclick="loadDefaultGoals()" style="background: #6c757d; margin-left: 10px;">Reset to Defaults</button>
             </div>
         </div>
 
@@ -318,17 +329,41 @@
                 <h3>Enter Today's Activity</h3>
                 <div class="form-group">
                     <label>Date</label>
-                    <input type="date">
+                    <input type="date" id="dailyDate">
                 </div>
                 <div class="form-group">
                     <label>Hours Worked</label>
-                    <input type="number" placeholder="Enter hours worked">
+                    <input type="number" id="hoursWorked" placeholder="Enter hours worked" step="0.5">
                 </div>
                 <div class="form-group">
                     <label>Calls Made</label>
-                    <input type="number" placeholder="Enter calls made">
+                    <input type="number" id="callsMade" placeholder="Enter calls made">
                 </div>
-                <button class="btn">Save Daily Data</button>
+                <div class="form-group">
+                    <label>Calls Answered</label>
+                    <input type="number" id="callsAnswered" placeholder="Enter calls answered">
+                </div>
+                <div class="form-group">
+                    <label>Appointments Set</label>
+                    <input type="number" id="appointments" placeholder="Enter appointments set">
+                </div>
+                <div class="form-group">
+                    <label>Offers Written</label>
+                    <input type="number" id="offers" placeholder="Enter offers written">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="dailyNotes" placeholder="Enter any notes about today's activities" rows="3"></textarea>
+                </div>
+                <button class="btn" onclick="saveDailyData()">Save Daily Data</button>
+                <button class="btn" onclick="clearDailyForm()" style="background: #6c757d; margin-left: 10px;">Clear Form</button>
+            </div>
+
+            <div class="card">
+                <h3>Recent Daily Data</h3>
+                <div id="dailyDataHistory">
+                    <!-- Daily data history will be populated here -->
+                </div>
             </div>
         </div>
 
@@ -406,6 +441,180 @@
     </div>
 
     <script>
+        // Daily data storage
+        let dailyData = {};
+        let goals = {};
+
+        // Load data from localStorage on page load
+        function loadDailyData() {
+            const stored = localStorage.getItem('dailyData');
+            if (stored) {
+                dailyData = JSON.parse(stored);
+            }
+            displayDailyDataHistory();
+        }
+
+        // Load goals from localStorage
+        function loadGoals() {
+            const stored = localStorage.getItem('goals');
+            if (stored) {
+                goals = JSON.parse(stored);
+                // Populate form fields
+                document.getElementById('dailyCallGoal').value = goals.dailyCallGoal || 10;
+                document.getElementById('weeklyAppointmentGoal').value = goals.weeklyAppointmentGoal || 5;
+                document.getElementById('monthlyClosingGoal').value = goals.monthlyClosingGoal || 2;
+                document.getElementById('monthlyOffersGoal').value = goals.monthlyOffersGoal || 15;
+                document.getElementById('annualGCIGoal').value = goals.annualGCIGoal || 215000;
+            }
+        }
+
+        // Save goals
+        function saveGoals() {
+            goals = {
+                dailyCallGoal: parseInt(document.getElementById('dailyCallGoal').value) || 10,
+                weeklyAppointmentGoal: parseInt(document.getElementById('weeklyAppointmentGoal').value) || 5,
+                monthlyClosingGoal: parseInt(document.getElementById('monthlyClosingGoal').value) || 2,
+                monthlyOffersGoal: parseInt(document.getElementById('monthlyOffersGoal').value) || 15,
+                annualGCIGoal: parseInt(document.getElementById('annualGCIGoal').value) || 215000,
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem('goals', JSON.stringify(goals));
+            alert('Goals saved successfully!');
+        }
+
+        // Load default goals
+        function loadDefaultGoals() {
+            document.getElementById('dailyCallGoal').value = 10;
+            document.getElementById('weeklyAppointmentGoal').value = 5;
+            document.getElementById('monthlyClosingGoal').value = 2;
+            document.getElementById('monthlyOffersGoal').value = 15;
+            document.getElementById('annualGCIGoal').value = 215000;
+        }
+
+        // Save daily data
+        function saveDailyData() {
+            const date = document.getElementById('dailyDate').value;
+            const hoursWorked = parseFloat(document.getElementById('hoursWorked').value) || 0;
+            const callsMade = parseInt(document.getElementById('callsMade').value) || 0;
+            const callsAnswered = parseInt(document.getElementById('callsAnswered').value) || 0;
+            const appointments = parseInt(document.getElementById('appointments').value) || 0;
+            const offers = parseInt(document.getElementById('offers').value) || 0;
+            const notes = document.getElementById('dailyNotes').value || '';
+
+            if (!date) {
+                alert('Please select a date');
+                return;
+            }
+
+            // Save to dailyData object
+            dailyData[date] = {
+                date: date,
+                hoursWorked: hoursWorked,
+                callsMade: callsMade,
+                callsAnswered: callsAnswered,
+                appointments: appointments,
+                offers: offers,
+                notes: notes,
+                timestamp: new Date().toISOString()
+            };
+
+            // Save to localStorage
+            localStorage.setItem('dailyData', JSON.stringify(dailyData));
+
+            // Update display
+            displayDailyDataHistory();
+
+            // Show success message
+            alert('Daily data saved successfully!');
+
+            // Optionally clear form
+            // clearDailyForm();
+        }
+
+        // Clear the form
+        function clearDailyForm() {
+            document.getElementById('dailyDate').value = '';
+            document.getElementById('hoursWorked').value = '';
+            document.getElementById('callsMade').value = '';
+            document.getElementById('callsAnswered').value = '';
+            document.getElementById('appointments').value = '';
+            document.getElementById('offers').value = '';
+            document.getElementById('dailyNotes').value = '';
+        }
+
+        // Display daily data history
+        function displayDailyDataHistory() {
+            const historyDiv = document.getElementById('dailyDataHistory');
+            
+            if (Object.keys(dailyData).length === 0) {
+                historyDiv.innerHTML = '<p>No daily data recorded yet.</p>';
+                return;
+            }
+
+            // Sort dates in descending order (most recent first)
+            const sortedDates = Object.keys(dailyData).sort((a, b) => new Date(b) - new Date(a));
+
+            let historyHTML = '<table class="table"><thead><tr><th>Date</th><th>Hours</th><th>Calls Made</th><th>Calls Answered</th><th>Appointments</th><th>Offers</th><th>Notes</th><th>Actions</th></tr></thead><tbody>';
+
+            sortedDates.forEach(date => {
+                const data = dailyData[date];
+                const formattedDate = new Date(date).toLocaleDateString();
+                const shortNotes = data.notes.length > 50 ? data.notes.substring(0, 50) + '...' : data.notes;
+                
+                historyHTML += `
+                    <tr>
+                        <td>${formattedDate}</td>
+                        <td>${data.hoursWorked}</td>
+                        <td>${data.callsMade}</td>
+                        <td>${data.callsAnswered || 0}</td>
+                        <td>${data.appointments}</td>
+                        <td>${data.offers}</td>
+                        <td>${shortNotes}</td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="editDailyData('${date}')">Edit</button>
+                            <button class="action-btn delete-btn" onclick="deleteDailyData('${date}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            historyHTML += '</tbody></table>';
+            historyDiv.innerHTML = historyHTML;
+        }
+
+        // Edit daily data
+        function editDailyData(date) {
+            const data = dailyData[date];
+            if (data) {
+                document.getElementById('dailyDate').value = date;
+                document.getElementById('hoursWorked').value = data.hoursWorked;
+                document.getElementById('callsMade').value = data.callsMade;
+                document.getElementById('callsAnswered').value = data.callsAnswered || 0;
+                document.getElementById('appointments').value = data.appointments;
+                document.getElementById('offers').value = data.offers;
+                document.getElementById('dailyNotes').value = data.notes;
+                
+                // Scroll to form
+                document.getElementById('daily').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Delete daily data
+        function deleteDailyData(date) {
+            if (confirm(`Are you sure you want to delete data for ${new Date(date).toLocaleDateString()}?`)) {
+                delete dailyData[date];
+                localStorage.setItem('dailyData', JSON.stringify(dailyData));
+                displayDailyDataHistory();
+            }
+        }
+
+        // Set today's date as default
+        function setTodaysDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dailyDate').value = today;
+        }
+
         // Simple tab functionality
         function showTab(tabName) {
             // Hide all tab contents
@@ -444,6 +653,11 @@
                     }
                 });
             });
+
+            // Load daily data, goals, and set today's date
+            loadDailyData();
+            loadGoals();
+            setTodaysDate();
         });
     </script>
 </body>
