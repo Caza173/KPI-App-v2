@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console Test for KPI Dashboard</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        console.log("Starting console test...");
+        
+        // Test if React is loaded
+        console.log("React version:", React.version);
+        console.log("ReactDOM:", ReactDOM);
+        
+        // Simple test component
+        const TestApp = () => {
+            console.log("TestApp component rendering...");
+            return (
+                <div style={{padding: '20px', fontFamily: 'Arial, sans-serif'}}>
+                    <h1>Console Test Working</h1>
+                    <p>React is loaded and working. Check console for debug info.</p>
+                    <button onClick={() => console.log("Button clicked!")}>
+                        Test Console Log
+                    </button>
+                </div>
+            );
+        };
+        
+        console.log("About to render...");
+        ReactDOM.render(<TestApp />, document.getElementById('root'));
+        console.log("Render complete!");
+    </script>
+</body>
+</html>

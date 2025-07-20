@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI Dashboard - Debug</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+        .tab {
+            padding: 12px 16px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px 8px 0 0;
+        }
+        .tab.active {
+            background: #007bff;
+            color: white;
+        }
+        .tile {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #ddd;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [properties, setProperties] = useState([]);
+            const [transactions, setTransactions] = useState([]);
+            const [expenses, setExpenses] = useState([]);
+            const [calls, setCalls] = useState({ made: 0, answered: 0 });
+            const [totalCommission, setTotalCommission] = useState(0);
+            
+            return (
+                <div className="container">
+                    <h1>Real Estate KPI Dashboard - Debug Version</h1>
+                    
+                    {/* Tab Navigation */}
+                    <div className="tabs">
+                        <div 
+                            className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('dashboard')}
+                        >
+                            📊 Dashboard
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'goals' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('goals')}
+                        >
+                            🎯 Goals
+                        </div>
+                    </div>
+                    
+                    {/* Dashboard Tab */}
+                    {activeTab === 'dashboard' && (
+                        <div>
+                            <h2>📊 Dashboard Overview</h2>
+                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px'}}>
+                                <div className="tile">
+                                    <h4>Total Commission</h4>
+                                    <p>${totalCommission.toLocaleString()}</p>
+                                    <small>Year-to-date earnings</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Active Listings</h4>
+                                    <p>{properties.filter(p => p.status === 'Active').length}</p>
+                                    <small>Properties on market</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Calls Today</h4>
+                                    <p>{calls.made}</p>
+                                    <small>Outreach efforts</small>
+                                </div>
+                                <div className="tile">
+                                    <h4>Total Expenses</h4>
+                                    <p>${expenses.reduce((sum, e) => sum + (e.amount || 0), 0).toLocaleString()}</p>
+                                    <small>Business expenses</small>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Goals Tab */}
+                    {activeTab === 'goals' && (
+                        <div>
+                            <h2>🎯 Goals</h2>
+                            <p>Set your targets and track progress here.</p>
+                            <div className="tile">
+                                <h4>Sample Goal</h4>
+                                <p>This is a placeholder for goals functionality</p>
+                            </div>
+                        </div>
+                    )}
+                    
+                    <div style={{marginTop: '20px', padding: '10px', background: '#d4edda', borderRadius: '5px'}}>
+                        <strong>✅ React is working correctly!</strong> The dashboard is rendering properly.
+                    </div>
+                </div>
+            );
+        };
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -74,6 +74,48 @@
             background: #ffca2c;
         }
         
+        /* Master Reset Button */
+        .master-reset-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 130px;
+            height: 55px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .master-reset-button:hover {
+            background: #c82333;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+        }
+        
+        .dark-theme .master-reset-button {
+            background: #dc3545;
+            border: 2px solid #ff6b7a;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5);
+        }
+        
+        .dark-theme .master-reset-button:hover {
+            background: #c82333;
+            border-color: #ff8591;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.7);
+        }
+        
         /* ROI Tile Special Styling */
         .roi-tile {
             background: linear-gradient(135deg, #e8f5e8, #d4edda) !important;
@@ -697,12 +739,6 @@
             color: #0d47a1;
         }
         
-        .tab[data-tab="dashboard"] {
-            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
-            border-color: #9c27b0;
-            color: #4a148c;
-        }
-        
         .tab[data-tab="expenses"] {
             background: linear-gradient(135deg, #fff3e0, #ffcc02);
             border-color: #ff9800;
@@ -750,12 +786,6 @@
             background: linear-gradient(135deg, #bbdefb, #90caf9);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
-        }
-        
-        .tab[data-tab="dashboard"]:hover {
-            background: linear-gradient(135deg, #e1bee7, #ce93d8);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
         }
         
         .tab[data-tab="expenses"]:hover {
@@ -809,13 +839,6 @@
             border-color: #2196f3;
             color: white;
             box-shadow: 0 6px 12px rgba(33, 150, 243, 0.4);
-        }
-        
-        .tab[data-tab="dashboard"].active {
-            background: linear-gradient(135deg, #9c27b0, #e91e63);
-            border-color: #9c27b0;
-            color: white;
-            box-shadow: 0 6px 12px rgba(156, 39, 176, 0.4);
         }
         
         .tab[data-tab="expenses"].active {
@@ -1290,7 +1313,9 @@
                 commissionRate: 2.5,
                 averageCommissionPerDeal: 8750, // Default commission per deal
                 desiredGCI: 215000,
-                dealsNeeded: 0
+                dealsNeeded: 0,
+                desiredSalesVolume: 0,
+                dealsNeededForVolume: 0
             });
             const [selectedPropertyForExpenses, setSelectedPropertyForExpenses] = useState(null);
             const [currentTheme, setCurrentTheme] = useState('light');
@@ -1636,11 +1661,70 @@
                 document.body.className = currentTheme === 'dark' ? 'dark-theme' : '';
             }, [currentTheme]);
             
+            // Master Reset function
+            const handleMasterReset = () => {
+                if (window.confirm('⚠️ WARNING: This will permanently delete ALL data including properties, transactions, expenses, daily activities, and goals. This action cannot be undone. Are you absolutely sure?')) {
+                    if (window.confirm('🔴 FINAL CONFIRMATION: Click OK to permanently delete everything or Cancel to keep your data.')) {
+                        // Reset all state to completely empty/zero values
+                        setProperties([]);
+                        setTransactions([]);
+                        setExpenses([]);
+                        setHours([]);
+                        setCalls({ made: 0, answered: 0 });
+                        setAppointments([]);
+                        setDailyData({});
+                        setGciData({ gciGoal: 0, current: 0 });
+                        setGoals({
+                            dailyCalls: 0,
+                            weeklyAppointments: 0,
+                            weeklyBuyerContracts: 0,
+                            weeklyOffers: 0,
+                            monthlyClosings: 0,
+                            annualGCI: 0
+                        });
+                        setGoalsLocked(false);
+                        setGciCalculator({
+                            averageSalePrice: 0,
+                            commissionRate: 0,
+                            averageCommissionPerDeal: 0,
+                            desiredGCI: 0,
+                            dealsNeeded: 0,
+                            desiredSalesVolume: 0,
+                            dealsNeededForVolume: 0
+                        });
+                        setHourlyWage(0);
+                        setSelectedDate(new Date().toISOString().split('T')[0]);
+                        setActiveTab('goals');
+                        setSelectedPropertyForExpenses(null);
+                        setShowExpenseModal(false);
+                        setSelectedTransactionExpenses([]);
+                        setEditingExpense(null);
+                        setIsEditMode(false);
+                        setSelectedPropertyForExpense(null);
+                        setShowReportModal(false);
+                        setCurrentReport(null);
+                        setPropertySourceFilter('All');
+                        setPropertyStatusFilter('All');
+                        
+                        alert('✅ Master Reset Complete! All data has been cleared and the dashboard has been reset to default settings.');
+                    }
+                }
+            };
+            
             const totalCommission = transactions.reduce((sum, t) => sum + (t.commission || 0), 0);
             const closedDeals = transactions.filter(t => t.status === 'Closed');
             
             return (
                 <div className="container">
+                    {/* Master Reset Button */}
+                    <button 
+                        className="master-reset-button" 
+                        onClick={handleMasterReset}
+                        title="Reset all dashboard data - WARNING: This will delete everything!"
+                    >
+                        🔴 MASTER RESET
+                    </button>
+                    
                     {/* Theme Toggle Button */}
                     <button 
                         className="theme-toggle" 
@@ -1670,13 +1754,6 @@
                             onClick={() => setActiveTab('transactions')}
                         >
                             📋 Transactions & Properties
-                        </div>
-                        <div 
-                            className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-                            data-tab="dashboard"
-                            onClick={() => setActiveTab('dashboard')}
-                        >
-                            📊 Dashboard
                         </div>
                         <div 
                             className={`tab ${activeTab === 'expenses' ? 'active' : ''}`}
@@ -2369,8 +2446,8 @@
                                         client: formData.get('client'),
                                         type: formData.get('type'),
                                         price: parseFloat(formData.get('price')),
-                                        status: formData.get('status') || 'Active',
-                                        statusNote: formData.get('statusNote') || '',
+                                        status: 'Active', // Default status since status input was removed
+                                        statusNote: '', // Default empty note since statusNote input was removed
                                         source: formData.get('source') || 'Direct'
                                     };
                                     addProperty(propertyData);
@@ -2430,44 +2507,6 @@
                                             </div>
                                         </div>
                                         
-                                    </div>
-                                    
-                                    {/* Status Section */}
-                                    <div style={{padding: '15px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', marginTop: '20px'}}>
-                                        <h4 style={{margin: '0 0 15px 0', color: '#495057'}}>📊 Status & Notes</h4>
-                                        <div style={{display: 'grid', gridTemplateColumns: window.innerWidth > 768 ? '1fr 2fr' : '1fr', gap: '15px'}}>
-                                            <div className="form-group">
-                                                <label style={{fontWeight: '500'}}>Status</label>
-                                                <select name="status" style={{borderRadius: '6px'}}>
-                                                    <option value="">Select Status</option>
-                                                    <optgroup label="General">
-                                                        <option value="Active">Active</option>
-                                                        <option value="Inactive">Inactive</option>
-                                                        <option value="Under Contract">Under Contract</option>
-                                                        <option value="Closed">Closed</option>
-                                                        <option value="Withdrawn">Withdrawn</option>
-                                                        <option value="Expired">Expired</option>
-                                                        <option value="Terminated">Terminated</option>
-                                                    </optgroup>
-                                                    <optgroup label="Buyer Pipeline">
-                                                        <option value="Buyer Appointment">Buyer Appointment</option>
-                                                        <option value="Buyer Signed">Buyer Signed</option>
-                                                        <option value="Showing Properties">Showing Properties</option>
-                                                        <option value="Offer Submitted">Offer Submitted</option>
-                                                    </optgroup>
-                                                    <optgroup label="Seller Pipeline">
-                                                        <option value="Listing Appointment">Listing Appointment</option>
-                                                        <option value="Listed">Listed</option>
-                                                        <option value="Pending Sale">Pending Sale</option>
-                                                        <option value="Sold">Sold</option>
-                                                    </optgroup>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label style={{fontWeight: '500'}}>Status Notes (Optional)</label>
-                                                <input type="text" name="statusNote" placeholder="Enter status note (optional)" style={{borderRadius: '6px'}} />
-                                            </div>
-                                        </div>
                                     </div>
                                     
                                     <button type="submit" className="btn" style={{
@@ -2871,43 +2910,6 @@
                         </div>
                     )}
                     
-                    {/* Dashboard Tab */}
-                    {activeTab === 'dashboard' && (
-                        <div className="tab-content">
-                            <div style={{textAlign: 'center', marginBottom: '30px'}}>
-                                <h2 style={{marginBottom: '10px'}}>📊 Dashboard Overview</h2>
-                                <p style={{color: '#666', fontSize: '16px', margin: 0}}>Your real-time performance metrics and key business indicators</p>
-                            </div>
-                            <div className="grid">
-                                <div className="tile">
-                                    <h4>Today's Calls</h4>
-                                    <p>{calls.made}</p>
-                                    <small>Calls made today</small>
-                                </div>
-                                <div className="tile">
-                                    <h4>Call Success Rate</h4>
-                                    <p>{calls.made > 0 ? Math.round((calls.answered / calls.made) * 100) : 0}%</p>
-                                    <small>Answered calls rate</small>
-                                </div>
-                                <div className="tile">
-                                    <h4>Appointments Today</h4>
-                                    <p>{appointments.filter(a => a.date === selectedDate).length}</p>
-                                    <small>Scheduled appointments</small>
-                                </div>
-                                <div className="tile">
-                                    <h4>Monthly Progress</h4>
-                                    <p>{Math.round((totalCommission / gciData.gciGoal) * 100)}%</p>
-                                    <small>Progress toward annual goal</small>
-                                </div>
-                            </div>
-                            
-                            <div className="alert alert-info">
-                                <strong>Quick Stats:</strong> You have {properties.filter(p => p.status === 'Active').length} active listings, 
-                                {properties.filter(p => p.status === 'Pending').length} pending sales, and have earned 
-                                ${totalCommission.toLocaleString()} in commission this year.
-                            </div>
-                        </div>
-                    )}
                     
                     {/* Expenses Tab */}
                     {activeTab === 'expenses' && (
@@ -3533,6 +3535,124 @@
                                                 <strong>Deals per Quarter:</strong><br/>
                                                 <span style={{fontSize: '1.2em', color: '#6f42c1'}}>
                                                     {Math.ceil(gciCalculator.dealsNeeded / 4)} deals/quarter
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            {/* Sales Volume Calculator */}
+                            <div className="form-section" style={{borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', background: 'white', border: '1px solid #e9ecef', marginTop: '20px'}}>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '20px'}}>
+                                    <span style={{fontSize: '24px', marginRight: '10px'}}>📈</span>
+                                    <h3 style={{margin: 0}}>Sales Volume Calculator</h3>
+                                </div>
+                                <form onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const formData = new FormData(e.target);
+                                    const desiredSalesVolume = parseFloat(formData.get('desiredSalesVolume')) || 0;
+                                    const avgSalePrice = parseFloat(formData.get('avgSalePriceVolume')) || gciCalculator.averageSalePrice || 0;
+                                    
+                                    // Calculate deals needed for desired sales volume
+                                    const dealsNeededForVolume = avgSalePrice > 0 ? Math.ceil(desiredSalesVolume / avgSalePrice) : 0;
+                                    
+                                    setGciCalculator(prev => ({
+                                        ...prev,
+                                        desiredSalesVolume: desiredSalesVolume,
+                                        dealsNeededForVolume: dealsNeededForVolume
+                                    }));
+                                }}>
+                                    <div style={{display: 'grid', gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr' : '1fr', gap: '20px'}}>
+                                        
+                                        {/* Volume Input Fields */}
+                                        <div style={{padding: '15px', background: '#fff8e1', borderRadius: '8px', border: '1px solid #ffcc02'}}>
+                                            <h4 style={{margin: '0 0 15px 0', color: '#f57c00'}}>📊 Volume Parameters</h4>
+                                            <div className="form-group">
+                                                <label style={{fontWeight: '500'}}>Desired Annual Sales Volume</label>
+                                                <input 
+                                                    type="number" 
+                                                    name="desiredSalesVolume"
+                                                    defaultValue={gciCalculator.desiredSalesVolume}
+                                                    placeholder="Enter desired total sales volume"
+                                                    style={{borderRadius: '6px'}}
+                                                    onChange={(e) => {
+                                                        const form = e.target.form;
+                                                        const desiredSalesVolume = parseFloat(e.target.value) || 0;
+                                                        const avgSalePrice = parseFloat(form.avgSalePriceVolume.value) || gciCalculator.averageSalePrice || 0;
+                                                        
+                                                        if (desiredSalesVolume && avgSalePrice) {
+                                                            const dealsNeededForVolume = Math.ceil(desiredSalesVolume / avgSalePrice);
+                                                            setGciCalculator(prev => ({
+                                                                ...prev,
+                                                                desiredSalesVolume: desiredSalesVolume,
+                                                                dealsNeededForVolume: dealsNeededForVolume
+                                                            }));
+                                                        }
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label style={{fontWeight: '500'}}>Average Sale Price</label>
+                                                <input 
+                                                    type="number" 
+                                                    name="avgSalePriceVolume"
+                                                    defaultValue={gciCalculator.averageSalePrice}
+                                                    placeholder="Enter average sale price"
+                                                    style={{borderRadius: '6px'}}
+                                                    onChange={(e) => {
+                                                        const form = e.target.form;
+                                                        const avgSalePrice = parseFloat(e.target.value) || 0;
+                                                        const desiredSalesVolume = parseFloat(form.desiredSalesVolume.value) || 0;
+                                                        
+                                                        if (avgSalePrice && desiredSalesVolume) {
+                                                            const dealsNeededForVolume = Math.ceil(desiredSalesVolume / avgSalePrice);
+                                                            setGciCalculator(prev => ({
+                                                                ...prev,
+                                                                dealsNeededForVolume: dealsNeededForVolume
+                                                            }));
+                                                        }
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <button type="submit" className="btn" style={{
+                                                background: 'linear-gradient(135deg, #ffc107, #ff8f00)',
+                                                borderRadius: '8px',
+                                                padding: '10px 20px',
+                                                fontWeight: '500',
+                                                marginTop: '15px',
+                                                width: '100%'
+                                            }}>📈 Calculate Volume Deals</button>
+                                        </div>
+                                        
+                                        {/* Volume Results */}
+                                        <div style={{padding: '15px', background: '#fff8e1', borderRadius: '8px', border: '1px solid #ffcc02'}}>
+                                            <h4 style={{margin: '0 0 15px 0', color: '#f57c00'}}>📈 Volume Results</h4>
+                                            <div style={{marginBottom: '10px'}}>
+                                                <strong>Target Sales Volume:</strong><br/>
+                                                <span style={{fontSize: '1.2em', color: '#f57c00'}}>
+                                                    ${(gciCalculator.desiredSalesVolume || 0).toLocaleString()}
+                                                </span>
+                                            </div>
+                                            <div style={{marginBottom: '10px'}}>
+                                                <strong>Deals Needed for Volume:</strong><br/>
+                                                <span style={{fontSize: '1.5em', color: '#ff8f00', fontWeight: 'bold'}}>
+                                                    {gciCalculator.dealsNeededForVolume || 0} deals
+                                                </span>
+                                            </div>
+                                            <div style={{marginBottom: '10px'}}>
+                                                <strong>Deals per Month:</strong><br/>
+                                                <span style={{fontSize: '1.2em', color: '#f57c00'}}>
+                                                    {Math.ceil((gciCalculator.dealsNeededForVolume || 0) / 12)} deals/month
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <strong>Deals per Quarter:</strong><br/>
+                                                <span style={{fontSize: '1.2em', color: '#ff8f00'}}>
+                                                    {Math.ceil((gciCalculator.dealsNeededForVolume || 0) / 4)} deals/quarter
                                                 </span>
                                             </div>
                                         </div>
