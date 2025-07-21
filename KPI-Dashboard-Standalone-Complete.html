@@ -128,6 +128,47 @@
             background: #ffca2c;
         }
         
+        /* Master Reset Button */
+        .master-reset {
+            position: fixed;
+            top: 20px;
+            right: 80px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .master-reset:hover {
+            background: #c82333;
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .master-reset:active {
+            transform: scale(0.95);
+        }
+        
+        .dark-theme .master-reset {
+            background: #dc3545;
+            box-shadow: 0 4px 8px rgba(255,255,255,0.1);
+        }
+        
+        .dark-theme .master-reset:hover {
+            background: #c82333;
+            box-shadow: 0 6px 12px rgba(255,255,255,0.2);
+        }
+        
         /* ROI Tile Special Styling */
         .roi-tile {
             background: linear-gradient(135deg, #e8f5e8, #d4edda) !important;
@@ -1356,60 +1397,113 @@
             const [selectedPropertyForExpense, setSelectedPropertyForExpense] = useState(null);
             const [showReportModal, setShowReportModal] = useState(false);
             const [currentReport, setCurrentReport] = useState(null);
+            
+            // Date range for reports
+            const [reportDateRange, setReportDateRange] = useState({
+                startDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0], // January 1st of current year
+                endDate: new Date().toISOString().split('T')[0] // Today
+            });
             const [propertySourceFilter, setPropertySourceFilter] = useState('All');
             const [propertyStatusFilter, setPropertyStatusFilter] = useState('All');
             
             // Load initial data and set up functionality
             useEffect(() => {
+                // Comprehensive Sample Properties for Testing All Functions
                 const sampleProperties = [
-                    { id: 1, address: '123 Main St', client: 'John Doe', status: 'Listed', price: 350000, type: 'Seller', statusNote: '', source: 'Referral', listedDate: '2025-06-15', contractDate: null, closedDate: null },
-                    { id: 2, address: '456 Oak Ave', client: 'Jane Smith', status: 'Sold', price: 425000, type: 'Seller', statusNote: '', source: 'SOI', listedDate: '2025-05-20', contractDate: '2025-06-10', closedDate: '2025-07-10' },
-                    { id: 3, address: '789 Pine Rd', client: 'Bob Johnson', status: 'Under Contract', price: 275000, type: 'Buyer', statusNote: '', source: 'Zillow', listedDate: null, contractDate: '2025-07-01', closedDate: null },
-                    { id: 4, address: '321 Elm Dr', client: 'Sarah Wilson', status: 'Buyer Appointment', price: 300000, type: 'Buyer', statusNote: '', source: 'Facebook', listedDate: null, contractDate: null, closedDate: null },
-                    { id: 5, address: '654 Maple Ave', client: 'Mike Brown', status: 'Buyer Signed', price: 380000, type: 'Buyer', statusNote: '', source: 'Direct Mail', listedDate: null, contractDate: '2025-06-25', closedDate: null },
-                    { id: 6, address: '987 Cedar St', client: 'Lisa Davis', status: 'Listing Appointment', price: 450000, type: 'Seller', statusNote: '', source: 'OpCity', listedDate: null, contractDate: null, closedDate: null },
-                    { id: 7, address: '159 Oak Ln', client: 'Tom Anderson', status: 'Closed', price: 320000, type: 'Buyer', statusNote: '', source: 'In-house Referral', listedDate: null, contractDate: '2025-06-05', closedDate: '2025-07-15' }
+                    { id: 1, address: '123 Main St', client: 'John Doe', status: 'Listed', price: 350000, type: 'Seller', statusNote: 'Price reduced', source: 'Referral', listedDate: '2025-06-15', contractDate: null, closedDate: null },
+                    { id: 2, address: '456 Oak Ave', client: 'Jane Smith', status: 'Sold', price: 425000, type: 'Seller', statusNote: 'Quick sale', source: 'SOI', listedDate: '2025-05-20', contractDate: '2025-06-10', closedDate: '2025-07-10' },
+                    { id: 3, address: '789 Pine Rd', client: 'Bob Johnson', status: 'Under Contract', price: 275000, type: 'Buyer', statusNote: 'Inspection pending', source: 'Zillow', listedDate: null, contractDate: '2025-07-01', closedDate: null },
+                    { id: 4, address: '321 Elm Dr', client: 'Sarah Wilson', status: 'Buyer Appointment', price: 300000, type: 'Buyer', statusNote: 'First time buyer', source: 'Facebook', listedDate: null, contractDate: null, closedDate: null },
+                    { id: 5, address: '654 Maple Ave', client: 'Mike Brown', status: 'Buyer Signed', price: 380000, type: 'Buyer', statusNote: 'Approved for loan', source: 'Direct Mail', listedDate: null, contractDate: '2025-06-25', closedDate: null },
+                    { id: 6, address: '987 Cedar St', client: 'Lisa Davis', status: 'Listing Appointment', price: 450000, type: 'Seller', statusNote: 'Needs repairs', source: 'OpCity', listedDate: null, contractDate: null, closedDate: null },
+                    { id: 7, address: '159 Oak Ln', client: 'Tom Anderson', status: 'Closed', price: 320000, type: 'Buyer', statusNote: 'Smooth closing', source: 'In-house Referral', listedDate: null, contractDate: '2025-06-05', closedDate: '2025-07-15' },
+                    { id: 8, address: '246 Birch Way', client: 'Amy Martinez', status: 'Expired', price: 290000, type: 'Seller', statusNote: 'Overpriced', source: 'FSBOs', listedDate: '2025-04-10', contractDate: null, closedDate: null },
+                    { id: 9, address: '369 Walnut Ct', client: 'David Lee', status: 'Withdrawn', price: 520000, type: 'Seller', statusNote: 'Changed mind', source: 'Cold Call', listedDate: '2025-05-01', contractDate: null, closedDate: null },
+                    { id: 10, address: '741 Spruce Ave', client: 'Emma Taylor', status: 'Sold', price: 395000, type: 'Seller', statusNote: 'Multiple offers', source: 'Referral', listedDate: '2025-05-15', contractDate: '2025-06-20', closedDate: '2025-07-18' }
                 ];
                 setProperties(sampleProperties);
                 
+                // Comprehensive Sample Transactions
                 const sampleTransactions = [
-                    { id: 1, amount: 350000, commission: 8750, status: 'Closed', property: '123 Main St', date: '2025-07-15' },
-                    { id: 2, amount: 425000, commission: 10625, status: 'Closed', property: '456 Oak Ave', date: '2025-07-10' },
-                    { id: 3, amount: 275000, commission: 6875, status: 'Pending', property: '789 Pine Rd', date: '2025-07-05' }
+                    { id: 1, amount: 425000, commission: 10625, status: 'Closed', property: '456 Oak Ave', date: '2025-07-10', type: 'Sale' },
+                    { id: 2, amount: 320000, commission: 8000, status: 'Closed', property: '159 Oak Ln', date: '2025-07-15', type: 'Purchase' },
+                    { id: 3, amount: 395000, commission: 9875, status: 'Closed', property: '741 Spruce Ave', date: '2025-07-18', type: 'Sale' },
+                    { id: 4, amount: 275000, commission: 6875, status: 'Pending', property: '789 Pine Rd', date: '2025-08-01', type: 'Purchase' },
+                    { id: 5, amount: 380000, commission: 9500, status: 'Pending', property: '654 Maple Ave', date: '2025-08-05', type: 'Purchase' }
                 ];
                 setTransactions(sampleTransactions);
                 
-                setCalls({ made: 15, answered: 12 });
-                setAppointments([
-                    { id: 1, date: '2025-07-16', time: '10:00', client: 'John Doe' },
-                    { id: 2, date: '2025-07-16', time: '14:00', client: 'Jane Smith' }
-                ]);
-                
+                // Sample Expenses for Testing
                 const sampleExpenses = [
-                    { 
-                        id: 1, 
-                        date: '2025-07-20', 
-                        propertyId: 1, 
-                        propertyAddress: '123 Main St', 
-                        category: 'Travel', 
-                        amount: 30, 
-                        hoursWorked: 0.5,
-                        description: 'Gas for property visit', 
-                        vendor: 'Shell Station' 
-                    },
-                    { 
-                        id: 2, 
-                        date: '2025-07-20', 
-                        propertyId: 1, 
-                        propertyAddress: '123 Main St', 
-                        category: 'Staging', 
-                        amount: 1500, 
-                        hoursWorked: 4,
-                        description: 'Professional staging setup', 
-                        vendor: 'Elite Staging Co' 
-                    }
+                    { id: 1, type: 'Marketing', amount: 250, description: 'Facebook Ads - July', date: '2025-07-01', category: 'Advertising', propertyId: 1 },
+                    { id: 2, type: 'Travel', amount: 45, description: 'Gas for property showings', date: '2025-07-02', category: 'Transportation', propertyId: 2 },
+                    { id: 3, type: 'Professional', amount: 150, description: 'Photography services', date: '2025-07-03', category: 'Services', propertyId: 1 },
+                    { id: 4, type: 'Office', amount: 75, description: 'Business cards printing', date: '2025-07-05', category: 'Supplies', propertyId: null },
+                    { id: 5, type: 'Education', amount: 300, description: 'Real estate course', date: '2025-07-10', category: 'Training', propertyId: null },
+                    { id: 6, type: 'Technology', amount: 89, description: 'CRM monthly subscription', date: '2025-07-15', category: 'Software', propertyId: null },
+                    { id: 7, type: 'Marketing', amount: 180, description: 'Zillow Premier Agent', date: '2025-07-01', category: 'Advertising', propertyId: null }
                 ];
                 setExpenses(sampleExpenses);
+                
+                // Sample Daily Activity Data for Testing Goals and Progress
+                const sampleDailyData = {
+                    '2025-07-15': { hoursWorked: 8, callsMade: 12, callsAnswered: 7, appointmentsSet: 2, offersWritten: 1, buyerContracts: 0, listingsObtained: 1 },
+                    '2025-07-16': { hoursWorked: 7.5, callsMade: 15, callsAnswered: 9, appointmentsSet: 3, offersWritten: 0, buyerContracts: 1, listingsObtained: 0 },
+                    '2025-07-17': { hoursWorked: 9, callsMade: 18, callsAnswered: 11, appointmentsSet: 1, offersWritten: 2, buyerContracts: 0, listingsObtained: 0 },
+                    '2025-07-18': { hoursWorked: 6, callsMade: 8, callsAnswered: 5, appointmentsSet: 1, offersWritten: 0, buyerContracts: 0, listingsObtained: 1 },
+                    '2025-07-19': { hoursWorked: 8.5, callsMade: 20, callsAnswered: 14, appointmentsSet: 4, offersWritten: 1, buyerContracts: 1, listingsObtained: 0 },
+                    '2025-07-20': { hoursWorked: 7, callsMade: 10, callsAnswered: 6, appointmentsSet: 2, offersWritten: 1, buyerContracts: 0, listingsObtained: 0 }
+                };
+                setDailyData(sampleDailyData);
+                
+                // Sample Hours Data
+                const sampleHours = [
+                    { date: '2025-07-15', hours: 8, description: 'Property showings and calls' },
+                    { date: '2025-07-16', hours: 7.5, description: 'Client meetings and paperwork' },
+                    { date: '2025-07-17', hours: 9, description: 'Prospecting and follow-ups' },
+                    { date: '2025-07-18', hours: 6, description: 'Closing preparation' },
+                    { date: '2025-07-19', hours: 8.5, description: 'Open house and showings' },
+                    { date: '2025-07-20', hours: 7, description: 'Administrative tasks' }
+                ];
+                setHours(sampleHours);
+                
+                // Sample Appointments
+                const sampleAppointments = [
+                    { id: 1, client: 'John Doe', property: '123 Main St', date: '2025-07-22', time: '10:00 AM', type: 'Listing Consultation' },
+                    { id: 2, client: 'Sarah Wilson', property: '321 Elm Dr', date: '2025-07-22', time: '2:00 PM', type: 'Buyer Consultation' },
+                    { id: 3, client: 'Mike Brown', property: '654 Maple Ave', date: '2025-07-23', time: '11:00 AM', type: 'Property Showing' },
+                    { id: 4, client: 'Lisa Davis', property: '987 Cedar St', date: '2025-07-24', time: '3:00 PM', type: 'Listing Presentation' },
+                    { id: 5, client: 'Emma Taylor', property: '741 Spruce Ave', date: '2025-07-25', time: '1:00 PM', type: 'Closing' }
+                ];
+                setAppointments(sampleAppointments);
+                
+                // Update GCI data based on closed transactions
+                const closedCommissions = sampleTransactions
+                    .filter(t => t.status === 'Closed')
+                    .reduce((sum, t) => sum + t.commission, 0);
+                setGciData(prev => ({ ...prev, current: closedCommissions }));
+                
+                // Set default goals to test progress tracking
+                setGoals({
+                    dailyCalls: 15,
+                    weeklyAppointments: 8,
+                    weeklyBuyerContracts: 2,
+                    weeklyOffers: 4,
+                    monthlyClosings: 3,
+                    annualGCI: 250000,
+                    hoursWorked: 8,
+                    appointmentsSet: 2,
+                    offersWritten: 1
+                });
+                
+                console.log('✅ Test data loaded successfully!');
+                console.log('📊 Properties:', sampleProperties.length);
+                console.log('💰 Transactions:', sampleTransactions.length);
+                console.log('💸 Expenses:', sampleExpenses.length);
+                console.log('📅 Daily Data entries:', Object.keys(sampleDailyData).length);
+                console.log('⏰ Hours entries:', sampleHours.length);
+                console.log('🤝 Appointments:', sampleAppointments.length);
+                console.log('💵 Current GCI:', closedCommissions);
             }, []);
             
             // Property management functions
@@ -1562,12 +1656,187 @@
                 });
             };
             
+            // Master Reset Function - Clears all data and resets to initial state
+            const masterReset = () => {
+                const confirmReset = window.confirm(
+                    '⚠️ MASTER RESET WARNING ⚠️\n\n' +
+                    'This will permanently delete ALL data including:\n' +
+                    '• All Properties\n' +
+                    '• All Transactions\n' +
+                    '• All Expenses\n' +
+                    '• All Hours/Activities\n' +
+                    '• All Appointments\n' +
+                    '• All Goals Progress\n\n' +
+                    'This action CANNOT be undone!\n\n' +
+                    'Are you absolutely sure you want to reset everything?'
+                );
+                
+                if (confirmReset) {
+                    const doubleConfirm = window.confirm(
+                        'FINAL CONFIRMATION\n\n' +
+                        'This is your last chance to cancel.\n' +
+                        'ALL DATA WILL BE PERMANENTLY DELETED.\n\n' +
+                        'Click OK to proceed with the master reset.'
+                    );
+                    
+                    if (doubleConfirm) {
+                        // Reset all state to initial empty values
+                        setProperties([]);
+                        setTransactions([]);
+                        setExpenses([]);
+                        setHours([]);
+                        setCalls({ made: 0, answered: 0 });
+                        setAppointments([]);
+                        setDailyData({});
+                        setGciData({ current: 0, goal: 250000 });
+                        setGoals({
+                            dailyCalls: 0,
+                            weeklyAppointments: 0,
+                            weeklyBuyerContracts: 0,
+                            weeklyOffers: 0,
+                            monthlyClosings: 0,
+                            annualGCI: 0,
+                            hoursWorked: 0,
+                            appointmentsSet: 0,
+                            offersWritten: 0
+                        });
+                        setGciCalculator({
+                            desiredGCI: 0,
+                            averageCommission: 0,
+                            dealsNeeded: 0,
+                            monthlyDeals: 0,
+                            weeklyDeals: 0,
+                            dailyDeals: 0
+                        });
+                        
+                        // Reset date range to defaults
+                        setReportDateRange({
+                            startDate: '2025-01-01',
+                            endDate: '2025-12-31'
+                        });
+                        
+                        // Show success message
+                        alert('✅ Master Reset Complete!\n\nAll data has been cleared and the dashboard has been reset to its initial state.');
+                        
+                        // Log the reset action
+                        console.log('🔄 Master Reset executed at:', new Date().toLocaleString());
+                        console.log('✅ All data cleared successfully');
+                    }
+                }
+            };
+            
+            // Filter data by date range
+            const filterByDateRange = (data, dateField = 'date') => {
+                return data.filter(item => {
+                    const itemDate = new Date(item[dateField]);
+                    const startDate = new Date(reportDateRange.startDate);
+                    const endDate = new Date(reportDateRange.endDate);
+                    return itemDate >= startDate && itemDate <= endDate;
+                });
+            };
+            
+            // Generate commission report
+            const generateCommissionReport = () => {
+                const filteredTransactions = filterByDateRange(transactions);
+                const closedTransactions = filteredTransactions.filter(t => t.status === 'Closed');
+                const pendingTransactions = filteredTransactions.filter(t => t.status === 'Pending');
+                
+                const totalCommission = closedTransactions.reduce((sum, t) => sum + (t.commission || 0), 0);
+                const pendingCommission = pendingTransactions.reduce((sum, t) => sum + (t.commission || 0), 0);
+                const totalVolume = closedTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+                const pendingVolume = pendingTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+                
+                // Group by month for monthly breakdown
+                const monthlyBreakdown = closedTransactions.reduce((acc, transaction) => {
+                    const month = new Date(transaction.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                    if (!acc[month]) {
+                        acc[month] = { commission: 0, volume: 0, deals: 0 };
+                    }
+                    acc[month].commission += transaction.commission || 0;
+                    acc[month].volume += transaction.amount || 0;
+                    acc[month].deals += 1;
+                    return acc;
+                }, {});
+                
+                // Calculate average commission rate
+                const avgCommissionRate = totalVolume > 0 ? (totalCommission / totalVolume) * 100 : 0;
+                
+                return {
+                    title: 'Commission Report',
+                    subtitle: `Commission analysis from ${reportDateRange.startDate} to ${reportDateRange.endDate}`,
+                    dateRange: reportDateRange,
+                    totalCommission,
+                    pendingCommission,
+                    totalVolume,
+                    pendingVolume,
+                    closedDeals: closedTransactions.length,
+                    pendingDeals: pendingTransactions.length,
+                    avgCommissionRate,
+                    avgCommissionPerDeal: closedTransactions.length > 0 ? totalCommission / closedTransactions.length : 0,
+                    monthlyBreakdown,
+                    closedTransactions: closedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)),
+                    pendingTransactions: pendingTransactions.sort((a, b) => new Date(a.date) - new Date(b.date)),
+                    reportDate: new Date().toLocaleDateString()
+                };
+            };
+            
+            // Generate expense per category report with date filtering
+            const generateExpenseCategoryReport = () => {
+                const filteredExpenses = filterByDateRange(expenses);
+                const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+                
+                // Group expenses by category with detailed breakdown
+                const categoryBreakdown = filteredExpenses.reduce((acc, expense) => {
+                    const category = expense.category || 'Uncategorized';
+                    if (!acc[category]) {
+                        acc[category] = {
+                            items: [],
+                            totalAmount: 0,
+                            count: 0,
+                            averageAmount: 0,
+                            percentage: 0
+                        };
+                    }
+                    acc[category].items.push(expense);
+                    acc[category].totalAmount += expense.amount || 0;
+                    acc[category].count += 1;
+                    return acc;
+                }, {});
+                
+                // Calculate percentages and averages
+                Object.keys(categoryBreakdown).forEach(category => {
+                    const categoryData = categoryBreakdown[category];
+                    categoryData.averageAmount = categoryData.totalAmount / categoryData.count;
+                    categoryData.percentage = totalExpenses > 0 ? (categoryData.totalAmount / totalExpenses) * 100 : 0;
+                    // Sort items by amount (highest first)
+                    categoryData.items.sort((a, b) => (b.amount || 0) - (a.amount || 0));
+                });
+                
+                // Sort categories by total amount (highest first)
+                const sortedCategories = Object.keys(categoryBreakdown).sort((a, b) => 
+                    categoryBreakdown[b].totalAmount - categoryBreakdown[a].totalAmount
+                );
+                
+                return {
+                    title: 'Expenses by Category Report',
+                    subtitle: `Detailed breakdown of expenses by category from ${reportDateRange.startDate} to ${reportDateRange.endDate}`,
+                    dateRange: reportDateRange,
+                    totalExpenses,
+                    categoryCount: Object.keys(categoryBreakdown).length,
+                    categoryBreakdown,
+                    sortedCategories,
+                    reportDate: new Date().toLocaleDateString(),
+                    expenseCount: filteredExpenses.length
+                };
+            };
+            
             // Generate report functions
             const generateExpenseReport = () => {
-                const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-                const totalHours = expenses.reduce((sum, e) => sum + (e.hoursWorked || 0), 0);
+                const filteredExpenses = filterByDateRange(expenses);
+                const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+                const totalHours = filteredExpenses.reduce((sum, e) => sum + (e.hoursWorked || 0), 0);
                 
-                const categorySummary = expenses.reduce((acc, expense) => {
+                const categorySummary = filteredExpenses.reduce((acc, expense) => {
                     const category = expense.category || 'Other';
                     if (!acc[category]) {
                         acc[category] = { amount: 0, count: 0, hours: 0 };
@@ -1580,10 +1849,12 @@
                 
                 return {
                     title: 'Expense Report',
+                    subtitle: `Expense analysis from ${reportDateRange.startDate} to ${reportDateRange.endDate}`,
+                    dateRange: reportDateRange,
                     totalExpenses,
                     totalHours,
                     categorySummary,
-                    expenses: expenses.sort((a, b) => new Date(b.date) - new Date(a.date))
+                    expenses: filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date))
                 };
             };
             
@@ -1747,6 +2018,39 @@
                         title={`Switch to ${currentTheme === 'light' ? 'dark' : 'light'} theme`}
                     >
                         {currentTheme === 'light' ? '🌙' : '☀️'}
+                    </button>
+                    
+                    {/* Master Reset Button */}
+                    <button 
+                        className="master-reset" 
+                        onClick={masterReset}
+                        title="Master Reset - Clear ALL data and start fresh"
+                        style={{
+                            position: 'fixed',
+                            top: '20px',
+                            right: '80px',
+                            background: '#dc3545',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '50px',
+                            height: '50px',
+                            fontSize: '20px',
+                            cursor: 'pointer',
+                            zIndex: 1000,
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                            transition: 'all 0.3s ease'
+                        }}
+                        onMouseOver={(e) => {
+                            e.target.style.background = '#c82333';
+                            e.target.style.transform = 'scale(1.1)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.target.style.background = '#dc3545';
+                            e.target.style.transform = 'scale(1)';
+                        }}
+                    >
+                        🗑️
                     </button>
                     
                     <div className="timestamp">
@@ -3390,7 +3694,86 @@
                                 <p style={{color: '#666', fontSize: '16px', margin: 0}}>Generate comprehensive reports and analyze your business performance</p>
                             </div>
                             
+                            {/* Date Range Selector */}
+                            <div style={{
+                                background: '#f8f9fa', 
+                                padding: '20px', 
+                                borderRadius: '8px', 
+                                marginBottom: '30px',
+                                textAlign: 'center'
+                            }}>
+                                <h3 style={{marginBottom: '15px', color: '#333'}}>📅 Report Date Range</h3>
+                                <div style={{
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center', 
+                                    gap: '15px',
+                                    flexWrap: 'wrap'
+                                }}>
+                                    <div>
+                                        <label style={{display: 'block', marginBottom: '5px', fontWeight: 'bold'}}>From:</label>
+                                        <input
+                                            type="date"
+                                            value={reportDateRange.startDate}
+                                            onChange={(e) => setReportDateRange(prev => ({...prev, startDate: e.target.value}))}
+                                            style={{
+                                                padding: '8px',
+                                                border: '1px solid #ddd',
+                                                borderRadius: '4px',
+                                                fontSize: '14px'
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{display: 'block', marginBottom: '5px', fontWeight: 'bold'}}>To:</label>
+                                        <input
+                                            type="date"
+                                            value={reportDateRange.endDate}
+                                            onChange={(e) => setReportDateRange(prev => ({...prev, endDate: e.target.value}))}
+                                            style={{
+                                                padding: '8px',
+                                                border: '1px solid #ddd',
+                                                borderRadius: '4px',
+                                                fontSize: '14px'
+                                            }}
+                                        />
+                                    </div>
+                                    <div style={{marginTop: '20px'}}>
+                                        <button
+                                            onClick={() => setReportDateRange({
+                                                startDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0],
+                                                endDate: new Date().toISOString().split('T')[0]
+                                            })}
+                                            style={{
+                                                background: '#007bff',
+                                                color: 'white',
+                                                border: 'none',
+                                                padding: '8px 12px',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer',
+                                                fontSize: '12px'
+                                            }}
+                                        >
+                                            Reset to Year-to-Date
+                                        </button>
+                                    </div>
+                                </div>
+                                <p style={{color: '#666', fontSize: '14px', margin: '10px 0 0 0'}}>
+                                    All reports will show data from {new Date(reportDateRange.startDate).toLocaleDateString()} 
+                                    to {new Date(reportDateRange.endDate).toLocaleDateString()}
+                                </p>
+                            </div>
+                            
                             <div className="grid">
+                                <div className="tile" onClick={() => {
+                                    setCurrentReport(generateCommissionReport());
+                                    setShowReportModal(true);
+                                }} style={{cursor: 'pointer'}}>
+                                    <h4>💰 Commission Report</h4>
+                                    <p>GCI Analysis</p>
+                                    <small>Detailed commission and deal breakdown</small>
+                                </div>
+                                
                                 <div className="tile" onClick={() => {
                                     setCurrentReport(generateExpenseReport());
                                     setShowReportModal(true);
@@ -3398,6 +3781,15 @@
                                     <h4>📊 Expense Report</h4>
                                     <p>Detailed Analysis</p>
                                     <small>Complete expense breakdown by category</small>
+                                </div>
+                                
+                                <div className="tile" onClick={() => {
+                                    setCurrentReport(generateExpenseCategoryReport());
+                                    setShowReportModal(true);
+                                }} style={{cursor: 'pointer'}}>
+                                    <h4>📋 Expense by Category</h4>
+                                    <p>Category Breakdown</p>
+                                    <small>Detailed analysis per expense category</small>
                                 </div>
                                 
                                 <div className="tile" onClick={() => {
@@ -5330,11 +5722,144 @@
                                 </div>
                                 
                                 <div className="report-content">
+                                    {currentReport.title === 'Commission Report' && (
+                                        <div>
+                                            <h3>Summary</h3>
+                                            <div style={{marginBottom: '20px', padding: '15px', background: '#f8f9fa', borderRadius: '8px'}}>
+                                                <p><strong>Report Period:</strong> {new Date(currentReport.dateRange.startDate).toLocaleDateString()} to {new Date(currentReport.dateRange.endDate).toLocaleDateString()}</p>
+                                                <p><strong>Total Commission (Closed):</strong> ${currentReport.totalCommission.toLocaleString()}</p>
+                                                <p><strong>Pending Commission:</strong> ${currentReport.pendingCommission.toLocaleString()}</p>
+                                                <p><strong>Total Sales Volume:</strong> ${currentReport.totalVolume.toLocaleString()}</p>
+                                                <p><strong>Average Commission Rate:</strong> {currentReport.avgCommissionRate.toFixed(2)}%</p>
+                                                <p><strong>Average Commission per Deal:</strong> ${currentReport.avgCommissionPerDeal.toLocaleString()}</p>
+                                            </div>
+                                            
+                                            <h3>Deal Summary</h3>
+                                            <table className="report-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Status</th>
+                                                        <th>Number of Deals</th>
+                                                        <th>Sales Volume</th>
+                                                        <th>Commission</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><strong>Closed</strong></td>
+                                                        <td>{currentReport.closedDeals}</td>
+                                                        <td>${currentReport.totalVolume.toLocaleString()}</td>
+                                                        <td>${currentReport.totalCommission.toLocaleString()}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Pending</strong></td>
+                                                        <td>{currentReport.pendingDeals}</td>
+                                                        <td>${currentReport.pendingVolume.toLocaleString()}</td>
+                                                        <td>${currentReport.pendingCommission.toLocaleString()}</td>
+                                                    </tr>
+                                                    <tr style={{background: '#e3f2fd'}}>
+                                                        <td><strong>Total</strong></td>
+                                                        <td>{currentReport.closedDeals + currentReport.pendingDeals}</td>
+                                                        <td>${(currentReport.totalVolume + currentReport.pendingVolume).toLocaleString()}</td>
+                                                        <td>${(currentReport.totalCommission + currentReport.pendingCommission).toLocaleString()}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            
+                                            {Object.keys(currentReport.monthlyBreakdown).length > 0 && (
+                                                <>
+                                                    <h3>Monthly Breakdown (Closed Deals)</h3>
+                                                    <table className="report-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Month</th>
+                                                                <th>Deals</th>
+                                                                <th>Volume</th>
+                                                                <th>Commission</th>
+                                                                <th>Avg per Deal</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {Object.entries(currentReport.monthlyBreakdown).map(([month, data]) => (
+                                                                <tr key={month}>
+                                                                    <td>{month}</td>
+                                                                    <td>{data.deals}</td>
+                                                                    <td>${data.volume.toLocaleString()}</td>
+                                                                    <td>${data.commission.toLocaleString()}</td>
+                                                                    <td>${(data.commission / data.deals).toLocaleString()}</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </>
+                                            )}
+                                            
+                                            <h3>Closed Transactions</h3>
+                                            <table className="report-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Property</th>
+                                                        <th>Type</th>
+                                                        <th>Sale Amount</th>
+                                                        <th>Commission</th>
+                                                        <th>Rate</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {currentReport.closedTransactions.map(transaction => (
+                                                        <tr key={transaction.id}>
+                                                            <td>{new Date(transaction.date).toLocaleDateString()}</td>
+                                                            <td>{transaction.property}</td>
+                                                            <td>{transaction.type || 'Sale'}</td>
+                                                            <td>${transaction.amount.toLocaleString()}</td>
+                                                            <td>${transaction.commission.toLocaleString()}</td>
+                                                            <td>{((transaction.commission / transaction.amount) * 100).toFixed(2)}%</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                            
+                                            {currentReport.pendingTransactions.length > 0 && (
+                                                <>
+                                                    <h3>Pending Transactions</h3>
+                                                    <table className="report-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Expected Date</th>
+                                                                <th>Property</th>
+                                                                <th>Type</th>
+                                                                <th>Sale Amount</th>
+                                                                <th>Expected Commission</th>
+                                                                <th>Rate</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {currentReport.pendingTransactions.map(transaction => (
+                                                                <tr key={transaction.id}>
+                                                                    <td>{new Date(transaction.date).toLocaleDateString()}</td>
+                                                                    <td>{transaction.property}</td>
+                                                                    <td>{transaction.type || 'Sale'}</td>
+                                                                    <td>${transaction.amount.toLocaleString()}</td>
+                                                                    <td>${transaction.commission.toLocaleString()}</td>
+                                                                    <td>{((transaction.commission / transaction.amount) * 100).toFixed(2)}%</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                    
                                     {currentReport.title === 'Expense Report' && (
                                         <div>
                                             <h3>Summary</h3>
-                                            <p><strong>Total Expenses:</strong> ${currentReport.totalExpenses.toLocaleString()}</p>
-                                            <p><strong>Total Hours:</strong> {currentReport.totalHours} hours</p>
+                                            <div style={{marginBottom: '20px', padding: '15px', background: '#f8f9fa', borderRadius: '8px'}}>
+                                                <p><strong>Report Period:</strong> {new Date(currentReport.dateRange.startDate).toLocaleDateString()} to {new Date(currentReport.dateRange.endDate).toLocaleDateString()}</p>
+                                                <p><strong>Total Expenses:</strong> ${currentReport.totalExpenses.toLocaleString()}</p>
+                                                <p><strong>Total Hours:</strong> {currentReport.totalHours} hours</p>
+                                            </div>
                                             
                                             <h3>Category Breakdown</h3>
                                             <table className="report-table">
@@ -5385,6 +5910,87 @@
                                                     ))}
                                                 </tbody>
                                             </table>
+                                        </div>
+                                    )}
+                                    
+                                    {currentReport.title === 'Expenses by Category Report' && (
+                                        <div>
+                                            <h3>Report Summary</h3>
+                                            <div style={{marginBottom: '20px', padding: '15px', background: '#f8f9fa', borderRadius: '8px'}}>
+                                                <p><strong>Report Period:</strong> {new Date(currentReport.dateRange.startDate).toLocaleDateString()} to {new Date(currentReport.dateRange.endDate).toLocaleDateString()}</p>
+                                                <p><strong>Report Date:</strong> {currentReport.reportDate}</p>
+                                                <p><strong>Total Expenses:</strong> ${currentReport.totalExpenses.toLocaleString()}</p>
+                                                <p><strong>Number of Categories:</strong> {currentReport.categoryCount}</p>
+                                                <p><strong>Total Expense Items:</strong> {currentReport.expenseCount}</p>
+                                            </div>
+                                            
+                                            <h3>Category Overview</h3>
+                                            <table className="report-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Category</th>
+                                                        <th>Total Amount</th>
+                                                        <th>% of Total</th>
+                                                        <th>Items Count</th>
+                                                        <th>Average Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {currentReport.sortedCategories.map(category => {
+                                                        const data = currentReport.categoryBreakdown[category];
+                                                        return (
+                                                            <tr key={category}>
+                                                                <td><strong>{category}</strong></td>
+                                                                <td>${data.totalAmount.toLocaleString()}</td>
+                                                                <td>{data.percentage.toFixed(1)}%</td>
+                                                                <td>{data.count}</td>
+                                                                <td>${data.averageAmount.toLocaleString()}</td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                            
+                                            <h3>Detailed Category Breakdown</h3>
+                                            {currentReport.sortedCategories.map(category => {
+                                                const data = currentReport.categoryBreakdown[category];
+                                                return (
+                                                    <div key={category} style={{marginBottom: '30px'}}>
+                                                        <h4 style={{
+                                                            background: '#007bff', 
+                                                            color: 'white', 
+                                                            padding: '10px', 
+                                                            margin: '0 0 10px 0',
+                                                            borderRadius: '4px'
+                                                        }}>
+                                                            {category} - ${data.totalAmount.toLocaleString()} ({data.percentage.toFixed(1)}%)
+                                                        </h4>
+                                                        <table className="report-table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Date</th>
+                                                                    <th>Description</th>
+                                                                    <th>Property</th>
+                                                                    <th>Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {data.items.map(expense => (
+                                                                    <tr key={expense.id}>
+                                                                        <td>{expense.date}</td>
+                                                                        <td>{expense.description}</td>
+                                                                        <td>{expense.propertyId ? 
+                                                                            properties.find(p => p.id === expense.propertyId)?.address || 'Unknown Property'
+                                                                            : 'General Business'
+                                                                        }</td>
+                                                                        <td>${expense.amount.toLocaleString()}</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     )}
                                     
