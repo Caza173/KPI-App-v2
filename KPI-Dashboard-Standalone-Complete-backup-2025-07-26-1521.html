@@ -62,6 +62,20 @@
             box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
         }
         
+        /* Ensure body doesn't interfere with fixed positioning */
+        html, body {
+            position: relative;
+            overflow-x: auto;
+        }
+        
+        /* Fixed Button Container - Ensures buttons stay in viewport */
+        .theme-toggle, .master-reset {
+            position: fixed !important;
+            margin: 0 !important;
+            left: auto !important;
+            bottom: auto !important;
+        }
+        
         /* Light Theme (Default) */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -98,34 +112,99 @@
         
         /* Theme Toggle Button */
         .theme-toggle {
-            position: fixed;
-            top: 20px;
+            position: fixed !important;
+            top: 15px;
             right: 20px;
-            background: #007bff;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            border-radius: 8px;
+            padding: 8px 16px;
+            min-width: 120px;
+            height: 45px;
             cursor: pointer;
-            font-size: 20px;
-            z-index: 1000;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transform: translateZ(0);
+            will-change: transform;
         }
         
         .theme-toggle:hover {
-            background: #0056b3;
-            transform: scale(1.1);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a6fd8, #6a47a2);
+        }
+        
+        .theme-toggle:active {
+            transform: translateY(0px) scale(0.98);
         }
         
         .dark-theme .theme-toggle {
-            background: #ffc107;
+            background: linear-gradient(135deg, #ffc107, #ff8f00);
             color: #000;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+            border: 2px solid rgba(0, 0, 0, 0.1);
         }
         
         .dark-theme .theme-toggle:hover {
-            background: #ffca2c;
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+            background: linear-gradient(135deg, #e6ac00, #e67e00);
+        }
+        
+        /* Master Reset Button */
+        .master-reset {
+            position: fixed !important;
+            top: 15px;
+            right: 155px;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            min-width: 120px;
+            height: 45px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        
+        .master-reset:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+            background: linear-gradient(135deg, #c82333, #bd2130);
+        }
+        
+        .master-reset:active {
+            transform: translateY(0px) scale(0.98);
+        }
+        
+        .dark-theme .master-reset {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark-theme .master-reset:hover {
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+            background: linear-gradient(135deg, #c82333, #bd2130);
         }
         
         /* ROI Tile Special Styling */
@@ -967,14 +1046,85 @@
             color: #aaa;
         }
         .form-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
             margin-top: 20px;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .form-section:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
         }
         
         .dark-theme .form-section {
-            background: #404040;
+            background: linear-gradient(135deg, #404040, #4a4a4a);
+            border-color: #555;
+            color: #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .dark-theme .form-section:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        
+        /* Enhanced form styling */
+        .form-section h3 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.4em;
+        }
+        
+        .dark-theme .form-section h3 {
+            background: linear-gradient(135deg, #4dabf7, #339af0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Property form section styling */
+        .property-form-section {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .property-form-section:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+        }
+        
+        .dark-theme .property-form-section {
+            background: linear-gradient(135deg, #404040, #4a4a4a);
+            border-color: #555;
+            color: #e0e0e0;
+        }
+        
+        .dark-theme .property-form-section:hover {
+            border-color: #4dabf7;
+            box-shadow: 0 4px 15px rgba(77, 171, 247, 0.2);
+        }
+        
+        .property-form-section h4 {
+            margin: 0 0 15px 0;
+            color: #495057;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .dark-theme .property-form-section h4 {
             color: #e0e0e0;
         }
         
@@ -1277,6 +1427,121 @@
         .dark-theme .property-card p {
             color: #ccc !important;
         }
+        
+        /* Custom Confirmation Dialog Styles */
+        .custom-confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(3px);
+        }
+        
+        .custom-confirm-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .dark-theme .custom-confirm-content {
+            background: #2d2d2d;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+        
+        .custom-confirm-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .custom-confirm-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .dark-theme .custom-confirm-title {
+            color: #e0e0e0;
+        }
+        
+        .custom-confirm-message {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            color: #555;
+        }
+        
+        .dark-theme .custom-confirm-message {
+            color: #ccc;
+        }
+        
+        .custom-confirm-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .custom-confirm-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+        
+        .custom-confirm-btn.primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .custom-confirm-btn.primary:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .custom-confirm-btn.danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .custom-confirm-btn.danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+        
+        .custom-confirm-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .custom-confirm-btn.secondary:hover {
+            background: #545b62;
+            transform: translateY(-1px);
+        }
+        
+        .dark-theme .custom-confirm-btn.primary {
+            background: #4dabf7;
+        }
+        
+        .dark-theme .custom-confirm-btn.primary:hover {
+            background: #339af0;
+        }
     </style>
 </head>
 <body>
@@ -1335,8 +1600,7 @@
                 weeklyAppointments: 5,
                 weeklyBuyerContracts: 2,
                 weeklyOffers: 5,
-                monthlyClosings: 2,
-                annualGCI: 215000
+                monthlyClosings: 2
             });
             const [goalsLocked, setGoalsLocked] = useState(false);
             const [gciCalculator, setGciCalculator] = useState({
@@ -1358,58 +1622,178 @@
             const [currentReport, setCurrentReport] = useState(null);
             const [propertySourceFilter, setPropertySourceFilter] = useState('All');
             const [propertyStatusFilter, setPropertyStatusFilter] = useState('All');
+            const [showConfirmModal, setShowConfirmModal] = useState(false);
+            const [confirmConfig, setConfirmConfig] = useState({});
+            const [confirmResolve, setConfirmResolve] = useState(null);
+            const [activities, setActivities] = useState([]);
+            const [customLeadSource, setCustomLeadSource] = useState('');
+            const [showCustomLeadSource, setShowCustomLeadSource] = useState(false);
+            
+            // Database functions for localStorage persistence
+            const saveToDatabase = (key, data) => {
+                try {
+                    localStorage.setItem(`kpi_dashboard_${key}`, JSON.stringify(data));
+                } catch (error) {
+                    console.error('Error saving to database:', error);
+                }
+            };
+            
+            const loadFromDatabase = (key, defaultValue = null) => {
+                try {
+                    const stored = localStorage.getItem(`kpi_dashboard_${key}`);
+                    return stored ? JSON.parse(stored) : defaultValue;
+                } catch (error) {
+                    console.error('Error loading from database:', error);
+                    return defaultValue;
+                }
+            };
+            
+            const clearDatabase = () => {
+                try {
+                    const keys = Object.keys(localStorage).filter(key => key.startsWith('kpi_dashboard_'));
+                    keys.forEach(key => localStorage.removeItem(key));
+                    console.log('Database cleared successfully');
+                } catch (error) {
+                    console.error('Error clearing database:', error);
+                }
+            };
             
             // Load initial data and set up functionality
             useEffect(() => {
-                const sampleProperties = [
-                    { id: 1, address: '123 Main St', client: 'John Doe', status: 'Listed', price: 350000, type: 'Seller', statusNote: '', source: 'Referral', listedDate: '2025-06-15', contractDate: null, closedDate: null },
-                    { id: 2, address: '456 Oak Ave', client: 'Jane Smith', status: 'Sold', price: 425000, type: 'Seller', statusNote: '', source: 'SOI', listedDate: '2025-05-20', contractDate: '2025-06-10', closedDate: '2025-07-10' },
-                    { id: 3, address: '789 Pine Rd', client: 'Bob Johnson', status: 'Under Contract', price: 275000, type: 'Buyer', statusNote: '', source: 'Zillow', listedDate: null, contractDate: '2025-07-01', closedDate: null },
-                    { id: 4, address: '321 Elm Dr', client: 'Sarah Wilson', status: 'Buyer Appointment', price: 300000, type: 'Buyer', statusNote: '', source: 'Facebook', listedDate: null, contractDate: null, closedDate: null },
-                    { id: 5, address: '654 Maple Ave', client: 'Mike Brown', status: 'Buyer Signed', price: 380000, type: 'Buyer', statusNote: '', source: 'Direct Mail', listedDate: null, contractDate: '2025-06-25', closedDate: null },
-                    { id: 6, address: '987 Cedar St', client: 'Lisa Davis', status: 'Listing Appointment', price: 450000, type: 'Seller', statusNote: '', source: 'OpCity', listedDate: null, contractDate: null, closedDate: null },
-                    { id: 7, address: '159 Oak Ln', client: 'Tom Anderson', status: 'Closed', price: 320000, type: 'Buyer', statusNote: '', source: 'In-house Referral', listedDate: null, contractDate: '2025-06-05', closedDate: '2025-07-15' }
-                ];
-                setProperties(sampleProperties);
+                // Load data from database or use sample data if none exists
+                const storedProperties = loadFromDatabase('properties');
+                const storedTransactions = loadFromDatabase('transactions');
+                const storedExpenses = loadFromDatabase('expenses');
+                const storedCalls = loadFromDatabase('calls');
+                const storedAppointments = loadFromDatabase('appointments');
+                const storedGoals = loadFromDatabase('goals');
+                const storedGciData = loadFromDatabase('gciData');
+                const storedDailyData = loadFromDatabase('dailyData');
+                const storedTheme = loadFromDatabase('theme');
+                const storedHourlyWage = loadFromDatabase('hourlyWage');
+                const storedGciCalculator = loadFromDatabase('gciCalculator');
+                const storedGoalsLocked = loadFromDatabase('goalsLocked');
+                const storedActivities = loadFromDatabase('activities');
                 
-                const sampleTransactions = [
-                    { id: 1, amount: 350000, commission: 8750, status: 'Closed', property: '123 Main St', date: '2025-07-15' },
-                    { id: 2, amount: 425000, commission: 10625, status: 'Closed', property: '456 Oak Ave', date: '2025-07-10' },
-                    { id: 3, amount: 275000, commission: 6875, status: 'Pending', property: '789 Pine Rd', date: '2025-07-05' }
-                ];
-                setTransactions(sampleTransactions);
+                if (storedProperties && storedProperties.length > 0) {
+                    setProperties(storedProperties);
+                } else {
+                    // Only use sample data if no stored data exists
+                    const sampleProperties = [
+                        { id: 1, address: '123 Main St', client: 'John Doe', status: 'Listed', price: 350000, type: 'Seller', source: 'Referral' },
+                        { id: 2, address: '456 Oak Ave', client: 'Jane Smith', status: 'Sold', price: 425000, type: 'Seller', source: 'SOI' },
+                        { id: 3, address: '789 Pine Rd', client: 'Bob Johnson', status: 'Under Contract', price: 275000, type: 'Buyer', source: 'Zillow' },
+                        { id: 4, address: '321 Elm Dr', client: 'Sarah Wilson', status: 'Buyer Appointment', price: 300000, type: 'Buyer', source: 'Facebook' },
+                        { id: 5, address: '654 Maple Ave', client: 'Mike Brown', status: 'Buyer Signed', price: 380000, type: 'Buyer', source: 'Direct Mail' },
+                        { id: 6, address: '987 Cedar St', client: 'Lisa Davis', status: 'Listing Appointment', price: 450000, type: 'Seller', source: 'OpCity' },
+                        { id: 7, address: '159 Oak Ln', client: 'Tom Anderson', status: 'Closed', price: 320000, type: 'Buyer', source: 'In-house Referral' }
+                    ];
+                    setProperties(sampleProperties);
+                    saveToDatabase('properties', sampleProperties);
+                }
                 
-                setCalls({ made: 15, answered: 12 });
-                setAppointments([
-                    { id: 1, date: '2025-07-16', time: '10:00', client: 'John Doe' },
-                    { id: 2, date: '2025-07-16', time: '14:00', client: 'Jane Smith' }
-                ]);
+                if (storedTransactions) {
+                    setTransactions(storedTransactions);
+                } else {
+                    const sampleTransactions = [
+                        { id: 1, amount: 350000, commission: 8750, status: 'Closed', property: '123 Main St', date: '2025-07-15' },
+                        { id: 2, amount: 425000, commission: 10625, status: 'Closed', property: '456 Oak Ave', date: '2025-07-10' },
+                        { id: 3, amount: 275000, commission: 6875, status: 'Pending', property: '789 Pine Rd', date: '2025-07-05' }
+                    ];
+                    setTransactions(sampleTransactions);
+                    saveToDatabase('transactions', sampleTransactions);
+                }
                 
-                const sampleExpenses = [
-                    { 
-                        id: 1, 
-                        date: '2025-07-20', 
-                        propertyId: 1, 
-                        propertyAddress: '123 Main St', 
-                        category: 'Travel', 
-                        amount: 30, 
-                        hoursWorked: 0.5,
-                        description: 'Gas for property visit', 
-                        vendor: 'Shell Station' 
-                    },
-                    { 
-                        id: 2, 
-                        date: '2025-07-20', 
-                        propertyId: 1, 
-                        propertyAddress: '123 Main St', 
-                        category: 'Staging', 
-                        amount: 1500, 
-                        hoursWorked: 4,
-                        description: 'Professional staging setup', 
-                        vendor: 'Elite Staging Co' 
-                    }
-                ];
-                setExpenses(sampleExpenses);
+                if (storedExpenses) {
+                    setExpenses(storedExpenses);
+                } else {
+                    const sampleExpenses = [
+                        { 
+                            id: 1, 
+                            date: '2025-07-20', 
+                            propertyId: 1, 
+                            propertyAddress: '123 Main St', 
+                            category: 'Travel', 
+                            amount: 30, 
+                            hoursWorked: 0.5,
+                            description: 'Gas for property visit', 
+                            vendor: 'Shell Station' 
+                        },
+                        { 
+                            id: 2, 
+                            date: '2025-07-20', 
+                            propertyId: 1, 
+                            propertyAddress: '123 Main St', 
+                            category: 'Staging', 
+                            amount: 1500, 
+                            hoursWorked: 4,
+                            description: 'Professional staging setup', 
+                            vendor: 'Elite Staging Co' 
+                        }
+                    ];
+                    setExpenses(sampleExpenses);
+                    saveToDatabase('expenses', sampleExpenses);
+                }
+                
+                if (storedCalls) {
+                    setCalls(storedCalls);
+                } else {
+                    const defaultCalls = { made: 15, answered: 12 };
+                    setCalls(defaultCalls);
+                    saveToDatabase('calls', defaultCalls);
+                }
+                
+                if (storedAppointments) {
+                    setAppointments(storedAppointments);
+                } else {
+                    const defaultAppointments = [
+                        { id: 1, date: '2025-07-16', time: '10:00', client: 'John Doe' },
+                        { id: 2, date: '2025-07-16', time: '14:00', client: 'Jane Smith' }
+                    ];
+                    setAppointments(defaultAppointments);
+                    saveToDatabase('appointments', defaultAppointments);
+                }
+                
+                if (storedGoals) {
+                    setGoals(storedGoals);
+                } else {
+                    saveToDatabase('goals', goals); // Save default goals
+                }
+                
+                if (storedGciData) {
+                    setGciData(storedGciData);
+                } else {
+                    saveToDatabase('gciData', gciData); // Save default GCI data
+                }
+                
+                if (storedDailyData) {
+                    setDailyData(storedDailyData);
+                } else {
+                    saveToDatabase('dailyData', {}); // Save empty daily data
+                }
+                
+                if (storedTheme) {
+                    setCurrentTheme(storedTheme);
+                }
+                
+                if (storedHourlyWage) {
+                    setHourlyWage(storedHourlyWage);
+                }
+                
+                if (storedGciCalculator) {
+                    setGciCalculator(storedGciCalculator);
+                }
+                
+                if (storedGoalsLocked !== null) {
+                    setGoalsLocked(storedGoalsLocked);
+                }
+                
+                if (storedActivities) {
+                    setActivities(storedActivities);
+                } else {
+                    setActivities([]);
+                    saveToDatabase('activities', []);
+                }
             }, []);
             
             // Property management functions
@@ -1418,7 +1802,9 @@
                     id: Math.max(...properties.map(p => p.id), 0) + 1,
                     ...propertyData
                 };
-                setProperties([...properties, newProperty]);
+                const updatedProperties = [...properties, newProperty];
+                setProperties(updatedProperties);
+                saveToDatabase('properties', updatedProperties);
                 
                 // Always create transaction for every property, default status is "Inactive"
                 const commission = propertyData.status === 'Closed' ? propertyData.price * 0.025 : 0;
@@ -1430,16 +1816,20 @@
                     property: propertyData.address,
                     date: new Date().toISOString().split('T')[0]
                 };
-                setTransactions([...transactions, newTransaction]);
+                const updatedTransactions = [...transactions, newTransaction];
+                setTransactions(updatedTransactions);
+                saveToDatabase('transactions', updatedTransactions);
             };
             
             const deleteProperty = (propertyId) => {
-                setProperties(properties.filter(p => p.id !== propertyId));
+                const updatedProperties = properties.filter(p => p.id !== propertyId);
+                setProperties(updatedProperties);
+                saveToDatabase('properties', updatedProperties);
             };
             
             // Function to update transaction status and recalculate commission
             const updateTransactionStatus = (transactionId, newStatus) => {
-                setTransactions(transactions.map(transaction => {
+                const updatedTransactions = transactions.map(transaction => {
                     if (transaction.id === transactionId) {
                         const newCommission = newStatus === 'Closed' ? transaction.amount * 0.025 : 0;
                         return {
@@ -1449,12 +1839,14 @@
                         };
                     }
                     return transaction;
-                }));
+                });
+                setTransactions(updatedTransactions);
+                saveToDatabase('transactions', updatedTransactions);
             };
             
             // Function to update property status
             const updatePropertyStatus = (propertyId, newStatus) => {
-                setProperties(properties.map(property => {
+                const updatedProperties = properties.map(property => {
                     if (property.id === propertyId) {
                         return {
                             ...property,
@@ -1462,10 +1854,12 @@
                         };
                     }
                     return property;
-                }));
+                });
+                setProperties(updatedProperties);
+                saveToDatabase('properties', updatedProperties);
                 
                 // Also update corresponding transaction if it exists
-                setTransactions(transactions.map(transaction => {
+                const updatedTransactions = transactions.map(transaction => {
                     if (transaction.property === properties.find(p => p.id === propertyId)?.address) {
                         const newCommission = newStatus === 'Closed' ? transaction.amount * 0.025 : 0;
                         return {
@@ -1475,7 +1869,9 @@
                         };
                     }
                     return transaction;
-                }));
+                });
+                setTransactions(updatedTransactions);
+                saveToDatabase('transactions', updatedTransactions);
             };
             
             const addExpense = (expenseData) => {
@@ -1483,15 +1879,20 @@
                     id: Math.max(...expenses.map(e => e.id), 0) + 1,
                     ...expenseData
                 };
-                setExpenses([...expenses, newExpense]);
+                const updatedExpenses = [...expenses, newExpense];
+                setExpenses(updatedExpenses);
+                saveToDatabase('expenses', updatedExpenses);
             };
             
             const updateExpense = (expenseId, updatedData) => {
-                setExpenses(prev => prev.map(expense => 
+                const updatedExpenses = expenses.map(expense => 
                     expense.id === expenseId 
                         ? { ...expense, ...updatedData }
                         : expense
-                ));
+                );
+                setExpenses(updatedExpenses);
+                saveToDatabase('expenses', updatedExpenses);
+                
                 // Update the modal data if it's currently showing
                 setSelectedTransactionExpenses(prev => prev.map(expense =>
                     expense.id === expenseId
@@ -1619,6 +2020,80 @@
                 };
             };
             
+            // Generate Commissions Report
+            const generateCommissionsReport = () => {
+                const closedTransactions = transactions.filter(t => t.status === 'Closed');
+                const totalCommissions = closedTransactions.reduce((sum, t) => sum + (t.commission || 0), 0);
+                const averageCommission = closedTransactions.length > 0 ? totalCommissions / closedTransactions.length : 0;
+                
+                // Group by month
+                const monthlyCommissions = closedTransactions.reduce((acc, transaction) => {
+                    const month = transaction.date.substring(0, 7); // YYYY-MM format
+                    if (!acc[month]) {
+                        acc[month] = { total: 0, count: 0, transactions: [] };
+                    }
+                    acc[month].total += transaction.commission || 0;
+                    acc[month].count += 1;
+                    acc[month].transactions.push(transaction);
+                    return acc;
+                }, {});
+                
+                return {
+                    title: 'Commissions Report',
+                    totalCommissions,
+                    averageCommission,
+                    totalDeals: closedTransactions.length,
+                    monthlyBreakdown: monthlyCommissions,
+                    transactions: closedTransactions
+                };
+            };
+            
+            // Generate Expense by Property Report
+            const generateExpenseByPropertyReport = () => {
+                const propertyExpenses = properties.map(property => {
+                    const propertyExpenseList = expenses.filter(expense => 
+                        expense.propertyAddress === property.address
+                    );
+                    const totalExpenses = propertyExpenseList.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+                    const totalHours = propertyExpenseList.reduce((sum, exp) => sum + (exp.hoursWorked || 0), 0);
+                    
+                    // Get corresponding transaction
+                    const transaction = transactions.find(t => t.property === property.address);
+                    const commission = transaction ? transaction.commission : 0;
+                    const netProfit = commission - totalExpenses;
+                    const roi = totalExpenses > 0 ? ((netProfit / totalExpenses) * 100) : 0;
+                    
+                    return {
+                        property,
+                        expenses: propertyExpenseList,
+                        totalExpenses,
+                        totalHours,
+                        commission,
+                        netProfit,
+                        roi
+                    };
+                });
+                
+                // Sort by total expenses (highest first)
+                propertyExpenses.sort((a, b) => b.totalExpenses - a.totalExpenses);
+                
+                const totalAllExpenses = propertyExpenses.reduce((sum, p) => sum + p.totalExpenses, 0);
+                const totalAllHours = propertyExpenses.reduce((sum, p) => sum + p.totalHours, 0);
+                const totalAllCommissions = propertyExpenses.reduce((sum, p) => sum + p.commission, 0);
+                const totalNetProfit = propertyExpenses.reduce((sum, p) => sum + p.netProfit, 0);
+                
+                return {
+                    title: 'Expense by Property Report',
+                    propertyExpenses,
+                    totals: {
+                        expenses: totalAllExpenses,
+                        hours: totalAllHours,
+                        commissions: totalAllCommissions,
+                        netProfit: totalNetProfit
+                    }
+                };
+            };
+            
             const generateDailyReport = () => {
                 const dayData = dailyData[selectedDate] || {};
                 const dayExpenses = expenses.filter(e => e.date === selectedDate);
@@ -1633,45 +2108,22 @@
             };
             
             const saveDailyData = (data) => {
-                setDailyData(prev => ({
-                    ...prev,
+                const updatedDailyData = {
+                    ...dailyData,
                     [data.date]: data
-                }));
-                setCalls({ made: data.callsMade || 0, answered: data.callsAnswered || 0 });
+                };
+                setDailyData(updatedDailyData);
+                saveToDatabase('dailyData', updatedDailyData);
+                
+                const updatedCalls = { made: data.callsMade || 0, answered: data.callsAnswered || 0 };
+                setCalls(updatedCalls);
+                saveToDatabase('calls', updatedCalls);
             };
             
             // Calculate average time to close
             const calculateAverageTimeToClose = () => {
-                const closedProperties = properties.filter(p => p.status === 'Closed' || p.status === 'Sold');
-                
-                if (closedProperties.length === 0) return 0;
-                
-                const timeToCloseData = closedProperties.map(property => {
-                    if (!property.closedDate) return null;
-                    
-                    let startDate;
-                    if (property.type === 'Seller') {
-                        // For sellers: time from listing to closing
-                        startDate = property.listedDate;
-                    } else {
-                        // For buyers: time from contract acceptance to closing
-                        startDate = property.contractDate;
-                    }
-                    
-                    if (!startDate) return null;
-                    
-                    const start = new Date(startDate);
-                    const close = new Date(property.closedDate);
-                    const timeDiff = close.getTime() - start.getTime();
-                    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                    
-                    return daysDiff;
-                }).filter(days => days !== null && days > 0);
-                
-                if (timeToCloseData.length === 0) return 0;
-                
-                const averageDays = timeToCloseData.reduce((sum, days) => sum + days, 0) / timeToCloseData.length;
-                return Math.round(averageDays);
+                // Since date tracking has been simplified, return a default message
+                return 0;
             };
             
             // GCI Calculator function
@@ -1716,7 +2168,101 @@
             const toggleTheme = () => {
                 const newTheme = currentTheme === 'light' ? 'dark' : 'light';
                 setCurrentTheme(newTheme);
+                saveToDatabase('theme', newTheme);
                 document.body.className = newTheme === 'dark' ? 'dark-theme' : '';
+            };
+            
+            // Custom confirmation dialog function
+            const showCustomConfirm = (config) => {
+                return new Promise((resolve) => {
+                    setConfirmConfig(config);
+                    setConfirmResolve(() => resolve);
+                    setShowConfirmModal(true);
+                });
+            };
+            
+            const handleConfirmResponse = (response) => {
+                setShowConfirmModal(false);
+                if (confirmResolve) {
+                    confirmResolve(response);
+                }
+                setConfirmResolve(null);
+            };
+            
+            // Master Reset function
+            const masterReset = async () => {
+                const firstConfirmation = await showCustomConfirm({
+                    icon: '⚠️',
+                    title: 'Master Reset Warning',
+                    message: 'This will permanently delete ALL data including:\n• All Properties\n• All Transactions\n• All Expenses\n• All Hours/Activities\n• All Appointments\n• All Goals Progress\n• All Daily Data\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to reset everything?',
+                    primaryButton: 'Continue',
+                    secondaryButton: 'Cancel',
+                    type: 'danger'
+                });
+                
+                if (firstConfirmation) {
+                    const finalConfirmation = await showCustomConfirm({
+                        icon: '🔴',
+                        title: 'FINAL CONFIRMATION',
+                        message: 'This is your last chance to cancel.\nALL DATA WILL BE PERMANENTLY DELETED.\n\nClick "DELETE ALL DATA" to proceed with the master reset.',
+                        primaryButton: 'DELETE ALL DATA',
+                        secondaryButton: 'Cancel',
+                        type: 'danger'
+                    });
+                    
+                    if (finalConfirmation) {
+                        // Clear all database data
+                        clearDatabase();
+                        
+                        // Reset all state to initial values
+                        setProperties([]);
+                        setTransactions([]);
+                        setExpenses([]);
+                        setHours([]);
+                        setCalls({ made: 0, answered: 0 });
+                        setAppointments([]);
+                        setGciData({ gciGoal: 215000, current: 0 });
+                        setDailyData({});
+                        setGoals({
+                            dailyCalls: 0,
+                            weeklyAppointments: 0,
+                            weeklyBuyerContracts: 0,
+                            weeklyOffers: 0,
+                            monthlyClosings: 0
+                        });
+                        setGciCalculator({
+                            averageSalePrice: 0,
+                            commissionRate: 0,
+                            averageCommissionPerDeal: 0,
+                            desiredGCI: 0,
+                            dealsNeeded: 0
+                        });
+                        setSelectedPropertyForExpenses(null);
+                        setSelectedPropertyForExpense(null);
+                        setEditingExpense(null);
+                        setIsEditMode(false);
+                        setShowExpenseModal(false);
+                        setShowReportModal(false);
+                        setCurrentReport(null);
+                        setSelectedTransactionExpenses([]);
+                        setActivities([]);
+                        
+                        // Console log for debugging
+                        console.log('Master Reset Complete - All data cleared from database and state');
+                        
+                        // Success message
+                        setTimeout(async () => {
+                            await showCustomConfirm({
+                                icon: '✅',
+                                title: 'Master Reset Complete!',
+                                message: 'All data has been cleared and the dashboard has been reset to its initial state.\n\nYour KPI Dashboard is ready for fresh data entry.',
+                                primaryButton: 'Continue',
+                                secondaryButton: null,
+                                type: 'primary'
+                            });
+                        }, 100);
+                    }
+                }
             };
             
             // Set initial theme
@@ -1749,8 +2295,21 @@
                         {currentTheme === 'light' ? '🌙' : '☀️'}
                     </button>
                     
+                    {/* Master Reset Button */}
+                    <button 
+                        className="master-reset" 
+                        onClick={masterReset}
+                        title="Master Reset - Permanently delete ALL data and start fresh"
+                    >
+                        🗑️
+                    </button>
+                    
                     <div className="timestamp">
                         <span>📅 Last Updated: {new Date().toLocaleString()}</span>
+                        <br />
+                        <span style={{color: '#28a745', fontSize: '0.9em', fontWeight: 'bold'}}>
+                            💾 Database: Auto-saving enabled
+                        </span>
                     </div>
                     
                     {/* Navigation Tabs */}
@@ -1760,7 +2319,7 @@
                             data-tab="goals"
                             onClick={() => setActiveTab('goals')}
                         >
-                            🎯 Goals
+                            🎯 Goals & Activities
                         </div>
                         <div 
                             className={`tab ${activeTab === 'transactions' ? 'active' : ''}`}
@@ -1768,13 +2327,6 @@
                             onClick={() => setActiveTab('transactions')}
                         >
                             📋 Transactions & Properties
-                        </div>
-                        <div 
-                            className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-                            data-tab="dashboard"
-                            onClick={() => setActiveTab('dashboard')}
-                        >
-                            📊 Dashboard
                         </div>
                         <div 
                             className={`tab ${activeTab === 'expenses' ? 'active' : ''}`}
@@ -1810,7 +2362,7 @@
                     {activeTab === 'goals' && (
                         <div className="tab-content">
                             <div style={{textAlign: 'center', marginBottom: '30px'}}>
-                                <h2 style={{marginBottom: '10px'}}>🎯 Goals & Performance Tracking</h2>
+                                <h2 style={{marginBottom: '10px'}}>🎯 Goals & Activities Tracking</h2>
                                 <p style={{color: '#666', fontSize: '16px', margin: 0}}>Set your targets and track your daily progress toward success</p>
                             </div>
                             
@@ -1840,14 +2392,32 @@
                                         padding: '8px 20px',
                                         fontWeight: 'bold'
                                     }}
-                                    onClick={() => {
+                                    onClick={async () => {
                                         if (goalsLocked) {
-                                            if (confirm('🔓 Unlock your goals?\n\nThis will allow you to modify your targets but disable progress tracking until you lock them again.')) {
+                                            const confirmed = await showCustomConfirm({
+                                                icon: '🔓',
+                                                title: 'Unlock Goals',
+                                                message: 'This will allow you to modify your targets but disable progress tracking until you lock them again.\n\nDo you want to unlock your goals?',
+                                                primaryButton: 'Unlock Goals',
+                                                secondaryButton: 'Cancel',
+                                                type: 'primary'
+                                            });
+                                            if (confirmed) {
                                                 setGoalsLocked(false);
+                                                saveToDatabase('goalsLocked', false);
                                             }
                                         } else {
-                                            if (confirm('🔒 Lock your goals?\n\nThis will enable progress tracking and prevent goal modifications. You can unlock them later if needed.')) {
+                                            const confirmed = await showCustomConfirm({
+                                                icon: '🔒',
+                                                title: 'Lock Goals & Start Tracking',
+                                                message: 'This will enable progress tracking and prevent goal modifications. You can unlock them later if needed.\n\nDo you want to lock your goals and start tracking?',
+                                                primaryButton: 'Lock & Track',
+                                                secondaryButton: 'Cancel',
+                                                type: 'primary'
+                                            });
+                                            if (confirmed) {
                                                 setGoalsLocked(true);
+                                                saveToDatabase('goalsLocked', true);
                                             }
                                         }
                                     }}
@@ -1894,16 +2464,6 @@
                                         <p style={{fontSize: '24px', fontWeight: 'bold', color: '#1b5e20', margin: '8px 0'}}>{goals.monthlyClosings}</p>
                                         <small style={{color: '#2e7d32'}}>closings per month</small>
                                     </div>
-                                    <div className="tile" style={{
-                                        background: 'linear-gradient(135deg, #fff3e0, #ffcc02)',
-                                        border: '2px solid #ff9800',
-                                        borderRadius: '12px',
-                                        textAlign: 'center'
-                                    }}>
-                                        <h4 style={{color: '#f57c00', marginBottom: '8px'}}>💰 Annual GCI</h4>
-                                        <p style={{fontSize: '20px', fontWeight: 'bold', color: '#e65100', margin: '8px 0'}}>${goals.annualGCI?.toLocaleString() || 'Not Set'}</p>
-                                        <small style={{color: '#f57c00'}}>gross commission income</small>
-                                    </div>
                                 </div>
                             </div>
                             
@@ -1936,11 +2496,10 @@
                                             monthlyClosings: parseInt(formData.get('monthlyClosings')) || goals.monthlyClosings,
                                             hoursWorked: parseFloat(formData.get('hoursWorked')) || goals.hoursWorked || 8,
                                             appointmentsSet: parseInt(formData.get('appointmentsSet')) || goals.appointmentsSet || 1,
-                                            offersWritten: parseInt(formData.get('offersWritten')) || goals.offersWritten || 2,
-                                            annualGCI: parseInt(formData.get('annualGCI')) || goals.annualGCI
+                                            offersWritten: parseInt(formData.get('offersWritten')) || goals.offersWritten || 2
                                         };
                                         setGoals(newGoals);
-                                        setGciData(prev => ({ ...prev, gciGoal: newGoals.annualGCI }));
+                                        saveToDatabase('goals', newGoals);
                                         alert('✅ Goals updated successfully!');
                                     }}>
                                         
@@ -2018,16 +2577,6 @@
                                                     style={{borderRadius: '6px'}}
                                                 />
                                             </div>
-                                            <div className="form-group">
-                                                <label style={{fontWeight: '500'}}>Annual GCI Target</label>
-                                                <input 
-                                                    type="number" 
-                                                    name="annualGCI" 
-                                                    placeholder={`Current: $${goals.annualGCI?.toLocaleString() || 'Not Set'}`}
-                                                    disabled={goalsLocked}
-                                                    style={{borderRadius: '6px'}}
-                                                />
-                                            </div>
                                         </div>
                                         
                                         <button 
@@ -2064,7 +2613,12 @@
                                             appointmentsSet: parseInt(formData.get('appointmentsSet')) || 0,
                                             offersWritten: parseInt(formData.get('offersWritten')) || 0,
                                             buyerContracts: parseInt(formData.get('buyerContracts')) || 0,
-                                            listingsObtained: parseInt(formData.get('listingsObtained')) || 0
+                                            listingsObtained: parseInt(formData.get('listingsObtained')) || 0,
+                                            showings: parseInt(formData.get('showings')) || 0,
+                                            appraisals: parseInt(formData.get('appraisals')) || 0,
+                                            homeInspections: parseInt(formData.get('homeInspections')) || 0,
+                                            septicInspections: parseInt(formData.get('septicInspections')) || 0,
+                                            closings: parseInt(formData.get('closings')) || 0
                                         };
                                         saveDailyData(data);
                                         alert('✅ Daily activities saved successfully!');
@@ -2156,6 +2710,65 @@
                                             />
                                         </div>
                                         
+                                        {/* New Activity Types */}
+                                        <div style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                            gap: '15px',
+                                            marginTop: '20px'
+                                        }}>
+                                            <div className="form-group">
+                                                <label style={{fontWeight: '500'}}>🏠 Showings</label>
+                                                <input 
+                                                    type="number" 
+                                                    name="showings" 
+                                                    placeholder="0"
+                                                    style={{borderRadius: '6px'}}
+                                                    defaultValue={dailyData[selectedDate]?.showings || ''}
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label style={{fontWeight: '500'}}>📊 Appraisals</label>
+                                                <input 
+                                                    type="number" 
+                                                    name="appraisals" 
+                                                    placeholder="0"
+                                                    style={{borderRadius: '6px'}}
+                                                    defaultValue={dailyData[selectedDate]?.appraisals || ''}
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label style={{fontWeight: '500'}}>🔍 Home Inspections</label>
+                                                <input 
+                                                    type="number" 
+                                                    name="homeInspections" 
+                                                    placeholder="0"
+                                                    style={{borderRadius: '6px'}}
+                                                    defaultValue={dailyData[selectedDate]?.homeInspections || ''}
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label style={{fontWeight: '500'}}>🚿 Septic Inspections</label>
+                                                <input 
+                                                    type="number" 
+                                                    name="septicInspections" 
+                                                    placeholder="0"
+                                                    style={{borderRadius: '6px'}}
+                                                    defaultValue={dailyData[selectedDate]?.septicInspections || ''}
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label style={{fontWeight: '500'}}>🏆 Closings</label>
+                                                <input 
+                                                    type="number" 
+                                                    name="closings" 
+                                                    placeholder="0"
+                                                    style={{borderRadius: '6px'}}
+                                                    defaultValue={dailyData[selectedDate]?.closings || ''}
+                                                />
+                                            </div>
+                                        </div>
+                                        
                                         <button 
                                             type="submit" 
                                             className="btn"
@@ -2214,6 +2827,26 @@
                                                     <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                                         <span>🏠 Listings:</span>
                                                         <strong>{dailyData[selectedDate].listingsObtained}</strong>
+                                                    </div>
+                                                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                        <span>🏠 Showings:</span>
+                                                        <strong>{dailyData[selectedDate].showings || 0}</strong>
+                                                    </div>
+                                                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                        <span>📊 Appraisals:</span>
+                                                        <strong>{dailyData[selectedDate].appraisals || 0}</strong>
+                                                    </div>
+                                                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                        <span>🔍 Home Inspections:</span>
+                                                        <strong>{dailyData[selectedDate].homeInspections || 0}</strong>
+                                                    </div>
+                                                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                        <span>🚿 Septic Inspections:</span>
+                                                        <strong>{dailyData[selectedDate].septicInspections || 0}</strong>
+                                                    </div>
+                                                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                        <span>🏆 Closings:</span>
+                                                        <strong>{dailyData[selectedDate].closings || 0}</strong>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2442,6 +3075,154 @@
                                     </div>
                                 </div>
                             )}
+                            
+                            {/* Property-Linked Activities Section */}
+                            <div className="form-section" style={{borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', marginTop: '30px'}}>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '20px'}}>
+                                    <span style={{fontSize: '24px', marginRight: '10px'}}>🔗</span>
+                                    <h3 style={{margin: 0}}>Link Activities to Properties</h3>
+                                </div>
+                                
+                                {properties.length === 0 ? (
+                                    <div className="alert alert-info">
+                                        <strong>No properties yet!</strong> Add properties in the Transactions tab to link activities to them.
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p style={{color: '#666', marginBottom: '20px'}}>
+                                            Track which activities are associated with specific properties for better pipeline management.
+                                        </p>
+                                        
+                                        <form onSubmit={(e) => {
+                                            e.preventDefault();
+                                            const formData = new FormData(e.target);
+                                            const activityData = {
+                                                id: Math.max(...activities.map(a => a.id), 0) + 1,
+                                                date: selectedDate,
+                                                propertyId: parseInt(formData.get('propertyId')),
+                                                activityType: formData.get('activityType'),
+                                                notes: formData.get('notes') || ''
+                                            };
+                                            const updatedActivities = [...activities, activityData];
+                                            setActivities(updatedActivities);
+                                            saveToDatabase('activities', updatedActivities);
+                                            e.target.reset();
+                                            alert('✅ Activity linked to property successfully!');
+                                        }}>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '15px'}}>
+                                                <div className="form-group">
+                                                    <label style={{fontWeight: '500'}}>🏠 Select Property</label>
+                                                    <select name="propertyId" required style={{borderRadius: '6px'}}>
+                                                        <option value="">Choose a property...</option>
+                                                        {properties.map(property => (
+                                                            <option key={property.id} value={property.id}>
+                                                                {property.address} - {property.client}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                
+                                                <div className="form-group">
+                                                    <label style={{fontWeight: '500'}}>📋 Activity Type</label>
+                                                    <select name="activityType" required style={{borderRadius: '6px'}}>
+                                                        <option value="">Select activity...</option>
+                                                        <option value="showing">🏠 Showing</option>
+                                                        <option value="appraisal">📊 Appraisal</option>
+                                                        <option value="homeInspection">🔍 Home Inspection</option>
+                                                        <option value="septicInspection">🚿 Septic Inspection</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="form-group">
+                                                <label style={{fontWeight: '500'}}>📝 Notes (Optional)</label>
+                                                <textarea 
+                                                    name="notes" 
+                                                    placeholder="Add any additional details about this activity..."
+                                                    rows="3"
+                                                    style={{borderRadius: '6px'}}
+                                                />
+                                            </div>
+                                            
+                                            <button 
+                                                type="submit" 
+                                                className="btn"
+                                                style={{
+                                                    borderRadius: '8px',
+                                                    padding: '12px 24px',
+                                                    fontWeight: 'bold',
+                                                    background: 'linear-gradient(135deg, #17a2b8, #138496)',
+                                                    border: 'none'
+                                                }}
+                                            >
+                                                🔗 Link Activity to Property
+                                            </button>
+                                        </form>
+                                        
+                                        {/* Display linked activities for selected date */}
+                                        {activities.filter(a => a.date === selectedDate).length > 0 && (
+                                            <div style={{marginTop: '25px'}}>
+                                                <h4 style={{marginBottom: '15px', color: '#495057'}}>Today's Property Activities</h4>
+                                                <div style={{display: 'grid', gap: '10px'}}>
+                                                    {activities.filter(a => a.date === selectedDate).map(activity => {
+                                                        const property = properties.find(p => p.id === activity.propertyId);
+                                                        const activityLabels = {
+                                                            showing: '🏠 Showing',
+                                                            appraisal: '📊 Appraisal',
+                                                            homeInspection: '🔍 Home Inspection',
+                                                            septicInspection: '🚿 Septic Inspection'
+                                                        };
+                                                        
+                                                        return (
+                                                            <div key={activity.id} style={{
+                                                                background: '#f8f9fa',
+                                                                border: '1px solid #e9ecef',
+                                                                borderRadius: '8px',
+                                                                padding: '15px',
+                                                                display: 'flex',
+                                                                justifyContent: 'space-between',
+                                                                alignItems: 'center'
+                                                            }}>
+                                                                <div>
+                                                                    <div style={{fontWeight: 'bold', marginBottom: '5px'}}>
+                                                                        {activityLabels[activity.activityType]}
+                                                                    </div>
+                                                                    <div style={{color: '#666', fontSize: '14px'}}>
+                                                                        📍 {property ? property.address : 'Property not found'}
+                                                                    </div>
+                                                                    {activity.notes && (
+                                                                        <div style={{color: '#666', fontSize: '13px', marginTop: '5px', fontStyle: 'italic'}}>
+                                                                            💭 {activity.notes}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                <button 
+                                                                    onClick={() => {
+                                                                        const updatedActivities = activities.filter(a => a.id !== activity.id);
+                                                                        setActivities(updatedActivities);
+                                                                        saveToDatabase('activities', updatedActivities);
+                                                                    }}
+                                                                    style={{
+                                                                        background: '#dc3545',
+                                                                        color: 'white',
+                                                                        border: 'none',
+                                                                        borderRadius: '4px',
+                                                                        padding: '5px 10px',
+                                                                        cursor: 'pointer',
+                                                                        fontSize: '12px'
+                                                                    }}
+                                                                >
+                                                                    ❌ Remove
+                                                                </button>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                     
@@ -2462,27 +3243,28 @@
                                 <form onSubmit={(e) => {
                                     e.preventDefault();
                                     const formData = new FormData(e.target);
+                                    const selectedSource = formData.get('source');
+                                    const finalSource = selectedSource === 'Other' ? customLeadSource : selectedSource;
+                                    
                                     const propertyData = {
                                         address: formData.get('address'),
                                         client: formData.get('client'),
                                         type: formData.get('type'),
                                         price: parseFloat(formData.get('price')),
-                                        status: formData.get('status') || 'Active',
-                                        statusNote: formData.get('statusNote') || '',
-                                        source: formData.get('source') || 'Direct',
-                                        listedDate: formData.get('listedDate') || null,
-                                        contractDate: formData.get('contractDate') || null,
-                                        closedDate: formData.get('closedDate') || null
+                                        status: 'Active',
+                                        source: finalSource || 'Direct'
                                     };
                                     addProperty(propertyData);
                                     e.target.reset();
+                                    setShowCustomLeadSource(false);
+                                    setCustomLeadSource('');
                                     alert('Property added successfully!');
                                 }}>
                                     <div style={{display: 'grid', gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr' : '1fr', gap: '20px'}}>
                                         
                                         {/* Property Details Section */}
-                                        <div style={{padding: '15px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef'}}>
-                                            <h4 style={{margin: '0 0 15px 0', color: '#495057'}}>🏠 Property Details</h4>
+                                        <div className="property-form-section">
+                                            <h4>🏠 Property Details</h4>
                                             <div className="form-group">
                                                 <label style={{fontWeight: '500'}}>Property Address</label>
                                                 <input type="text" name="address" placeholder="Enter property address" required style={{borderRadius: '6px'}} />
@@ -2491,16 +3273,11 @@
                                                 <label style={{fontWeight: '500'}}>Price</label>
                                                 <input type="number" name="price" placeholder="Enter price (USD)" required style={{borderRadius: '6px'}} />
                                             </div>
-                                            <div className="form-group">
-                                                <label style={{fontWeight: '500'}}>Listed Date (for Sellers)</label>
-                                                <input type="date" name="listedDate" style={{borderRadius: '6px'}} />
-                                                <small style={{color: '#666', fontSize: '12px'}}>Date property was listed</small>
-                                            </div>
                                         </div>
                                         
                                         {/* Client & Lead Information Section */}
-                                        <div style={{padding: '15px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef'}}>
-                                            <h4 style={{margin: '0 0 15px 0', color: '#495057'}}>👤 Client & Lead Information</h4>
+                                        <div className="property-form-section">
+                                            <h4>👤 Client & Lead Information</h4>
                                             <div className="form-group">
                                                 <label style={{fontWeight: '500'}}>Client Name</label>
                                                 <input type="text" name="client" placeholder="Enter client name" required style={{borderRadius: '6px'}} />
@@ -2516,7 +3293,17 @@
                                             </div>
                                             <div className="form-group">
                                                 <label style={{fontWeight: '500'}}>Lead Source</label>
-                                                <select name="source" required style={{borderRadius: '6px'}}>
+                                                <select 
+                                                    name="source" 
+                                                    required 
+                                                    style={{borderRadius: '6px'}}
+                                                    onChange={(e) => {
+                                                        setShowCustomLeadSource(e.target.value === 'Other');
+                                                        if (e.target.value !== 'Other') {
+                                                            setCustomLeadSource('');
+                                                        }
+                                                    }}
+                                                >
                                                     <option value="">Select Lead Source</option>
                                                     <option value="Social Media">Social Media</option>
                                                     <option value="Referral">Referral</option>
@@ -2533,67 +3320,50 @@
                                                     <option value="Terminated">Terminated Listings</option>
                                                     <option value="Other">Other</option>
                                                 </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label style={{fontWeight: '500'}}>Contract Date</label>
-                                                <input type="date" name="contractDate" style={{borderRadius: '6px'}} />
-                                                <small style={{color: '#666', fontSize: '12px'}}>Date contract was accepted</small>
-                                            </div>
-                                            <div className="form-group">
-                                                <label style={{fontWeight: '500'}}>Closing Date</label>
-                                                <input type="date" name="closedDate" style={{borderRadius: '6px'}} />
-                                                <small style={{color: '#666', fontSize: '12px'}}>Date transaction closed</small>
+                                                {showCustomLeadSource && (
+                                                    <div style={{marginTop: '10px'}}>
+                                                        <input 
+                                                            type="text" 
+                                                            name="customSource"
+                                                            placeholder="Enter custom lead source" 
+                                                            value={customLeadSource}
+                                                            onChange={(e) => setCustomLeadSource(e.target.value)}
+                                                            required={showCustomLeadSource}
+                                                            style={{
+                                                                borderRadius: '6px',
+                                                                width: '100%',
+                                                                padding: '10px',
+                                                                border: '1px solid #ddd',
+                                                                fontSize: '14px'
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         
                                     </div>
                                     
-                                    {/* Status Section */}
-                                    <div style={{padding: '15px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', marginTop: '20px'}}>
-                                        <h4 style={{margin: '0 0 15px 0', color: '#495057'}}>📊 Status & Notes</h4>
-                                        <div style={{display: 'grid', gridTemplateColumns: window.innerWidth > 768 ? '1fr 2fr' : '1fr', gap: '15px'}}>
-                                            <div className="form-group">
-                                                <label style={{fontWeight: '500'}}>Status</label>
-                                                <select name="status" style={{borderRadius: '6px'}}>
-                                                    <option value="">Select Status</option>
-                                                    <optgroup label="General">
-                                                        <option value="Active">Active</option>
-                                                        <option value="Inactive">Inactive</option>
-                                                        <option value="Under Contract">Under Contract</option>
-                                                        <option value="Closed">Closed</option>
-                                                        <option value="Withdrawn">Withdrawn</option>
-                                                        <option value="Expired">Expired</option>
-                                                        <option value="Terminated">Terminated</option>
-                                                    </optgroup>
-                                                    <optgroup label="Buyer Pipeline">
-                                                        <option value="Buyer Appointment">Buyer Appointment</option>
-                                                        <option value="Buyer Signed">Buyer Signed</option>
-                                                        <option value="Showing Properties">Showing Properties</option>
-                                                        <option value="Offer Submitted">Offer Submitted</option>
-                                                    </optgroup>
-                                                    <optgroup label="Seller Pipeline">
-                                                        <option value="Listing Appointment">Listing Appointment</option>
-                                                        <option value="Listed">Listed</option>
-                                                        <option value="Pending Sale">Pending Sale</option>
-                                                        <option value="Sold">Sold</option>
-                                                    </optgroup>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label style={{fontWeight: '500'}}>Status Notes (Optional)</label>
-                                                <input type="text" name="statusNote" placeholder="Enter status note (optional)" style={{borderRadius: '6px'}} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
                                     <button type="submit" className="btn" style={{
-                                        background: 'linear-gradient(135deg, #2196f3, #03a9f4)',
-                                        borderRadius: '8px',
-                                        padding: '12px 24px',
-                                        fontWeight: '500',
-                                        marginTop: '20px',
-                                        width: '100%'
-                                    }}>🏠 Add Property</button>
+                                        background: 'linear-gradient(135deg, #28a745, #20c997)',
+                                        borderRadius: '10px',
+                                        padding: '15px 30px',
+                                        fontWeight: '600',
+                                        fontSize: '16px',
+                                        boxShadow: '0 4px 15px rgba(40, 167, 69, 0.3)',
+                                        transition: 'all 0.3s ease',
+                                        border: 'none'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.transform = 'translateY(-2px)';
+                                        e.target.style.boxShadow = '0 6px 20px rgba(40, 167, 69, 0.4)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.transform = 'translateY(0)';
+                                        e.target.style.boxShadow = '0 4px 15px rgba(40, 167, 69, 0.3)';
+                                    }}>
+                                        🏠 Add Property
+                                    </button>
                                 </form>
                             </div>
                             
@@ -2606,8 +3376,8 @@
                                 </div>
                                 <div className="tile">
                                     <h4>Total Volume</h4>
-                                    <p>${transactions.reduce((sum, t) => sum + t.amount, 0).toLocaleString()}</p>
-                                    <small>Total transaction volume</small>
+                                    <p>${transactions.filter(t => t.status === 'Closed').reduce((sum, t) => sum + t.amount, 0).toLocaleString()}</p>
+                                    <small>Closed transaction volume</small>
                                 </div>
                                 <div className="tile">
                                     <h4>Commission Earned</h4>
@@ -2640,6 +3410,10 @@
                                         const totalExpenses = transactionExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
                                         const netProfit = transaction.commission - totalExpenses;
                                         const roi = totalExpenses > 0 ? ((netProfit / totalExpenses) * 100) : 0;
+                                        
+                                        // Get activities linked to this property
+                                        const property = properties.find(p => p.address === transaction.property);
+                                        const linkedActivities = property ? activities.filter(activity => activity.propertyId === property.id) : [];
                                         
                                         return (
                                             <div key={transaction.id} style={{
@@ -2741,6 +3515,48 @@
                                                         )}
                                                     </div>
                                                 </div>
+                                                
+                                                {/* Linked Activities Section */}
+                                                {linkedActivities.length > 0 && (
+                                                    <div style={{
+                                                        borderTop: '1px solid #e0e0e0',
+                                                        paddingTop: '8px',
+                                                        marginTop: '8px'
+                                                    }}>
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'center',
+                                                            marginBottom: '5px'
+                                                        }}>
+                                                            <span className="transaction-detail" style={{margin: 0}}>
+                                                                <strong>🔗 Activities:</strong> {linkedActivities.length}
+                                                            </span>
+                                                        </div>
+                                                        <div style={{fontSize: '12px', color: '#666'}}>
+                                                            {linkedActivities.map((activity, index) => {
+                                                                const activityLabels = {
+                                                                    showings: '🏠 Showing',
+                                                                    appraisal: '📊 Appraisal', 
+                                                                    homeInspection: '🔍 Home Inspection',
+                                                                    septicInspection: '🚿 Septic Inspection',
+                                                                    closings: '📋 Closing'
+                                                                };
+                                                                return (
+                                                                    <div key={activity.id} style={{
+                                                                        marginBottom: '3px',
+                                                                        fontSize: '11px',
+                                                                        display: 'flex',
+                                                                        justifyContent: 'space-between'
+                                                                    }}>
+                                                                        <span>{activityLabels[activity.activityType] || activity.activityType}</span>
+                                                                        <span style={{color: '#999'}}>{activity.date}</span>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                )}
                                                 
                                                 {/* Net Profit */}
                                                 <div style={{
@@ -2983,44 +3799,6 @@
                                         </div>
                                     </div>
                                 )}
-                            </div>
-                        </div>
-                    )}
-                    
-                    {/* Dashboard Tab */}
-                    {activeTab === 'dashboard' && (
-                        <div className="tab-content">
-                            <div style={{textAlign: 'center', marginBottom: '30px'}}>
-                                <h2 style={{marginBottom: '10px'}}>📊 Dashboard Overview</h2>
-                                <p style={{color: '#666', fontSize: '16px', margin: 0}}>Your real-time performance metrics and key business indicators</p>
-                            </div>
-                            <div className="grid">
-                                <div className="tile">
-                                    <h4>Today's Calls</h4>
-                                    <p>{calls.made}</p>
-                                    <small>Calls made today</small>
-                                </div>
-                                <div className="tile">
-                                    <h4>Call Success Rate</h4>
-                                    <p>{calls.made > 0 ? Math.round((calls.answered / calls.made) * 100) : 0}%</p>
-                                    <small>Answered calls rate</small>
-                                </div>
-                                <div className="tile">
-                                    <h4>Appointments Today</h4>
-                                    <p>{appointments.filter(a => a.date === selectedDate).length}</p>
-                                    <small>Scheduled appointments</small>
-                                </div>
-                                <div className="tile">
-                                    <h4>Monthly Progress</h4>
-                                    <p>{Math.round((totalCommission / gciData.gciGoal) * 100)}%</p>
-                                    <small>Progress toward annual goal</small>
-                                </div>
-                            </div>
-                            
-                            <div className="alert alert-info">
-                                <strong>Quick Stats:</strong> You have {properties.filter(p => p.status === 'Active').length} active listings, 
-                                {properties.filter(p => p.status === 'Pending').length} pending sales, and have earned 
-                                ${totalCommission.toLocaleString()} in commission this year.
                             </div>
                         </div>
                     )}
@@ -3416,6 +4194,24 @@
                                     <h4>📋 Daily Report</h4>
                                     <p>Today's Activities</p>
                                     <small>Daily performance and tasks</small>
+                                </div>
+                                
+                                <div className="tile" onClick={() => {
+                                    setCurrentReport(generateCommissionsReport());
+                                    setShowReportModal(true);
+                                }} style={{cursor: 'pointer'}}>
+                                    <h4>💰 Commissions Report</h4>
+                                    <p>Earnings Analysis</p>
+                                    <small>Total commissions and monthly breakdown</small>
+                                </div>
+                                
+                                <div className="tile" onClick={() => {
+                                    setCurrentReport(generateExpenseByPropertyReport());
+                                    setShowReportModal(true);
+                                }} style={{cursor: 'pointer'}}>
+                                    <h4>🏠 Expense by Property</h4>
+                                    <p>Property Analysis</p>
+                                    <small>Expenses, ROI, and profitability by property</small>
                                 </div>
                             </div>
                             
@@ -5471,6 +6267,201 @@
                                             <p><strong>Count:</strong> {currentReport.expenses.length} expense(s)</p>
                                         </div>
                                     )}
+                                    
+                                    {currentReport.title === 'Commissions Report' && (
+                                        <div>
+                                            <h3>Commission Summary</h3>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '20px'}}>
+                                                <div style={{background: '#f8f9fa', padding: '15px', borderRadius: '8px', textAlign: 'center'}}>
+                                                    <h4 style={{margin: '0 0 10px 0', color: '#28a745'}}>Total Commissions</h4>
+                                                    <p style={{fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#28a745'}}>
+                                                        ${currentReport.totalCommissions.toLocaleString()}
+                                                    </p>
+                                                </div>
+                                                <div style={{background: '#f8f9fa', padding: '15px', borderRadius: '8px', textAlign: 'center'}}>
+                                                    <h4 style={{margin: '0 0 10px 0', color: '#007bff'}}>Total Deals</h4>
+                                                    <p style={{fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#007bff'}}>
+                                                        {currentReport.totalDeals}
+                                                    </p>
+                                                </div>
+                                                <div style={{background: '#f8f9fa', padding: '15px', borderRadius: '8px', textAlign: 'center'}}>
+                                                    <h4 style={{margin: '0 0 10px 0', color: '#ffc107'}}>Average Commission</h4>
+                                                    <p style={{fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#ffc107'}}>
+                                                        ${currentReport.averageCommission.toLocaleString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                            <h3>Monthly Breakdown</h3>
+                                            <table className="report-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Month</th>
+                                                        <th>Deals Closed</th>
+                                                        <th>Total Commission</th>
+                                                        <th>Average Commission</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {Object.entries(currentReport.monthlyBreakdown).map(([month, data]) => (
+                                                        <tr key={month}>
+                                                            <td>{month}</td>
+                                                            <td>{data.count}</td>
+                                                            <td>${data.total.toLocaleString()}</td>
+                                                            <td>${(data.total / data.count).toLocaleString()}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                            
+                                            <h3>Closed Transactions</h3>
+                                            <table className="report-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Property</th>
+                                                        <th>Sale Amount</th>
+                                                        <th>Commission</th>
+                                                        <th>Date Closed</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {currentReport.transactions.map(transaction => (
+                                                        <tr key={transaction.id}>
+                                                            <td>{transaction.property}</td>
+                                                            <td>${transaction.amount.toLocaleString()}</td>
+                                                            <td>${transaction.commission.toLocaleString()}</td>
+                                                            <td>{transaction.date}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                    
+                                    {currentReport.title === 'Expense by Property Report' && (
+                                        <div>
+                                            <h3>Summary Totals</h3>
+                                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '20px'}}>
+                                                <div style={{background: '#f8f9fa', padding: '15px', borderRadius: '8px', textAlign: 'center'}}>
+                                                    <h4 style={{margin: '0 0 10px 0', color: '#dc3545'}}>Total Expenses</h4>
+                                                    <p style={{fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#dc3545'}}>
+                                                        ${currentReport.totals.expenses.toLocaleString()}
+                                                    </p>
+                                                </div>
+                                                <div style={{background: '#f8f9fa', padding: '15px', borderRadius: '8px', textAlign: 'center'}}>
+                                                    <h4 style={{margin: '0 0 10px 0', color: '#28a745'}}>Total Commissions</h4>
+                                                    <p style={{fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#28a745'}}>
+                                                        ${currentReport.totals.commissions.toLocaleString()}
+                                                    </p>
+                                                </div>
+                                                <div style={{background: '#f8f9fa', padding: '15px', borderRadius: '8px', textAlign: 'center'}}>
+                                                    <h4 style={{margin: '0 0 10px 0', color: '#007bff'}}>Net Profit</h4>
+                                                    <p style={{fontSize: '24px', fontWeight: 'bold', margin: 0, color: currentReport.totals.netProfit >= 0 ? '#28a745' : '#dc3545'}}>
+                                                        ${currentReport.totals.netProfit.toLocaleString()}
+                                                    </p>
+                                                </div>
+                                                <div style={{background: '#f8f9fa', padding: '15px', borderRadius: '8px', textAlign: 'center'}}>
+                                                    <h4 style={{margin: '0 0 10px 0', color: '#6c757d'}}>Total Hours</h4>
+                                                    <p style={{fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#6c757d'}}>
+                                                        {currentReport.totals.hours.toLocaleString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                            <h3>Property Breakdown</h3>
+                                            <table className="report-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Property</th>
+                                                        <th>Client</th>
+                                                        <th>Status</th>
+                                                        <th>Total Expenses</th>
+                                                        <th>Hours</th>
+                                                        <th>Commission</th>
+                                                        <th>Net Profit</th>
+                                                        <th>ROI %</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {currentReport.propertyExpenses.map(propertyData => (
+                                                        <tr key={propertyData.property.id}>
+                                                            <td>{propertyData.property.address}</td>
+                                                            <td>{propertyData.property.client}</td>
+                                                            <td>{propertyData.property.status}</td>
+                                                            <td>${propertyData.totalExpenses.toLocaleString()}</td>
+                                                            <td>{propertyData.totalHours}</td>
+                                                            <td>${propertyData.commission.toLocaleString()}</td>
+                                                            <td style={{color: propertyData.netProfit >= 0 ? '#28a745' : '#dc3545'}}>
+                                                                ${propertyData.netProfit.toLocaleString()}
+                                                            </td>
+                                                            <td style={{color: propertyData.roi >= 0 ? '#28a745' : '#dc3545'}}>
+                                                                {propertyData.totalExpenses > 0 ? `${propertyData.roi.toFixed(1)}%` : 'N/A'}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                            
+                                            <h3>Top Expense Properties</h3>
+                                            <p style={{fontSize: '14px', color: '#666', marginBottom: '15px'}}>
+                                                Properties sorted by total expenses (highest first)
+                                            </p>
+                                            {currentReport.propertyExpenses.slice(0, 5).map((propertyData, index) => (
+                                                <div key={propertyData.property.id} style={{
+                                                    background: '#f8f9fa', 
+                                                    padding: '15px', 
+                                                    borderRadius: '8px', 
+                                                    marginBottom: '10px',
+                                                    border: '1px solid #e9ecef'
+                                                }}>
+                                                    <h4 style={{margin: '0 0 10px 0'}}>
+                                                        #{index + 1} - {propertyData.property.address}
+                                                    </h4>
+                                                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px'}}>
+                                                        <div><strong>Client:</strong> {propertyData.property.client}</div>
+                                                        <div><strong>Expenses:</strong> ${propertyData.totalExpenses.toLocaleString()}</div>
+                                                        <div><strong>Commission:</strong> ${propertyData.commission.toLocaleString()}</div>
+                                                        <div><strong>Net Profit:</strong> 
+                                                            <span style={{color: propertyData.netProfit >= 0 ? '#28a745' : '#dc3545'}}>
+                                                                ${propertyData.netProfit.toLocaleString()}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Custom Confirmation Modal */}
+                    {showConfirmModal && (
+                        <div className="custom-confirm-modal">
+                            <div className="custom-confirm-content">
+                                <div className="custom-confirm-icon">{confirmConfig.icon}</div>
+                                <div className="custom-confirm-title">{confirmConfig.title}</div>
+                                <div className="custom-confirm-message">
+                                    {confirmConfig.message?.split('\n').map((line, index) => (
+                                        <div key={index}>{line}</div>
+                                    ))}
+                                </div>
+                                <div className="custom-confirm-buttons">
+                                    {confirmConfig.secondaryButton && (
+                                        <button 
+                                            className="custom-confirm-btn secondary"
+                                            onClick={() => handleConfirmResponse(false)}
+                                        >
+                                            {confirmConfig.secondaryButton}
+                                        </button>
+                                    )}
+                                    <button 
+                                        className={`custom-confirm-btn ${confirmConfig.type === 'danger' ? 'danger' : 'primary'}`}
+                                        onClick={() => handleConfirmResponse(true)}
+                                    >
+                                        {confirmConfig.primaryButton || 'OK'}
+                                    </button>
                                 </div>
                             </div>
                         </div>

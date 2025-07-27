@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate KPI Spreadsheet - 2025</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            padding-top: 70px;
+            background-color: #f5f5f5;
+            font-size: 12px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: auto;
+            max-width: 100%;
+        }
+        
+        .spreadsheet-table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1800px;
+        }
+        
+        .spreadsheet-table th,
+        .spreadsheet-table td {
+            border: 1px solid #ddd;
+            padding: 1px 4px;
+            text-align: center;
+            font-size: 11px;
+            white-space: nowrap;
+            height: 18px;
+            line-height: 16px;
+        }
+        
+        /* Make category column consistent across all tabs */
+        .category-header,
+        .category-label {
+            width: 90px !important;
+            max-width: 90px !important;
+            min-width: 90px !important;
+            text-align: left !important;
+            padding-left: 6px !important;
+            padding-top: 1px !important;
+            padding-bottom: 1px !important;
+            position: sticky;
+            left: 0;
+            background-color: inherit;
+            z-index: 20;
+        }
+        
+        /* Ensure category cells have proper background colors when sticky */
+        .category-header {
+            background-color: #4472C4 !important;
+        }
+        
+        .category-label {
+            background-color: #E7E6E6 !important;
+        }
+        
+        /* Make TOTAL column consistent */
+        .total-header,
+        .total-row {
+            width: 50px !important;
+            max-width: 50px !important;
+            min-width: 50px !important;
+            position: sticky;
+            right: 0;
+            background-color: inherit;
+            z-index: 15;
+        }
+        
+        /* Ensure total cells have same color as category with black text */
+        .total-header {
+            background-color: #E7E6E6 !important;
+            color: black !important;
+        }
+        
+        .total-row {
+            background-color: #E7E6E6 !important;
+            color: black !important;
+        }
+        
+        .spreadsheet-table th {
+            background-color: #4472C4;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .year-header {
+            background-color: #2E75B6 !important;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .month-row {
+            background-color: #D9E2F3;
+            font-weight: bold;
+        }
+        
+        .month-name {
+            background-color: #8DB4E2;
+            font-weight: bold;
+            text-align: left;
+            padding-left: 6px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+        }
+        
+        .total-row {
+            background-color: #70AD47;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .daily-header {
+            background-color: #A5A5A5;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .daily-row {
+            background-color: #F2F2F2;
+        }
+        
+        .daily-date {
+            background-color: #BDD7EE;
+            font-weight: bold;
+        }
+        
+        .money-cell {
+            color: #006600;
+            font-weight: bold;
+        }
+        
+        .editable-cell {
+            background-color: #FFF2CC;
+            cursor: pointer;
+        }
+        
+        .editable-cell:hover {
+            background-color: #FFE699;
+        }
+        
+        input.cell-input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: center;
+            font-size: 11px;
+            padding: 1px;
+            color: inherit;
+            height: 14px;
+        }
+
+        input.cell-input:focus {
+            outline: 2px solid var(--primary-color);
+            background-color: var(--table-bg);
+        }
+        
+        .category-label {
+            text-align: left;
+            padding-left: 6px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            background-color: #E7E6E6;
+            font-weight: bold;
+        }
+        
+        .print-btn {
+            position: fixed !important;
+            top: 10px !important;
+            right: 120px !important;
+            background: #70AD47;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 9999 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 12px;
+        }
+        
+        .print-btn:hover {
+            background: #5A8A37;
+        }
+        
+        .main-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .main-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        /* Theme Variables */
+        :root {
+            --primary-color: #4472C4;
+            --secondary-color: #2E75B6;
+            --accent-color: #70AD47;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --table-bg: white;
+            --border-color: #ddd;
+            --header-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --editable-bg: #FFF2CC;
+            --editable-hover: #FFE699;
+            --category-bg: #E7E6E6;
+            --daily-header-bg: #A5A5A5;
+            --daily-row-bg: #F2F2F2;
+            --daily-date-bg: #BDD7EE;
+            --month-name-bg: #8DB4E2;
+            --month-row-bg: #D9E2F3;
+            --tab-hover-bg: #e3f2fd;
+            --tab-hover-color: #1976d2;
+        }
+
+        /* Remove fixed positioning for save button - now inline with reset */
+        .save-btn {
+            background: #4472C4;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        .save-btn:hover {
+            background: #2E75B6;
+        }
+
+        .main-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .tab-btn:hover {
+            background-color: var(--tab-hover-bg);
+            color: var(--tab-hover-color);
+        }
+
+        .total-row {
+            background-color: var(--accent-color) !important;
+        }
+
+        .total-header {
+            background-color: var(--accent-color) !important;
+        }
+
+        .spreadsheet-table th,
+        .spreadsheet-table td {
+            border-color: var(--border-color);
+        }
+
+        .editable-cell {
+            background-color: var(--editable-bg);
+        }
+
+        .editable-cell:hover {
+            background-color: var(--editable-hover);
+        }
+
+        .category-label {
+            background-color: var(--category-bg) !important;
+        }
+
+        .daily-header {
+            background-color: var(--daily-header-bg) !important;
+        }
+
+        .daily-row {
+            background-color: var(--daily-row-bg);
+        }
+
+        .daily-date {
+            background-color: var(--daily-date-bg) !important;
+        }
+
+        .month-name {
+            background-color: var(--month-name-bg) !important;
+        }
+
+        .month-row {
+            background-color: var(--month-row-bg) !important;
+        }
+        
+        /* Tab Styles */
+        .tab-container {
+            margin: 20px 0;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #4472C4;
+            padding-bottom: 10px;
+        }
+        
+        .tab-btn {
+            padding: 10px 15px;
+            border: none;
+            background-color: #f8f9fa;
+            color: #333;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid #ddd;
+            border-bottom: none;
+        }
+        
+        .tab-btn:hover {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .tab-btn.active {
+            background-color: #4472C4;
+            color: white;
+            border-color: #4472C4;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .table-section {
+            margin-bottom: 30px;
+        }
+        
+        .table-section h2 {
+            color: #4472C4;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #4472C4, #2E75B6);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .controls button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        /* Save and Print buttons positioning removed - using fixed positioning from above */
+        
+        .reset-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        /* Custom Dialog Styles */
+        .custom-dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            font-family: Arial, sans-serif;
+        }
+
+        .custom-dialog {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .dialog-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .dialog-content {
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .dialog-warning {
+            color: #d32f2f;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .dialog-buttons {
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+        }
+
+        .dialog-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .dialog-btn-primary {
+            background: #4472C4;
+            color: white;
+        }
+
+        .dialog-btn-primary:hover {
+            background: #2E75B6;
+        }
+
+        .dialog-btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .dialog-btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        .dialog-btn-secondary {
+            background: #666;
+            color: white;
+        }
+
+        .dialog-btn-secondary:hover {
+            background: #555;
+        }
+
+        @media print {
+            .save-btn, .print-btn {
+                display: none;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-header">
+        <h1 class="main-title">KPI Dashboard</h1>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📊 KPI Annual Spreadsheet View - 2025</h1>
+            <div class="controls">
+                <button onclick="saveData()" class="save-btn">💾 Save Data</button>
+                <button onclick="masterReset()" class="reset-btn">🗑️ Master Reset</button>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showTab('annual')">📈 Annual Summary</button>
+                <button class="tab-btn" onclick="showTab('january')">January</button>
+                <button class="tab-btn" onclick="showTab('february')">February</button>
+                <button class="tab-btn" onclick="showTab('march')">March</button>
+                <button class="tab-btn" onclick="showTab('april')">April</button>
+                <button class="tab-btn" onclick="showTab('may')">May</button>
+                <button class="tab-btn" onclick="showTab('june')">June</button>
+                <button class="tab-btn" onclick="showTab('july')">July</button>
+                <button class="tab-btn" onclick="showTab('august')">August</button>
+                <button class="tab-btn" onclick="showTab('september')">September</button>
+                <button class="tab-btn" onclick="showTab('october')">October</button>
+                <button class="tab-btn" onclick="showTab('november')">November</button>
+                <button class="tab-btn" onclick="showTab('december')">December</button>
+            </div>
+        </div>
+
+        <!-- Annual Summary Tab -->
+        <div id="tab-annual" class="tab-content active">
+            <div class="table-section">
+                <h2>📈 Annual Summary - All Months</h2>
+                <div class="table-container">
+                    <table class="spreadsheet-table">
+                        <thead>
+                            <tr>
+                                <th class="category-header">Category</th>
+                                <th>Jan</th>
+                                <th>Feb</th>
+                                <th>Mar</th>
+                                <th>Apr</th>
+                                <th>May</th>
+                                <th>Jun</th>
+                                <th>Jul</th>
+                                <th>Aug</th>
+                                <th>Sep</th>
+                                <th>Oct</th>
+                                <th>Nov</th>
+                                <th>Dec</th>
+                                <th class="total-header">TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="annualData">
+                            <!-- Annual data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Tab Contents -->
+        <div id="tab-january" class="tab-content">
+            <div class="table-section">
+                <h2>📅 January 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="january-container">
+                    <!-- January table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-february" class="tab-content">
+            <div class="table-section">
+                <h2>📅 February 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="february-container">
+                    <!-- February table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-march" class="tab-content">
+            <div class="table-section">
+                <h2>📅 March 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="march-container">
+                    <!-- March table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-april" class="tab-content">
+            <div class="table-section">
+                <h2>📅 April 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="april-container">
+                    <!-- April table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-may" class="tab-content">
+            <div class="table-section">
+                <h2>📅 May 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="may-container">
+                    <!-- May table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-june" class="tab-content">
+            <div class="table-section">
+                <h2>📅 June 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="june-container">
+                    <!-- June table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-july" class="tab-content">
+            <div class="table-section">
+                <h2>📅 July 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="july-container">
+                    <!-- July table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-august" class="tab-content">
+            <div class="table-section">
+                <h2>📅 August 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="august-container">
+                    <!-- August table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-september" class="tab-content">
+            <div class="table-section">
+                <h2>📅 September 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="september-container">
+                    <!-- September table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-october" class="tab-content">
+            <div class="table-section">
+                <h2>📅 October 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="october-container">
+                    <!-- October table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-november" class="tab-content">
+            <div class="table-section">
+                <h2>📅 November 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="november-container">
+                    <!-- November table will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-december" class="tab-content">
+            <div class="table-section">
+                <h2>📅 December 2025 - Daily Breakdown</h2>
+                <div class="table-container" id="december-container">
+                    <!-- December table will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Dialog Structure -->
+    <div id="customDialog" class="custom-dialog-overlay" style="display: none;">
+        <div class="custom-dialog">
+            <div class="dialog-header" id="dialogHeader">
+                Confirmation
+            </div>
+            <div class="dialog-content">
+                <div class="dialog-warning" id="dialogWarning" style="display: none;"></div>
+                <div id="dialogMessage">Are you sure?</div>
+            </div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn dialog-btn-secondary" onclick="closeDialog()">Cancel</button>
+                <button class="dialog-btn dialog-btn-primary" id="dialogConfirmBtn" onclick="confirmDialog()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // KPI Categories exactly as shown in screenshot
+        const kpiCategories = [
+            'New Leads',
+            'Calls Made', 
+            'Calls Answered',
+            'Listing Appts',
+            'Listings Taken',
+            'Listings Sold',
+            'Buyer Appts',
+            'Buyers Sold',
+            'Buyer Showings',
+            'Buyers Signed',
+            'Social Media',
+            'SOI',
+            'Zillow',
+            'OpCity',
+            'Referral',
+            'UpNest',
+            'HomeLight',
+            'Hours Worked',
+            'OneSuite',
+            'Offers Written',
+            'Direct Mail',
+            'Realtor.com',
+            'Deals Closed',
+            'GCI Earned'
+        ];
+
+        // Custom Dialog Functions
+        let dialogResolve = null;
+
+        function showCustomDialog(title, message, isWarning = false, dangerBtn = false) {
+            return new Promise((resolve) => {
+                dialogResolve = resolve;
+                
+                document.getElementById('dialogHeader').textContent = title;
+                document.getElementById('dialogMessage').textContent = message;
+                
+                const warningDiv = document.getElementById('dialogWarning');
+                if (isWarning) {
+                    warningDiv.textContent = '⚠️ WARNING';
+                    warningDiv.style.display = 'block';
+                } else {
+                    warningDiv.style.display = 'none';
+                }
+                
+                const confirmBtn = document.getElementById('dialogConfirmBtn');
+                if (dangerBtn) {
+                    confirmBtn.className = 'dialog-btn dialog-btn-danger';
+                    confirmBtn.textContent = 'DELETE';
+                } else {
+                    confirmBtn.className = 'dialog-btn dialog-btn-primary';
+                    confirmBtn.textContent = 'OK';
+                }
+                
+                document.getElementById('customDialog').style.display = 'flex';
+            });
+        }
+
+        function closeDialog() {
+            document.getElementById('customDialog').style.display = 'none';
+            if (dialogResolve) {
+                dialogResolve(false);
+                dialogResolve = null;
+            }
+        }
+
+        function confirmDialog() {
+            document.getElementById('customDialog').style.display = 'none';
+            if (dialogResolve) {
+                dialogResolve(true);
+                dialogResolve = null;
+            }
+        }
+
+        function showSuccessDialog(message) {
+            return showCustomDialog('✅ Success', message, false, false);
+        }
+
+        const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const monthAbbrevs = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        // Days in each month for 2025 (not a leap year)
+        const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        // Day names for calendar headers
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        // Get the first day of the week for a given month/year
+        function getFirstDayOfMonth(year, month) {
+            return new Date(year, month, 1).getDay();
+        }
+
+        // Get calendar structure for a month
+        function getCalendarDates(year, monthIndex) {
+            const firstDay = getFirstDayOfMonth(year, monthIndex);
+            const daysInThisMonth = daysInMonth[monthIndex];
+            const dates = [];
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDay; i++) {
+                dates.push('');
+            }
+            
+            // Add all days of the month
+            for (let day = 1; day <= daysInThisMonth; day++) {
+                dates.push(day);
+            }
+            
+            return dates;
+        }
+
+        // Tab Management
+        function showTab(tabName) {
+            // Save current tab data before switching
+            saveCurrentTabData();
+            
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Mark button as active
+            event.target.classList.add('active');
+            
+            // Generate monthly table if not annual summary
+            if (tabName !== 'annual') {
+                const monthIndex = months.indexOf(tabName);
+                if (monthIndex !== -1) {
+                    generateMonthlyTable(monthIndex);
+                }
+            } else {
+                // Refresh annual summary when switching back
+                updateAnnualSummaryRealTime();
+            }
+        }
+
+        // Save current active tab data
+        function saveCurrentTabData() {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (!activeTab) return;
+            
+            const tabId = activeTab.id;
+            if (tabId === 'tab-annual') return; // Don't save annual tab
+            
+            const monthName = tabId.replace('tab-', '');
+            const monthIndex = months.indexOf(monthName);
+            if (monthIndex === -1) return;
+            
+            const container = document.getElementById(`${monthName}-container`);
+            if (!container) return;
+            
+            const table = container.querySelector('table');
+            if (!table) return;
+            
+            // Extract and save the current month's data
+            const monthData = {};
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            
+            const rows = tbody.querySelectorAll('tr');
+            
+            rows.forEach((row, rowIndex) => {
+                if (rowIndex >= kpiCategories.length) return;
+                
+                const category = kpiCategories[rowIndex];
+                monthData[category] = {};
+                
+                const inputs = row.querySelectorAll('input');
+                inputs.forEach((input, inputIndex) => {
+                    const day = inputIndex + 1;
+                    if (day <= daysInMonth[monthIndex]) {
+                        monthData[category][day] = input.value || '';
+                    }
+                });
+            });
+            
+            // Save to localStorage immediately
+            const allMonthlyData = JSON.parse(localStorage.getItem('kpiMonthlyData2025') || '{}');
+            allMonthlyData[monthName] = monthData;
+            localStorage.setItem('kpiMonthlyData2025', JSON.stringify(allMonthlyData));
+        }
+
+        // Load saved data from localStorage
+        function loadData() {
+            const savedData = localStorage.getItem('kpiAnnualData2025');
+            const savedMonthlyData = localStorage.getItem('kpiMonthlyData2025');
+            
+            return {
+                annual: savedData ? JSON.parse(savedData) : {},
+                monthly: savedMonthlyData ? JSON.parse(savedMonthlyData) : {}
+            };
+        }
+
+        // Save data to localStorage
+        async function saveData() {
+            // First save current active tab data
+            saveCurrentTabData();
+            
+            // Then extract all monthly data and calculate annual
+            const monthlyData = extractAllMonthlyData();
+            const annualData = calculateAnnualTotals(monthlyData);
+            
+            localStorage.setItem('kpiMonthlyData2025', JSON.stringify(monthlyData));
+            localStorage.setItem('kpiAnnualData2025', JSON.stringify(annualData));
+            
+            // Update annual summary table
+            populateAnnualTable(annualData);
+            
+            await showSuccessDialog('Data saved successfully!');
+        }
+
+        // Master Reset function
+        async function masterReset() {
+            const firstConfirmation = await showCustomDialog(
+                '⚠️ MASTER RESET WARNING',
+                'This will permanently delete ALL data including:\n• All Monthly KPI Data\n• All Daily Activity Data\n• All Saved Progress\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to reset everything?',
+                true,
+                true
+            );
+            
+            if (firstConfirmation) {
+                const finalConfirmation = await showCustomDialog(
+                    'FINAL CONFIRMATION',
+                    'This is your last chance to cancel.\nALL DATA WILL BE PERMANENTLY DELETED.\n\nClick OK to proceed with the master reset.',
+                    true,
+                    true
+                );
+                
+                if (finalConfirmation) {
+                    // Clear localStorage completely
+                    localStorage.removeItem('kpiAnnualData2025');
+                    localStorage.removeItem('kpiMonthlyData2025');
+                    localStorage.clear(); // Clear everything to be safe
+                    
+                    // Clear all input fields immediately
+                    document.querySelectorAll('input').forEach(input => {
+                        input.value = '';
+                    });
+                    
+                    // Clear all total displays
+                    document.querySelectorAll('.total-row').forEach(cell => {
+                        cell.textContent = '0';
+                    });
+                    
+                    // Show completion message and reload
+                    await showSuccessDialog('Master Reset Complete!\n\nAll data has been cleared and the spreadsheet has been reset to its initial state.');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                }
+            }
+        }
+
+        // Extract data from all monthly tables
+        function extractAllMonthlyData() {
+            const allData = {};
+            
+            months.forEach((month, monthIndex) => {
+                const container = document.getElementById(`${month}-container`);
+                if (!container) return;
+                
+                const table = container.querySelector('table');
+                if (!table) return;
+                
+                allData[month] = {};
+                
+                const tbody = table.querySelector('tbody');
+                if (!tbody) return;
+                
+                const rows = tbody.querySelectorAll('tr');
+                
+                rows.forEach((row, rowIndex) => {
+                    if (rowIndex >= kpiCategories.length) return;
+                    
+                    const category = kpiCategories[rowIndex];
+                    allData[month][category] = {};
+                    
+                    // Get all input elements in this row (excluding the total column)
+                    const inputs = row.querySelectorAll('input');
+                    
+                    // Each input corresponds to a day (1, 2, 3... up to daysInMonth)
+                    inputs.forEach((input, inputIndex) => {
+                        const day = inputIndex + 1; // Day numbers start at 1
+                        if (day <= daysInMonth[monthIndex]) {
+                            allData[month][category][day] = input.value || '';
+                        }
+                    });
+                });
+            });
+            
+            return allData;
+        }
+
+        // Calculate annual totals from monthly data
+        function calculateAnnualTotals(monthlyData) {
+            const annualTotals = {};
+            
+            kpiCategories.forEach(category => {
+                annualTotals[category] = {};
+                
+                monthAbbrevs.forEach((monthAbbrev, monthIndex) => {
+                    const monthName = months[monthIndex];
+                    let monthTotal = 0;
+                    
+                    if (monthlyData[monthName] && monthlyData[monthName][category]) {
+                        Object.values(monthlyData[monthName][category]).forEach(value => {
+                            const numValue = parseFloat(value) || 0;
+                            monthTotal += numValue;
+                        });
+                    }
+                    
+                    annualTotals[category][monthAbbrev] = monthTotal;
+                });
+            });
+            
+            return annualTotals;
+        }
+
+        // Update annual summary in real-time
+        function updateAnnualSummaryRealTime() {
+            const monthlyData = extractAllMonthlyData();
+            const annualData = calculateAnnualTotals(monthlyData);
+            populateAnnualTable(annualData);
+        }
+
+        // Calculate row total for a specific row in monthly table
+        function calculateMonthlyRowTotal(row) {
+            let total = 0;
+            const inputs = row.querySelectorAll('input');
+            
+            inputs.forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                total += value;
+            });
+            
+            return total;
+        }
+
+        // Update row total for a specific row
+        function updateRowTotal(row) {
+            const total = calculateMonthlyRowTotal(row);
+            const totalCell = row.querySelector('.total-row');
+            
+            if (totalCell) {
+                // Check if this is a money cell (GCI Earned)
+                const categoryCell = row.querySelector('.category-label');
+                const isMoneyCell = categoryCell && categoryCell.textContent === 'GCI Earned';
+                const displayTotal = isMoneyCell && total > 0 ? `$${total.toLocaleString()}` : total || '';
+                totalCell.textContent = displayTotal;
+            }
+        }
+
+        // Create editable cell with real-time calculation
+        function createEditableCell(value, isMoneyCell = false) {
+            const cell = document.createElement('td');
+            cell.className = 'editable-cell';
+            if (isMoneyCell) cell.classList.add('money-cell');
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'cell-input';
+            input.value = value || '';
+            
+            // Add event listener for real-time calculation
+            input.addEventListener('input', function() {
+                // Update the row total for this row
+                const row = this.closest('tr');
+                if (row) {
+                    updateRowTotal(row);
+                }
+                
+                // Update annual summary
+                updateAnnualSummaryRealTime();
+            });
+            
+            cell.appendChild(input);
+            return cell;
+        }
+
+        // Create regular cell
+        function createCell(value, className = '') {
+            const cell = document.createElement('td');
+            cell.textContent = value || '';
+            if (className) cell.className = className;
+            return cell;
+        }
+
+        // Create date cell
+        function createDateCell(day, className = 'date-cell') {
+            const cell = document.createElement('th');
+            cell.className = className;
+            if (day) {
+                cell.textContent = day;
+            }
+            return cell;
+        }
+
+        // Calculate row total for annual table
+        function calculateRowTotal(category, data) {
+            let total = 0;
+            monthAbbrevs.forEach(month => {
+                const value = parseFloat(data[category] && data[category][month] || 0);
+                if (!isNaN(value)) total += value;
+            });
+            return total;
+        }
+
+        // Populate annual summary table
+        function populateAnnualTable(data) {
+            const tbody = document.getElementById('annualData');
+            tbody.innerHTML = '';
+            
+            // Add data rows for each KPI category
+            kpiCategories.forEach(category => {
+                const tr = document.createElement('tr');
+                
+                // Category name
+                tr.appendChild(createCell(category, 'category-label'));
+                
+                // Monthly data columns
+                monthAbbrevs.forEach(month => {
+                    const value = data[category] && data[category][month] || 0;
+                    const isMoneyCell = category === 'GCI Earned';
+                    const displayValue = isMoneyCell && value > 0 ? `$${value.toLocaleString()}` : value;
+                    tr.appendChild(createCell(displayValue, ''));
+                });
+                
+                // Total column
+                const total = calculateRowTotal(category, data);
+                const isMoneyCell = category === 'GCI Earned';
+                const displayTotal = isMoneyCell && total > 0 ? `$${total.toLocaleString()}` : total || '';
+                tr.appendChild(createCell(displayTotal, 'total-row'));
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Generate monthly table for a specific month
+        function generateMonthlyTable(monthIndex) {
+            const monthName = months[monthIndex];
+            const monthDisplayName = monthNames[monthIndex];
+            const container = document.getElementById(`${monthName}-container`);
+            
+            if (!container) return;
+            
+            // Clear existing content
+            container.innerHTML = '';
+            
+            const table = document.createElement('table');
+            table.className = 'spreadsheet-table';
+            
+            // Header
+            const thead = document.createElement('thead');
+            
+            // Month title row
+            const titleRow = document.createElement('tr');
+            const titleCell = document.createElement('th');
+            titleCell.colSpan = daysInMonth[monthIndex] + 2; // Days + Category + Total
+            titleCell.className = 'daily-header';
+            titleCell.textContent = `${monthDisplayName} 2025`;
+            titleRow.appendChild(titleCell);
+            thead.appendChild(titleRow);
+            
+            // Date headers row
+            const dateRow = document.createElement('tr');
+            dateRow.appendChild(createDateCell('Category', 'category-header'));
+            
+            // Add date headers for actual days only (1, 2, 3... to last day)
+            for (let day = 1; day <= daysInMonth[monthIndex]; day++) {
+                const date = new Date(2025, monthIndex, day);
+                const dayName = dayNames[date.getDay()];
+                const headerText = `${dayName} ${day}`;
+                dateRow.appendChild(createDateCell(headerText, 'daily-date'));
+            }
+            
+            // Total column
+            dateRow.appendChild(createDateCell('TOTAL', 'total-header'));
+            thead.appendChild(dateRow);
+            
+            table.appendChild(thead);
+            
+            // Body
+            const tbody = document.createElement('tbody');
+            
+            kpiCategories.forEach(category => {
+                const tr = document.createElement('tr');
+                tr.className = 'daily-row';
+                
+                // Category name
+                tr.appendChild(createCell(category, 'category-label'));
+                
+                // Day columns - only for actual days of the month
+                for (let day = 1; day <= daysInMonth[monthIndex]; day++) {
+                    const isMoneyCell = category === 'GCI Earned';
+                    const value = ''; // Will be populated from saved data
+                    tr.appendChild(createEditableCell(value, isMoneyCell));
+                }
+                
+                // Total column - initially 0, will be calculated
+                tr.appendChild(createCell('', 'total-row'));
+                
+                tbody.appendChild(tr);
+            });
+            
+            table.appendChild(tbody);
+            container.appendChild(table);
+            
+            // Load saved data for this month
+            loadMonthlyData(monthName);
+        }
+
+        // Load saved data for a specific month
+        function loadMonthlyData(monthName) {
+            const data = loadData();
+            if (!data.monthly[monthName]) return;
+            
+            const container = document.getElementById(`${monthName}-container`);
+            if (!container) return;
+            
+            const table = container.querySelector('table');
+            if (!table) return;
+            
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            
+            const rows = tbody.querySelectorAll('tr');
+            
+            rows.forEach((row, rowIndex) => {
+                if (rowIndex >= kpiCategories.length) return;
+                
+                const category = kpiCategories[rowIndex];
+                const categoryData = data.monthly[monthName][category];
+                
+                if (!categoryData) return;
+                
+                const inputs = row.querySelectorAll('input');
+                inputs.forEach((input, inputIndex) => {
+                    const day = inputIndex + 1; // Days start at 1
+                    if (categoryData[day]) {
+                        input.value = categoryData[day];
+                    }
+                });
+                
+                // Calculate and update row total after loading data
+                updateRowTotal(row);
+            });
+        }
+
+        // Initialize the spreadsheet
+        function init() {
+            const data = loadData();
+            
+            // If we have monthly data, calculate annual totals
+            if (Object.keys(data.monthly).length > 0) {
+                const annualData = calculateAnnualTotals(data.monthly);
+                populateAnnualTable(annualData);
+            } else {
+                populateAnnualTable(data.annual);
+            }
+            
+            // Generate initial monthly table (January)
+            generateMonthlyTable(0);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Save data before page unload
+        window.addEventListener('beforeunload', function() {
+            // Save current active tab data first
+            saveCurrentTabData();
+            
+            // Silent save without confirmation when leaving page
+            const monthlyData = extractAllMonthlyData();
+            const annualData = calculateAnnualTotals(monthlyData);
+            
+            localStorage.setItem('kpiMonthlyData2025', JSON.stringify(monthlyData));
+            localStorage.setItem('kpiAnnualData2025', JSON.stringify(annualData));
+        });
+    </script>
+</body>
+</html>
